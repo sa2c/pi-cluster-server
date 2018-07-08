@@ -1,0 +1,16 @@
+- some stuff runs on the submission node, would be nice if we could free that up
+- choose from nodes or choose from IPs...?
+- everything is running on the wrong nodes..
+- the output is not flushing
+- the simulations are taking a long time (how long...?)
+- drag is wrong (max not min!)
+- avatar colours not being shown
+- can the queue system run multiple sims in parallel...!?
+- using the same dir MPI....??
+- initial submission is still slow (needs to be in another thread)
+- server needs to choose a colour (number 1->25)
+- client not showing all the info that it's cabable of (because the server doesn't have it)
+- server can't server from the simulations directory
+- multiple simulations can be submitted at once...
+- postcards not tested
+- notify ruth

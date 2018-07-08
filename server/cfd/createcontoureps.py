@@ -234,7 +234,7 @@ def generate_images_vtk(sim_id, nprocs, nsteps):
 
     simdir = model.run_directory(sim_id) + '/'
 
-    config = {'nodes':'32:ppn=4', 'queue':'dedicated', 'timelimit':'11:59'}
+    config = {'nodes':'4:ppn=4', 'queue':'compute', 'timelimit':'11:59'}
     pool = SlurmPool(**config)
 
     # Setup arguments

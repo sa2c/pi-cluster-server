@@ -90,7 +90,7 @@ def build_document(filename, images, name, drag):
 
     drag_figure = KeepInFrame(127.559,
                               50.551,
-                              [Paragraph(f"{drag:.1f}", styles["Heading2"])],
+                              [Paragraph("{drag:.1f}".format(drag=drag), styles["Heading2"])],
                               mode='shrink')
     drag_figure.wrapOn(page, 127.559, 50.551)
     drag_figure.drawOn(page, 289, 210)

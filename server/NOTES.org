@@ -1,3 +1,6 @@
+* Overlay the name text on the screen and get the user to type it
+* Can the user choose avatar?
+* Drop some submission scripts in place
 * Do it all with jobsteps...!!! How awesome would that be...!?
   - preprocess
   - FEM

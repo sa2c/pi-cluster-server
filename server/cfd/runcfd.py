@@ -22,7 +22,10 @@
 import os
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../'))
+sys.path.append(path)
+print("appending {path}".format(path=path))
+print(sys.path)
 
 from cfdpi_step3 import *
 from cfdpi_step4 import *

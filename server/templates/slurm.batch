@@ -22,9 +22,10 @@ echo $PWD
 # Store job ID to file
 echo ${RES##* } > job_id
 
-# remove finished file, in case this is a resubmission
-# this will allow the UI to update appropriately
+# remove finished file and old job products, in case
+# this is a resubmission this will allow the UI to update appropriately
 rm "{{end_file}}" 2>/dev/null
+rm slurm.output slurm.error slurm.hosts
 
 # Write host info
 
