@@ -1,1 +1,5 @@
 svg.path==2.2
+numpy==1.12.1
+scipy==0.18.1
+freenect=0.6.0
+opencv=2.4.9
