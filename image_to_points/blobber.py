@@ -43,7 +43,7 @@ def get_biggest_subpath(paths):
 def output_points(path, output_file):
     '''Given a path, writes the points in it to a given output_file'''
     for line in path:
-        output_file.write(f'{line.start.real}\t{line.start.imag}\n')
+        output_file.write(''+str(line.start.real)+'\t'+str(line.start.imag)+'\n')
 
 
 def main():
