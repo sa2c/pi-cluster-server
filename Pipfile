@@ -4,16 +4,17 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-numpy = "==1.12.1"
-scipy = "==0.18.1"
+numpy = "*"
+scipy = "*"
 "svg.path" = "==2.2"
 Cython = "*"
-"PyQt5" = "*"
 opencv-python = "*"
 opencv-contrib-python = "*"
 matplotlib = "*"
+"pyside2" = "*"
+shapely = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
