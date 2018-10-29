@@ -1,14 +1,19 @@
 
 import os
 from cfdpi_step5 import *
-from cfdpi_step6 import *
+from createcontoureps import *
 
+
+# Default entries
+project_name = "square"
+if_serial = True
+
+if len(sys.argv) > 1:
+    project_name = sys.argv[1]
 
 if_serial = True
 
-project_name = "test3"
-
-num_timesteps = 10
+num_timesteps = 100
 
 dst="./" + project_name + "/mesh/"
 os.chdir(dst)

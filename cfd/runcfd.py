@@ -24,7 +24,8 @@ import sys
 from cfdpi_step3 import *
 from cfdpi_step4 import *
 from cfdpi_step5 import *
-from cfdpi_step6 import *
+#from cfdpi_step6 import *
+from createcontoureps import *
 
 
 
@@ -117,7 +118,7 @@ print("###################################################################\n")
 #
 ##################################################################
 
-num_timesteps = 10
+num_timesteps = 100
 
 step6_generate_images_vtk(project_name, if_serial, num_timesteps)
 
