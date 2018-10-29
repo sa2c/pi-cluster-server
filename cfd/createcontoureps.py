@@ -97,6 +97,8 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, velo_magn_max
     if(compute_bound == True):
         velo_magn_max = 1.25*np.max(velocity_magn[:,0])
 
+    print compute_bound, velo_magn_max
+    VV=np.linspace(0.0, velo_magn_max, 20)
 
     # generate images
 
@@ -109,7 +111,6 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, velo_magn_max
     if(veloplots == True):
         plt.figure(1)
         plt.triplot(coords[:,0], coords[:,1], elems, color='black', linewidth=0.2)
-        VV=np.linspace(0.0, 3.5, 20)
         plt.tricontourf(coords[:,0], coords[:,1], elems, velocity_magn[:,0], VV, cmap="rainbow", extend='both')
         plt.colorbar()
         plt.axis('off')
@@ -121,12 +122,9 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, velo_magn_max
     if(vectorplots == True):
         # Quiver plot
         plt.figure(2)
+        plt.quiver(coords[:,0], coords[:,1], velocity[:,0], velocity[:,1], angles='xy', scale_units='xy',scale=2.0)
         plt.triplot(coords[:,0], coords[:,1], elems, color='black', linewidth=0.2)
-        #plt.colorbar()
-        plt.quiver(coords[:,0], coords[:,1], velocity[:,0], velocity[:,1])
-        #ax=plt.subplots()
-        #ax.quiver(coords[:,0], coords[:,1], velocity[:,0], velocity[:,1])
-        #ax.quiverkey(q,X=1.0, Y=1.0, U=1.0)
+        plt.axes().set_aspect(1.0)
         plt.axis('off')
         #plt.show()
         outfile = fname_data[0]+"-quiver.png"
@@ -152,8 +150,8 @@ def step6_generate_images_vtk(project_name, if_serial, num_timesteps):
     if if_serial:
         for fnum in range(num_timesteps):
             filename = fname_temp + str(fnum+1) + ".vtk"
-            print(filename)
-            generate_velocityvectorplots_from_vtk(filename, (fnum ==0), velo_magn_max)
+            print filename, velo_magn_max
+            generate_velocityvectorplots_from_vtk(filename, (fnum == 0), velo_magn_max)
     else:
         filename_prefix=test.vtk
     
