@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+numpy = "==1.12.1"
+scipy = "==0.18.1"
+opencv-python = "*"
+"svg.path" = "==2.2"
+Cython = "*"
+"PyQt5" = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"
