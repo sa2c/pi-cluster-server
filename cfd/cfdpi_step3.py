@@ -70,9 +70,9 @@ def step3_generate_polyline_from_outline(project_name, domain_area):
     poly_file.write("#channel boundary\n")
 
     poly_file.write("%d \t %10.6f \t %10.6f \t %d\n" % (1, pt1x, pt1y, 2) )
-    poly_file.write("%d \t %10.6f \t %10.6f \t %d\n" % (2, pt2x, pt1y, 2) )
+    poly_file.write("%d \t %10.6f \t %10.6f \t %d\n" % (2, pt2x, pt1y, 3) )
     poly_file.write("%d \t %10.6f \t %10.6f \t %d\n" % (3, pt2x, pt2y, 2) )
-    poly_file.write("%d \t %10.6f \t %10.6f \t %d\n" % (4, pt1x, pt2y, 2) )
+    poly_file.write("%d \t %10.6f \t %10.6f \t %d\n" % (4, pt1x, pt2y, 4) )
 
 
     # Immersed object
@@ -131,8 +131,8 @@ def step3_generate_mesh_from_outline(project_name):
     mesh_size = mesh_size.lstrip('0')
     mesh_size = mesh_size.lstrip('.')
 
-    #cmd = "./triangle -pq32.0 -a." + str(mesh_size) + " " + project_name
-    cmd = "./triangle -pq32.0 -a2000 " + project_name
+    cmd = "./triangle -pq32.0 -a0.05" + str(mesh_size) + " " + project_name
+    #cmd = "./triangle -pq32.0 -a2000 " + project_name
     print(cmd)
     os.system(cmd)
 
