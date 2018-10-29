@@ -6,10 +6,11 @@ name = "pypi"
 [packages]
 numpy = "==1.12.1"
 scipy = "==0.18.1"
-opencv-python = "*"
 "svg.path" = "==2.2"
 Cython = "*"
 "PyQt5" = "*"
+opencv-python = "*"
+opencv-contrib-python = "*"
 
 [dev-packages]
 
