@@ -131,7 +131,8 @@ def step3_generate_mesh_from_outline(project_name):
     mesh_size = mesh_size.lstrip('0')
     mesh_size = mesh_size.lstrip('.')
 
-    cmd = "./triangle -pq32.0 -a0.05" + str(mesh_size) + " " + project_name
+    cmd = "./triangle-lib/triangle -pq32.0 -a0.05" + str(mesh_size) + " " \
+            + project_name
     #cmd = "./triangle -pq32.0 -a2000 " + project_name
     print(cmd)
     os.system(cmd)
