@@ -419,7 +419,7 @@ int main(int argc, char* argv[])
         //pres[perm_vector[ii]] = stof(stringlist[0]);
       }
 
-      sprintf(fname_vtk, "%s%d%s", "elmeroutput",timecount,".vtk");
+      sprintf(fname_vtk, "%s%04d%s", "elmeroutput",timecount,".vtk");
       writeoutputvtk(nNode, nElem, xcoords, ycoords, elemNodeConn, veloX, veloY, pres, fname_vtk);
       timecount++;
     }

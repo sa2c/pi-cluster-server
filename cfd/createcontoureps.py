@@ -6,8 +6,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+def generate_velocityvectorplots_from_vtk(filename, compute_bound):
+    global velo_magn_max
 
-def generate_velocityvectorplots_from_vtk(filename, compute_bound, velo_magn_max):
     # Open the file with read only permit
     vtkfile = open(filename, "r")
 
@@ -95,9 +96,7 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, velo_magn_max
     vtkfile.close()
 
     if(compute_bound == True):
-        velo_magn_max = 1.25*np.max(velocity_magn[:,0])
-
-    print compute_bound, velo_magn_max
+        velo_magn_max = 0.75*np.max(velocity_magn[:,0])
     VV=np.linspace(0.0, velo_magn_max, 20)
 
     # generate images
@@ -105,8 +104,8 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, velo_magn_max
     fname_data = filename.split(".")
     # Velocity magnitude contour plot
 
-    veloplots = True
-    vectorplots = False
+    veloplots = False
+    vectorplots = True
 
     if(veloplots == True):
         plt.figure(1)
@@ -122,7 +121,7 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, velo_magn_max
     if(vectorplots == True):
         # Quiver plot
         plt.figure(2)
-        plt.quiver(coords[:,0], coords[:,1], velocity[:,0], velocity[:,1], angles='xy', scale_units='xy',scale=2.0)
+        plt.quiver(coords[:,0], coords[:,1], velocity[:,0], velocity[:,1], angles='xy', scale_units='xy')
         plt.triplot(coords[:,0], coords[:,1], elems, color='black', linewidth=0.2)
         plt.axes().set_aspect(1.0)
         plt.axis('off')
@@ -145,19 +144,19 @@ def step6_generate_images_vtk(project_name, if_serial, num_timesteps):
     #os.chdir(dst)
 
     fname_temp="elmeroutput"
-    velo_magn_max=2.0
+    global velo_magn_max
 
     if if_serial:
         for fnum in range(num_timesteps):
-            filename = fname_temp + str(fnum+1) + ".vtk"
-            print filename, velo_magn_max
-            generate_velocityvectorplots_from_vtk(filename, (fnum == 0), velo_magn_max)
+            filename = fname_temp + str(fnum+1).zfill(4) + ".vtk"
+            generate_velocityvectorplots_from_vtk(filename, (fnum == 0))
+            print filename
     else:
         filename_prefix=test.vtk
     
         for fnum in range(num_timesteps):
-            filename = filename_prefix + "." + str(fnum-1)
-            generate_velocityvectorplots_from_vtk(filename, (fnum ==0), velo_magn_max)
+            filename = filename_prefix + "." + str(fnum-1).zfill(4)
+            generate_velocityvectorplots_from_vtk(filename, (fnum ==0))
 
     return
 ##################################################

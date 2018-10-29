@@ -17,7 +17,7 @@ Simulation
   Steady State Max Iterations = 250
   TimeStepping Method = BDF  
   BDF Order = 2              
-  Timestep Sizes = 0.1
+  Timestep Sizes = 10.0
   TimeStep Intervals = 100
 
   Output Intervals = 1
