@@ -7,20 +7,27 @@ End
 
 Simulation
   Coordinate System = Cartesian 2D
+
   Coordinate Mapping(3) = 1 2 3
-  Simulation Type = Transient
+
+  #Simulation Type = Steady
+  #Steady State Max Iterations = 20
+
+  Simulation Type =Transient
   Steady State Max Iterations = 250
   TimeStepping Method = BDF  
   BDF Order = 2              
-  Timestep Sizes = 1.0
-  TimeStep Intervals = 50
+  Timestep Sizes = 10.0
+  TimeStep Intervals = 10
+
   Output Intervals = 1
+
   Output File =  "ElmerOutput.ep"
 End
 
 
 Constants
-  Gravity(4) = 0 -1 0 9.82
+  Gravity(4) = 0 -0 0 9.82
   Stefan Boltzmann = 5.67e-8
 End
 
@@ -40,13 +47,7 @@ End
 Solver 1
   Equation =  Navier-Stokes
 
-  Linear System Solver = Iterative
-  Linear System Iterative Method = BiCGStab
-  Linear System Max Iterations = 1000
-  Linear System Convergence Tolerance = 1.0e-6
-  Linear System Preconditioning = ILU3
-  Linear System Residual Output = 1
-  Steady State Convergence Tolerance = 1.0e-5
+  Linear System Solver = Direct
   Stabilize = True
   Nonlinear System Convergence Tolerance = 1.0e-5
   Nonlinear System Max Iterations = 10
@@ -55,11 +56,12 @@ Solver 1
   Nonlinear System Relaxation Factor = 1.0
 End
 
+
 Material 1
   Name = "Material1"
 
-  Density = 1.0
-  Viscosity = 0.05
+  Density = 1
+  Viscosity = 0.01
 End
 
 
