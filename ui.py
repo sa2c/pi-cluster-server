@@ -188,6 +188,7 @@ if __name__ == '__main__':
     th = VideoCaptureThread()
     window = ControlWindow(th)
 
+    th.setParent(window)
     th.start()
     window.show()
 
