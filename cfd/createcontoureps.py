@@ -150,7 +150,7 @@ def step6_generate_images_vtk(project_name, if_serial, num_timesteps):
         for fnum in range(num_timesteps):
             filename = fname_temp + str(fnum+1).zfill(4) + ".vtk"
             generate_velocityvectorplots_from_vtk(filename, (fnum == 0))
-            print filename
+            print(filename)
     else:
         filename_prefix=test.vtk
     
