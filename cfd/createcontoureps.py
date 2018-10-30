@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
+def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs,\
+        subject_img_data=None):
     global velo_magn_max
 
     # Open the file with read only permit
@@ -25,7 +26,7 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
     listtemp = " ".join(line.split())
     listtemp = listtemp.split(" ")
     numpoints = int(listtemp[1])
-    print "numpoints=", numpoints
+    print("numpoints=", numpoints)
     # Point coordinates
     coords = np.zeros((numpoints,3), dtype=float)
     for ii in range(numpoints):
@@ -42,7 +43,7 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
     listtemp = " ".join(line.split())
     listtemp = listtemp.split(" ")
     numcells = int(listtemp[1])
-    print "numcells=", numcells
+    print("numcells=", numcells)
     # Elements connectivity
     elems = np.zeros((numcells,3), dtype=int)
     for ii in range(numcells):
@@ -111,29 +112,37 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
     # Velocity magnitude contour plot
 
     contourplots = True
-    vectorplots = False
+    vectorplots = True
 
     if(contourplots == True):
-        plt.figure(1)
-        plt.triplot(coords[:,0], coords[:,1], elems, color='black', linewidth=0.2)
-        plt.tricontourf(coords[:,0], coords[:,1], elems, velocity_magn[:,0], VV, cmap="rainbow", extend='both')
-        #plt.colorbar()
-        plt.axis('off')
-        plt.axes().set_aspect(1.0)
+        # https://matplotlib.org/gallery/misc/agg_buffer_to_array.html
+        fig1 = plt.figure(1)
+        ax1 = fig1.add_subplot(111)
+        ax1.triplot(coords[:,0], coords[:,1], elems, color='black', linewidth=0.2)
+        mappable = ax1.tricontourf(coords[:,0], coords[:,1], elems, velocity_magn[:,0], VV, cmap="rainbow", extend='both')
+        plt.colorbar(mappable)
+        ax1.axis('off')
+        ax1.axes.set_aspect(1.0)
+        fig1.canvas.draw()
+        if subject_img_data is not None:
+            dx,dy = np.array(fig1.canvas.renderer._renderer).shape()
+            M = np.float32([[1,0,0],[0,1,0]])
+
         outfile = fname_data[0]+"-velomagn.png"
-        plt.savefig(outfile, dpi=200)
+        fig1.savefig(outfile, dpi=200)
         plt.close()
 
     if(vectorplots == True):
         # Quiver plot
-        plt.figure(2)
-        plt.quiver(coords[:,0], coords[:,1], velocity[:,0], velocity[:,1], angles='xy', scale_units='xy')
-        plt.triplot(coords[:,0], coords[:,1], elems, color='black', linewidth=0.2)
-        plt.axes().set_aspect(1.0)
-        plt.axis('off')
+        fig2 = plt.figure(2)
+        ax2 = fig2.add_subplot(111)
+        ax2.quiver(coords[:,0], coords[:,1], velocity[:,0], velocity[:,1], angles='xy', scale_units='xy')
+        ax2.triplot(coords[:,0], coords[:,1], elems, color='black', linewidth=0.2)
+        ax2.axes.set_aspect(1.0)
+        ax2.axis('off')
         #plt.show()
         outfile = fname_data[0]+"-quiver.png"
-        plt.savefig(outfile, dpi=200)
+        fig2.savefig(outfile, dpi=200)
         plt.close()
 
     return
@@ -154,7 +163,7 @@ def step6_generate_images_vtk(project_name, nprocs, num_timesteps):
 
     for fnum in range(num_timesteps):
         vtkfilename = fname_temp + str(fnum+1).zfill(4) + ".vtk"
-        print vtkfilename
+        print(vtkfilename)
         if(os.path.isfile(vtkfilename) == True):
             generate_velocityvectorplots_from_vtk(vtkfilename, (fnum == 0), nprocs)
         #else:
