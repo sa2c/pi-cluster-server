@@ -74,7 +74,6 @@ class ControlWindow(QMainWindow):
     def __init__(self, video_thread, parent=None):
         self.offset = [0, 0]
         self.scale = [1, 1]
-        self.captured = None
 
         super().__init__(parent)
         self.ui = load_ui('designer/control_panel.ui')
@@ -90,9 +89,11 @@ class ControlWindow(QMainWindow):
     def capture_action(self):
         self.capture_depth = measure_depth()
         self.capture_rgb_frame = get_video()
-        self.process()
+        self.process_image()
 
-    def process(self):
+    def process_image(self):
+        rgb_frame = np.copy(self.capture_rgb_frame)
+
         # set rgb image visible
         clean_depth = remove_background(self.capture_depth, self.background)
         depthimage = depth_to_depthimage(self.capture_depth)
@@ -100,37 +101,47 @@ class ControlWindow(QMainWindow):
         # compute contour
         contour = normalised_depth_to_contour(clean_depth)
 
-        outline = contour
-
-        # apply offset and scale to contour
-        outline[0, :] = outline[0, :] * self.scale[0]
-        outline[0, :] = outline[0, :] + self.offset[0]
-        outline[1, :] = outline[1, :] * self.scale[1]
-        outline[1, :] = outline[1, :] + self.offset[1]
+        outline, transformed_outline = contour_to_outline(
+            contour, self.scale, self.offset)
 
         # add contour to images
-        cv2.drawContours(depthimage, contour, -1, (0, 0, 255), 2)
-        cv2.drawContours(self.capture_rgb_frame, contour, -1, (0, 0, 255), 2)
+        cv2.drawContours(depthimage, [outline], -1, (0, 0, 255), 2)
+        cv2.drawContours(rgb_frame, [transformed_outline], -1, (0, 0, 255), 2)
 
         # set image
-        image = frame_to_QPixmap(self.capture_rgb_frame)
+        image = frame_to_QPixmap(rgb_frame)
         self.ui.captured_rgb.setImage(image)
         self.ui.captured_depth.setImage(frame_to_QPixmap(depthimage))
+
+        self.image = frame_to_QPixmap(rgb_frame)
+        self.ui.captured_rgb.setImage(self.image)
 
     def calibrate(self):
         self.background = measure_depth(20)
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Up:
-            self.offset[1] -= 5
-        if event.key() == Qt.Key_Down:
-            self.offset[1] += 5
-        if event.key() == Qt.Key_Left:
-            self.offset[0] -= 5
-        if event.key() == Qt.Key_Right:
-            self.offset[0] += 5
 
-        self.process()
+        motion = 1
+        large_motion = 10
+
+        if event.text() == 'k':
+            self.offset[1] -= large_motion
+        elif event.text() == 'j':
+            self.offset[1] += large_motion
+        elif event.text() == 'h':
+            self.offset[0] -= large_motion
+        elif event.text() == 'l':
+            self.offset[0] += large_motion
+        elif event.text() == 'K':
+            self.offset[1] -= motion
+        elif event.text() == 'J':
+            self.offset[1] += motion
+        elif event.text() == 'H':
+            self.offset[0] -= motion
+        elif event.text() == 'L':
+            self.offset[0] += motion
+
+        self.process_image()
 
         event.accept()
 
