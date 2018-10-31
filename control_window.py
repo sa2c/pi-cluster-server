@@ -25,10 +25,15 @@ class ControlWindow(QMainWindow):
         self.ui = load_ui('designer/control_panel.ui')
         self.setCentralWidget(self.ui)
 
+        # instance variables
+        self.outline = None
+        self.transformed_outline = None
+
         self.ui.capture_button.released.connect(self.capture_action)
         self.ui.process_button.released.connect(self.run_cfd_action)
         self.ui.details_button.released.connect(self.fill_in_details_action)
         self.ui.calibrate_button.released.connect(self.calibrate)
+        self.ui.show_button.released.connect(self.show_capture_action)
 
         self.background = measure_depth(nmeasurements)
 
@@ -57,6 +62,15 @@ class ControlWindow(QMainWindow):
         # returns all simulations for now
         return self.simulations.values()
 
+    def show_capture_action(self):
+        # get rgb image with current transformed outline
+        rgb_frame = np.copy(self.capture_rgb_frame)
+        cv2.drawContours(rgb_frame, [self.transformed_outline], -1, (0, 0, 255), 2)
+
+        # set images
+        qimage = frame_to_qimage(rgb_frame)
+        self.viewfinder.main_video.setStaticImage(qimage)
+
     def capture_action(self):
         self.capture_depth = measure_depth()
         self.capture_rgb_frame = get_video()
@@ -72,12 +86,12 @@ class ControlWindow(QMainWindow):
         # compute contour
         contour = normalised_depth_to_contour(clean_depth)
 
-        outline, transformed_outline = contour_to_outline(
+        self.outline, self.transformed_outline = contour_to_outline(
             contour, self.scale, self.offset)
 
         # add contour to images
-        cv2.drawContours(depthimage, [outline], -1, (0, 0, 255), 2)
-        cv2.drawContours(rgb_frame, [transformed_outline], -1, (0, 0, 255), 2)
+        cv2.drawContours(depthimage, [self.outline], -1, (0, 0, 255), 2)
+        cv2.drawContours(rgb_frame, [self.transformed_outline], -1, (0, 0, 255), 2)
 
         # set images
         qimage = frame_to_qimage(rgb_frame)

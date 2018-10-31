@@ -14,7 +14,7 @@ class QVideoWidget(QLabel):
         if self.dynamic_update:
             self._set_image(image)
 
-    def _set_image(image):
+    def _set_image(self,image):
         x = self.width()
         y = self.height()
         qimage = image.scaled(x, y, Qt.KeepAspectRatio)
