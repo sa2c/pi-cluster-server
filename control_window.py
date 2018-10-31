@@ -11,6 +11,7 @@ from kinect_to_points.kinect_lib import *
 from video_capture import QVideoWidget, frame_to_qimage
 from detail_form import DetailForm
 from leaderboard import LeaderboardWidget
+from cluster_run import queue_run, RunCompleteWatcher
 
 nmeasurements = 20
 
