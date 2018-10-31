@@ -4,30 +4,12 @@ from PySide2.QtWidgets import *
 from PySide2.QtUiTools import QUiLoader
 import cv2, sys, time, os
 import numpy as np
+from video_capture import frame_to_qimage
+from qt_utils import load_ui
 from kinect_to_points.kinect_lib import depth_to_depthimage
 
-
-def frame_to_QPixmap(frame):
-    # Convert frame to QImage
-    rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    qimage = QImage(rgbImage.data, rgbImage.shape[1], rgbImage.shape[0],
-                    QImage.Format_RGB888)
-    image = qimage.scaled(320, 240, Qt.KeepAspectRatio)
-    return QPixmap.fromImage(image)
-
-
-def load_leaderboard_widget():
-    filename = 'designer/leaderboard_list_item.ui'
-    loader = QUiLoader()
-    #loader.registerCustomWidget(QVideoWidget)
-
-    # read file
-    filepath = os.path.join(os.path.dirname(__file__), filename)
-    file = QFile(filepath)
-    file.open(QFile.ReadOnly)
-
-    # load window
-    return loader.load(file)
+image_width = 300
+image_height = 300
 
 
 class LeaderboardWidget(QListWidget):
@@ -48,10 +30,10 @@ class LeaderboardWidget(QListWidget):
         self.clear()
 
         for i, sim in enumerate(simulations):
-            rgb_image = frame_to_QPixmap(sim['rgb_frame'])
-            depth_image = frame_to_QPixmap(sim['depth_frame'])
+            rgb_image = frame_to_qimage(sim['rgb_frame'])
+            depth_image = frame_to_qimage(sim['depth_frame'])
 
-            widget = load_leaderboard_widget()
+            widget = load_ui('designer/leaderboard_list_item.ui')
 
             # set background color
             widget.setStyleSheet(self.stylesheets[i % 2])
@@ -59,12 +41,17 @@ class LeaderboardWidget(QListWidget):
             # populate data
             widget.name.setText(sim['name'])
             widget.score.setText(f'score: {sim["score"]}')
-            widget.time.setText(sim['time'])
             widget.rank.setText(f'#{i + 1}')
 
+            # set image dimensions
+            widget.rgb_image.setFixedHeight(image_width)
+            widget.rgb_image.setFixedWidth(image_height)
+            widget.depth_image.setFixedHeight(image_width)
+            widget.depth_image.setFixedWidth(image_height)
+
             # set images
-            widget.rgb_image.setPixmap(rgb_image)
-            widget.depth_image.setPixmap(depth_image)
+            widget.rgb_image.setImage(rgb_image)
+            widget.depth_image.setImage(depth_image)
 
             # add item
             item = QListWidgetItem()
@@ -84,28 +71,24 @@ if __name__ == '__main__':
         '23454325': {
             'name': 'Bob Jones',
             'score': 10.5,
-            'time': '10:00 12/15/2018',
             'rgb_frame': data[0],
             'depth_frame': depthimages[0]
         },
         '3445345': {
             'name': 'Terry Berry',
             'score': 9.5,
-            'time': '11:15 12/15/2018',
             'rgb_frame': data[1],
             'depth_frame': depthimages[1]
         },
         '234523452': {
             'name': 'Bob Jones',
             'score': 10.5,
-            'time': '10:00 12/15/2018',
             'rgb_frame': data[0],
             'depth_frame': depthimages[0]
         },
         '23452345': {
             'name': 'Terry Berry',
             'score': 9.5,
-            'time': '11:15 12/15/2018',
             'rgb_frame': data[1],
             'depth_frame': depthimages[1]
         }
