@@ -1,5 +1,7 @@
 #!smake
 
+all : elmerpostprocessserial elmerpostprocessparallel
+
 CC    = gcc
 COPT  = -std=c++11 -w -Wno-write-strings -Wno-uninitialized -Wno-deprecated  -Wno-format -fpermissive -O2 -fopenmp
 
@@ -18,12 +20,12 @@ test: $(OBJFILES)
 %.o: %.cpp
 	$(CC) -c $(COPT)  $(CINCL) $< -o $@
 
-elmerpostprocessserial: elmerpostprocessserial.o ${OBJECTS}
-	${CXX} -o elmerpostprocessserial elmerpostprocessserial.o ${OBJECTS} ${LIB}
+elmerpostprocessserial: elmerpostprocessserial.o 
+	${CXX} -o elmerpostprocessserial elmerpostprocessserial.o ${LIB}
 	rm  elmerpostprocessserial.o
 
-elmerpostprocessparallel: elmerpostprocessparallel.o ${OBJECTS}
-	${CXX} -o elmerpostprocessparallel elmerpostprocessparallel.o ${OBJECTS} ${LIB}
+elmerpostprocessparallel: elmerpostprocessparallel.o 
+	${CXX} -o elmerpostprocessparallel elmerpostprocessparallel.o ${LIB}
 	rm  elmerpostprocessparallel.o
 
 .PHONEY: clean

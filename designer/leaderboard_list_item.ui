@@ -24,7 +24,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>25</pointsize>
+       <pointsize>34</pointsize>
       </font>
      </property>
      <property name="text">
@@ -33,7 +33,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="rgb_image">
+    <widget class="QVideoWidget" name="rgb_image">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
        <horstretch>0</horstretch>
@@ -46,7 +46,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="depth_image">
+    <widget class="QVideoWidget" name="depth_image">
      <property name="text">
       <string>Depth Image Placeholder</string>
      </property>
@@ -65,24 +65,13 @@
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <widget class="QLabel" name="name">
+           <property name="font">
+            <font>
+             <pointsize>28</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>My Name Here</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="time">
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
-           </property>
-           <property name="text">
-            <string>00:00:00 01/01/2025</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -91,6 +80,11 @@
       </item>
       <item>
        <widget class="QLabel" name="score">
+        <property name="font">
+         <font>
+          <pointsize>19</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>score</string>
         </property>
@@ -101,6 +95,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QVideoWidget</class>
+   <extends>QLabel</extends>
+   <header>qvideowidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

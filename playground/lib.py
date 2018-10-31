@@ -1,14 +1,8 @@
-#ioff()
-
-import sys
-import os
-import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib import pyplot as plt
+import cv2
 
-
-def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
-    global velo_magn_max
-
+def vtkfile_to_numpy(filename,nprocs):
     # Open the file with read only permit
     vtkfile = open(filename, "r")
 
@@ -88,7 +82,6 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
     line = vtkfile.readline()
 
     velocity = np.zeros((numpoints,3), dtype=float)
-    velocity_magn = np.zeros((numpoints,1), dtype=float)
     for ii in range(numpoints):
         line = vtkfile.readline()
         #print("Line {}: {}".format(ii, line.strip()))
@@ -97,75 +90,81 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
         velocity[ii,0] = float(listtemp[0])
         velocity[ii,1] = float(listtemp[1])
         velocity[ii,2] = float(listtemp[2])
-        velocity_magn[ii,0] = np.abs(velocity[ii,0]*velocity[ii,0]+velocity[ii,1]*velocity[ii,1])
 
     vtkfile.close()
 
-    if(compute_bound == True):
-        velo_magn_max = np.max(velocity_magn[:,0])
-    VV=np.linspace(0.0, velo_magn_max, 20)
+    return coords, elems,velocity
 
-    # generate images
+def plot(coords,elems,velocity,dotri,dovector,docontour,subject_image,
+        velo_magn_max = None):
 
-    fname_data = filename.split(".")
-    # Velocity magnitude contour plot
+    fig = plt.figure()
+    ax = fig.add_axes([0,0,1,1])
+    ax.axis('off')
 
-    contourplots = True
-    vectorplots = True
+    xplotlims = (min(coords[:,0]),max(coords[:,0]))
+    yplotlims = (min(coords[:,1]),max(coords[:,1]))
 
-    if(contourplots == True):
-        # https://matplotlib.org/gallery/misc/agg_buffer_to_array.html
-        fig1 = plt.figure(1)
-        ax1 = fig1.add_subplot(111)
-        ax1.triplot(coords[:,0], coords[:,1], elems, color='black', linewidth=0.2)
-        mappable = ax1.tricontourf(coords[:,0], coords[:,1], elems, velocity_magn[:,0], VV, cmap="rainbow", extend='both')
-        plt.colorbar(mappable)
-        ax1.axis('off')
-        ax1.axes.set_aspect(1.0)
-        fig1.canvas.draw()
+    if subject_image is not None:
+        xplotlim_m = max(min(coords[:,0]),0)
+        xplotlim_p = min(max(coords[:,0]),subject_image.shape[1])
 
-        outfile = fname_data[0]+"-velomagn.png"
-        fig1.savefig(outfile, dpi=200)
-        plt.close()
+        yplotlim_m = max(min(coords[:,1]),0)
+        yplotlim_p = min(max(coords[:,1]),subject_image.shape[0])
 
-    if(vectorplots == True):
-        # Quiver plot
-        fig2 = plt.figure(2)
-        ax2 = fig2.add_subplot(111)
-        ax2.quiver(coords[:,0], coords[:,1], velocity[:,0], velocity[:,1], angles='xy', scale_units='xy')
-        ax2.triplot(coords[:,0], coords[:,1], elems, color='black', linewidth=0.2)
-        ax2.axes.set_aspect(1.0)
-        ax2.axis('off')
-        #plt.show()
-        outfile = fname_data[0]+"-quiver.png"
-        fig2.savefig(outfile, dpi=200)
-        plt.close()
+        xplotlims = (xplotlim_m,xplotlim_p)
+        yplotlims = (yplotlim_m,yplotlim_p)
+    else:
+        xplotlims = (min(coords[:,0]),max(coords[:,0]))
+        yplotlims = (min(coords[:,1]),max(coords[:,1]))
 
-    return
-######################################################
+    ax.set_xlim(xplotlims)
+    ax.set_ylim(yplotlims)
 
-# Generates the images for all the time steps requested
-#
-def step6_generate_images_vtk(project_name, nprocs, num_timesteps):
-    #print("Loading ", filename_prefix)
+    # In any case we plot the mesh 
+    if dotri:
+        ax.triplot(coords[:,0], coords[:,1], elems, color='red', linewidth=0.4)
 
-    print("The dir is: %s", os.getcwd())
-    #dst="./" + project_name + "/mesh/"
-    #dst="./mesh/"
-    #os.chdir(dst)
+    if docontour:
+        velocity_magn = np.hypot(velocity[:,0],velocity[:,1])
+        if velo_magn_max is None:
+            velo_magn_max = velocity_magn.max()
+        VV=np.linspace(0.0, velo_magn_max, 20)
 
-    fname_temp="elmeroutput"
-    global velo_magn_max
+        mappable = ax.tricontourf(coords[:,0], coords[:,1], elems, \
+                velocity_magn, VV, cmap="rainbow", extend='both')
+        
+        # this must go on another picture or it breaks the reference frame for 
+        # the subject image
+        # plt.figure( 
+        # plt.colorbar(mappable) 
+        # all the operations to save the colorbar in another picture
 
-    for fnum in range(num_timesteps):
-        vtkfilename = fname_temp + str(fnum+1).zfill(4) + ".vtk"
-        print(vtkfilename)
-        if(os.path.isfile(vtkfilename) == True):
-            generate_velocityvectorplots_from_vtk(vtkfilename, (fnum == 0), nprocs)
-        #else:
-            #print("{} file does not exist".format(vtkfilename))
+    if dovector:
+        ax.quiver(coords[:,0], coords[:,1], velocity[:,0], velocity[:,1], 
+                angles='xy', scale_units='xy',color = 'lightgreen',width=0.005,scale=0.0325)
 
-    return
-##################################################
-##################################################
+    fig.canvas.draw()
+
+    if subject_image is not None:
+        #https://matplotlib.org/gallery/misc/agg_buffer_to_array.html
+        dypx,dxpx,_ = np.array(fig.canvas.renderer._renderer).shape
+        subject_image = subject_image[:,:,[2,1,0]]
+        M = np.float32([[1,0,0],[0,-1,dypx]])
+
+        subject_layer = cv2.warpAffine(subject_image,M,(dxpx,dypx))
+
+        ax.imshow(subject_layer)
+
+    return np.array(fig.canvas.renderer._renderer)
+
+
+def vtk_to_plot(vtk_filename, nprocs, dotri,dovector,docontour,subject_image,\
+        velocity_magn=None):
+
+
+    coords, elems,velocity = vtkfile_to_numpy(vtk_filename,nprocs)
+    return plot(coords,elems,velocity,dotri,dovector,docontour,subject_image,
+            velocity_magn)
+
 

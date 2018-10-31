@@ -161,7 +161,7 @@ def step3_generate_mesh_from_outline(project_name, nprocs):
     else:
       nn = np.ceil(np.sqrt(nprocs))
       cmd="ElmerGrid 11 2 " + project_name + ".1 " + "-partition " + str(nn) + " " + str(nn) + " " + str(nn)
-    print cmd
+    print(cmd)
     os.system(cmd)
     os.rename(project_name,"mesh")
 
