@@ -23,10 +23,17 @@ class ControlWindow(QMainWindow):
 
         self.ui.capture_button.released.connect(self.capture_action)
         self.ui.process_button.released.connect(self.run_cfd_action)
+        self.ui.details_button.released.connect(self.fill_in_details_action)
 
         self.background = measure_depth(nmeasurements)
 
         self.calibrate()
+
+        # create viewfinder
+        self.viewfinder = load_ui('designer/viewfinder.ui')
+        self.viewfinder.show()
+
+        self.reset_action()
 
     def capture_action(self):
         self.capture_depth = measure_depth()
@@ -65,19 +72,27 @@ class ControlWindow(QMainWindow):
     def calibrate(self):
         self.background = measure_depth(nmeasurements)
 
-    def run_cfd_action(self):
+    def fill_in_details_action(self):
+        prev_name = self.current_name
+        prev_email = self.current_email
+
         dialog = DetailForm(self)
         accepted = dialog.exec()
 
-        if accepted:
-            print(dialog.name)
-            print(dialog.email)
-            #queue_run(self.index)
-        else:
-            print('cancelled')
+        if not accepted:
+            self.name_changed_action(prev_name, prev_email)
+            print('name change cancelled')
 
-    def name_changed_action(self, name):
-        print(name)
+    def run_cfd_action(self):
+        queue_run(self.index)
+
+    def reset_action(self):
+        self.name_changed_action('', '')
+
+    def name_changed_action(self, name, email):
+        self.current_name = name
+        self.current_email = email
+        self.viewfinder.name.setText(f'Name: {name}')
 
     def keyPressEvent(self, event):
 
