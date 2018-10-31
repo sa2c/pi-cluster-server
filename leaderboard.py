@@ -23,9 +23,9 @@ class LeaderboardWidget(QListWidget):
             "background-color: #FCF7F8;", "background-color: #90C2E7;"
         ]
 
-        self.setSimulations(simulations)
+        self.update(simulations)
 
-    def setSimulations(self, simulations):
+    def update(self, simulations):
 
         self.clear()
 
@@ -98,7 +98,7 @@ if __name__ == '__main__':
 
     def change_name():
         simulations[0]['name'] = 'Another Name'
-        lb.setSimulations(simulations)
+        lb.update(simulations)
 
     QTimer.singleShot(3000, change_name)
 
