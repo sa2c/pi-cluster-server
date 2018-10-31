@@ -7,19 +7,20 @@ import numpy as np
 from kinect_to_points.kinect_lib import *
 from fabric import Connection
 
+cluster_address = "pi@10.0.0.253"
 
 def get_cfd_output():
     ''' Get the current stdout of the ongoing run
         or the previpous run.
     '''
-    cluster = Connection("pi@10.0.0.253")
+    cluster = Connection(cluster_address)
 
     with cluster.cd('Documents/picluster/cfd/'):
         return cluster.run('cat fabric_run_output', hide=True)
 
 
 def queue_run( index ):
-    cluster = Connection("pi@10.0.0.253")
+    cluster = Connection(cluster_address)
 
     remote_name = 'Documents/picluster/inbox/run{}-outline-coords.dat'.format(index)
     cluster.put('contour.txt',remote=remote_name)
