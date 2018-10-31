@@ -5,13 +5,29 @@ from kinect_to_points.kinect_lib import *
 
 
 class QVideoWidget(QLabel):
+    def __init__(self, parent=None):
+        self.dynamic_update = True
+        super().__init__(parent)
+
     @Slot(QImage)
     def setImage(self, image):
+        if self.dynamic_update:
+            self._set_image(image)
+
+    def _set_image(image):
         x = self.width()
         y = self.height()
         qimage = image.scaled(x, y, Qt.KeepAspectRatio)
         image = QPixmap.fromImage(qimage)
         self.setPixmap(image)
+
+    def setStaticImage(self, image):
+        self.dynamic_update = False
+        self._set_image(image)
+
+    def resumeDynamicUpdate():
+        self.dynamic_update = True
+
 
 
 class VideoCaptureThread(QThread):
