@@ -43,7 +43,15 @@ class ControlWindow(QMainWindow):
         self.leaderboard = LeaderboardWidget(self.best_simulations())
         self.leaderboard.show()
 
+        # create file system watcher
+        self.run_watcher = RunCompleteWatcher(self)
+        self.run_watcher.completed.connect(self.run_completed)
+
         self.reset_action()
+
+    def run_completed(self, index):
+        print(f'finished {index}')
+        self.leaderboard.update(self.best_simulations())
 
     def best_simulations(self):
         # returns all simulations for now
