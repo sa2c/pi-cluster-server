@@ -8,6 +8,7 @@ import numpy as np
 from kinect_to_points.kinect_lib import *
 from video_capture import QVideoWidget, frame_to_qimage
 from detail_form import DetailForm
+from leaderboard import LeaderboardWidget
 
 nmeasurements = 20
 
@@ -32,6 +33,10 @@ class ControlWindow(QMainWindow):
         # create viewfinder
         self.viewfinder = load_ui('designer/viewfinder.ui')
         self.viewfinder.show()
+
+        # create leaderboard
+        self.simulations = []
+        self.leaderboard = LeaderboardWidget(self.simulations)
 
         self.reset_action()
 
