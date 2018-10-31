@@ -27,6 +27,7 @@ class ControlWindow(QMainWindow):
         self.ui.capture_button.released.connect(self.capture_action)
         self.ui.process_button.released.connect(self.run_cfd_action)
         self.ui.details_button.released.connect(self.fill_in_details_action)
+        self.ui.calibrate_button.released.connect(self.calibrate)
 
         self.background = measure_depth(nmeasurements)
 
