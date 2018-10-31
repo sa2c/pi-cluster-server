@@ -6,179 +6,60 @@ import cv2, sys, time, os
 import numpy as np
 from kinect_to_points.kinect_lib import *
 from fabric import Connection
+from detail_form import DetailForm
+from video_capture import VideoCaptureThread
+from control_window import ControlWindow
+
+cluster_address = "localhost"
+cluster_path = "picluster2"
+nmeasurements = 20
 
 
-def get_cfd_output():
+def get_cfd_output(index):
     ''' Get the current stdout of the ongoing run
-        or the previpous run.
+        or the previous run.
     '''
-    cluster = Connection("pi@10.0.0.253")
+    cluster = Connection(cluster_address)
 
-    with cluster.cd('Documents/picluster/cfd/'):
-        return cluster.run('cat fabric_run_output', hide=True)
+    directory = '{}/outbox/run{}/'.format(cluster_path, index)
+    with cluster.cd(directory):
+        return cluster.run('cat output', hide=True).stdout
+
+
+def get_run_completion_percentage(index):
+    ''' Read the completion percentage of the run
+    '''
+    output = get_cfd_output(index)
+
+    percentage = 0
+    for line in output.split("\n"):
+        if "MAIN:  Time:" in line:
+            timestring = line.split(' ')[3]
+
+    numbers = timestring.split('/')
+    percentage = float(numbers[0]) / float(numbers[1])
+    return percentage
+
+
+def queue_run(contour, index):
+    cluster = Connection(cluster_address)
+
+    # save contour to file and copy to the cluster inbox
+    filename = "contour.dat"
+    write_outline(filename, contour)
+
+    remote_name = '{}/inbox/run{}'.format(cluster_path, index)
+    cluster.put(filename, remote=remote_name)
+
 
 class ClusterSitterThread(QThread):
-    ''' Copies contour.txt to the cluster and starts
-        the cfd run
-
-        Need to add a signal to report execution as finished
-        (or can I just check if the thread is alive?)
+    ''' Periodically polls the cluster to check for finished jobs
+        Gets the resulting images as numpy arrays and 
+        communicates them through a signal
     '''
 
-    def __init__(self, index):
-        super().__init__()
-        self.index = index
-
     def run(self):
-        cluster = Connection("pi@10.0.0.253")
-
-        cluster.put('contour.txt',remote='Documents/picluster/cfd/run-outline-coords.dat')
-        with cluster.cd('Documents/picluster/cfd/'):
-            print("Starting run")
-            cluster.run('python runcfd.py run > fabric_run_output', hide=True)
-            print("Run ended")
-            cluster.run('rm run-outline-coords.dat', hide=True)
-
-
-
-
-def frame_to_QPixmap(frame):
-    # Convert frame to QImage
-    rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    qimage = QImage(rgbImage.data, rgbImage.shape[1], rgbImage.shape[0],
-                    QImage.Format_RGB888)
-    image = qimage.scaled(320, 240, Qt.KeepAspectRatio)
-    return QPixmap.fromImage(image)
-
-
-class VideoCaptureThread(QThread):
-    changeFramePixmap = Signal(QPixmap, np.ndarray)
-    changeDepthPixmap = Signal(QPixmap, np.ndarray)
-
-    def run(self):
-        background = measure_depth(20)
-
-        while True:
-            self.capture_video_frame()
-            self.capture_depth(background)
-            time.sleep(0.05)
-
-    def capture_video_frame(self):
-        # Capture video frame
-        frame = get_video()
-
-        p = frame_to_QPixmap(frame)
-
-        # Emit video frame QImage
-        self.changeFramePixmap.emit(p, frame)
-
-    def capture_depth(self, background):
-        # measure depth
-        depth = measure_depth()
-
-        # create depth image
-        depthimage = depth_to_depthimage(depth)
-        p = frame_to_QPixmap(depthimage)
-
-        # create depth image
-        depth = remove_background(depth, background)
-
-        self.changeDepthPixmap.emit(p, depth)
-
-
-class QVideoWidget(QLabel):
-    @Slot(QPixmap, np.ndarray)
-    def setImage(self, image):
-        self.setPixmap(image)
-
-
-def load_ui(filename):
-    loader = QUiLoader()
-    loader.registerCustomWidget(QVideoWidget)
-
-    # read file
-    filepath = os.path.join(os.path.dirname(__file__), filename)
-    file = QFile(filepath)
-    file.open(QFile.ReadOnly)
-
-    # load window
-    return loader.load(file)
-
-
-class ControlWindow(QMainWindow):
-    def __init__(self, video_thread, parent=None):
-        self.offset = [0, 0]
-        self.scale = [1, 1]
-
-        super().__init__(parent)
-        self.ui = load_ui('designer/control_panel.ui')
-        self.setCentralWidget(self.ui)
-
-        self.ui.capture_button.released.connect(self.capture_action)
-
-        self.calibrate()
-
-        th.changeFramePixmap.connect(self.ui.video_rgb.setImage)
-        th.changeDepthPixmap.connect(self.ui.video_depth.setImage)
-
-    def capture_action(self):
-        self.capture_depth = measure_depth()
-        self.capture_rgb_frame = get_video()
-        self.process_image()
-
-    def process_image(self):
-        rgb_frame = np.copy(self.capture_rgb_frame)
-
-        # set rgb image visible
-        clean_depth = remove_background(self.capture_depth, self.background)
-        depthimage = depth_to_depthimage(self.capture_depth)
-
-        # compute contour
-        contour = normalised_depth_to_contour(clean_depth)
-
-        outline, transformed_outline = contour_to_outline(
-            contour, self.scale, self.offset)
-
-        # add contour to images
-        cv2.drawContours(depthimage, [outline], -1, (0, 0, 255), 2)
-        cv2.drawContours(rgb_frame, [transformed_outline], -1, (0, 0, 255), 2)
-
-        # set image
-        image = frame_to_QPixmap(rgb_frame)
-        self.ui.captured_rgb.setImage(image)
-        self.ui.captured_depth.setImage(frame_to_QPixmap(depthimage))
-
-        self.image = frame_to_QPixmap(rgb_frame)
-        self.ui.captured_rgb.setImage(self.image)
-
-    def calibrate(self):
-        self.background = measure_depth(20)
-
-    def keyPressEvent(self, event):
-
-        motion = 1
-        large_motion = 10
-
-        if event.text() == 'k':
-            self.offset[1] -= large_motion
-        elif event.text() == 'j':
-            self.offset[1] += large_motion
-        elif event.text() == 'h':
-            self.offset[0] -= large_motion
-        elif event.text() == 'l':
-            self.offset[0] += large_motion
-        elif event.text() == 'K':
-            self.offset[1] -= motion
-        elif event.text() == 'J':
-            self.offset[1] += motion
-        elif event.text() == 'H':
-            self.offset[0] -= motion
-        elif event.text() == 'L':
-            self.offset[0] += motion
-
-        self.process_image()
-
-        event.accept()
+        pass
 
 
 if __name__ == '__main__':
@@ -186,10 +67,50 @@ if __name__ == '__main__':
 
     # initialise another thread for video capture
     th = VideoCaptureThread()
-    window = ControlWindow(th)
+    cluster_sitter = ClusterSitterThread()
+
+    data = np.load('kinect_to_points/color_kinect_data.npy')
+    depths = np.load('kinect_to_points/kinect_data.npy')
+    depthimages = [depth_to_depthimage(depth) for depth in depths]
+    simulations = {
+        '23454325': {
+            'name': 'Bob Jones',
+            'score': 10.5,
+            'time': '10:00 12/15/2018',
+            'rgb_frame': data[0],
+            'depth_frame': depthimages[0]
+        },
+        '3445345': {
+            'name': 'Terry Berry',
+            'score': 9.5,
+            'time': '11:15 12/15/2018',
+            'rgb_frame': data[1],
+            'depth_frame': depthimages[1]
+        },
+        '234523452': {
+            'name': 'Bob Jones',
+            'score': 10.5,
+            'time': '10:00 12/15/2018',
+            'rgb_frame': data[0],
+            'depth_frame': depthimages[0]
+        },
+        '23452345': {
+            'name': 'Terry Berry',
+            'score': 9.5,
+            'time': '11:15 12/15/2018',
+            'rgb_frame': data[1],
+            'depth_frame': depthimages[1]
+        }
+    }
+
+    window = ControlWindow(simulations)
+
+    th.changeFramePixmap.connect(window.ui.video_rgb.setImage)
+    th.changeFramePixmap.connect(window.viewfinder.main_video.setImage)
+    th.changeDepthPixmap.connect(window.ui.video_depth.setImage)
 
     th.setParent(window)
     th.start()
-    window.show()
 
+    window.show()
     sys.exit(app.exec_())
