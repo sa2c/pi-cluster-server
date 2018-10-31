@@ -5,6 +5,41 @@ from PySide2.QtUiTools import QUiLoader
 import cv2, sys, time, os
 import numpy as np
 from kinect_to_points.kinect_lib import *
+from fabric import Connection
+
+
+def get_cfd_output():
+    ''' Get the current stdout of the ongoing run
+        or the previpous run.
+    '''
+    cluster = Connection("pi@10.0.0.253")
+
+    with cluster.cd('Documents/picluster/cfd/'):
+        return cluster.run('cat fabric_run_output', hide=True)
+
+class ClusterSitterThread(QThread):
+    ''' Copies contour.txt to the cluster and starts
+        the cfd run
+
+        Need to add a signal to report execution as finished
+        (or can I just check if the thread is alive?)
+    '''
+
+    def __init__(self, index):
+        super().__init__()
+        self.index = index
+
+    def run(self):
+        cluster = Connection("pi@10.0.0.253")
+
+        cluster.put('contour.txt',remote='Documents/picluster/cfd/run-outline-coords.dat')
+        with cluster.cd('Documents/picluster/cfd/'):
+            print("Starting run")
+            cluster.run('python runcfd.py run > fabric_run_output', hide=True)
+            print("Run ended")
+            cluster.run('rm run-outline-coords.dat', hide=True)
+
+
 
 
 def frame_to_QPixmap(frame):
@@ -153,6 +188,7 @@ if __name__ == '__main__':
     th = VideoCaptureThread()
     window = ControlWindow(th)
 
+    th.setParent(window)
     th.start()
     window.show()
 
