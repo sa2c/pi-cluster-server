@@ -8,6 +8,8 @@ from kinect_to_points.kinect_lib import *
 from fabric import Connection
 
 cluster_address = "pi@10.0.0.253"
+nmeasurements = 20
+
 
 def get_cfd_output():
     ''' Get the current stdout of the ongoing run
@@ -19,11 +21,16 @@ def get_cfd_output():
         return cluster.run('cat fabric_run_output', hide=True)
 
 
-def queue_run( index ):
+def queue_run( contour, index ):
     cluster = Connection(cluster_address)
 
+    # save contour to file and copy to the cluster inbox
+    filename = "scf{}-outline-coords.dat".format(index)
+    write_outline( filename, contour )
+
     remote_name = 'Documents/picluster/inbox/run{}-outline-coords.dat'.format(index)
-    cluster.put('contour.txt',remote=remote_name)
+    cluster.put(filename,remote=remote_name)
+
 
 class ClusterSitterThread(QThread):
     ''' Periodically polls the cluster to check for finished jobs
@@ -34,8 +41,6 @@ class ClusterSitterThread(QThread):
     def run(self):
         pass
 
-
-nmeasurements = 20
 
 
 def frame_to_QPixmap(frame):
@@ -135,14 +140,11 @@ class ControlWindow(QMainWindow):
 
         outline, transformed_outline = contour_to_outline(
             contour, self.scale, self.offset)
+        self.contour = transformed_outline
 
         # add contour to images
         cv2.drawContours(depthimage, [outline], -1, (0, 0, 255), 2)
         cv2.drawContours(rgb_frame, [transformed_outline], -1, (0, 0, 255), 2)
-
-        # save contour to file
-        self.index = int( time.time() )
-        write_outline( outline, self.index )
 
         # set image
         image = frame_to_QPixmap(rgb_frame)
@@ -156,7 +158,8 @@ class ControlWindow(QMainWindow):
         self.background = measure_depth(nmeasurements)
 
     def run_cfd_action(self):
-        queue_run( self.index )
+        self.index = int( time.time() )
+        queue_run( self.contour, self.index )
 
     def keyPressEvent(self, event):
 
