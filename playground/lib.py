@@ -2,96 +2,169 @@ import numpy as np
 from matplotlib import pyplot as plt
 import cv2
 
-# NUMBERS TO TWEAK (ONCE), ALSO SIGN! 
-kinect_xfov_radians = 1.0821 # 62 degrees
-kinect_xres = 640
-kinect_sensor_camera_distance_mm = 50.0 # sign to adjust 
-kinect_sensor_camera_deltaphi_pixel = 0 # sign to adjust 
+def vtkfile_to_numpy(filename,nprocs):
+    # Open the file with read only permit
+    vtkfile = open(filename, "r")
 
-def get_larges_contour(depth_img,threshold):
-    _,thresholded = cv2.threshold(depth_img,threshold,1,cv2.THRESH_BINARY)
+    # Header
+    line = vtkfile.readline()
+    # Project name
+    line = vtkfile.readline()
+    # ASCII or Binary
+    line = vtkfile.readline()
+    # Grid type
+    line = vtkfile.readline()
+    # Points
+    line = vtkfile.readline()
+    listtemp = " ".join(line.split())
+    listtemp = listtemp.split(" ")
+    numpoints = int(listtemp[1])
+    print("numpoints=", numpoints)
+    # Point coordinates
+    coords = np.zeros((numpoints,3), dtype=float)
+    for ii in range(numpoints):
+        line = vtkfile.readline()
+        #print("Line {}: {}".format(ii, line.strip()))
+        listtemp = " ".join(line.split())
+        listtemp = listtemp.split(" ")
+        coords[ii,0] = float(listtemp[0])
+        coords[ii,1] = float(listtemp[1])
+        coords[ii,2] = float(listtemp[2])
 
-    _,contours,hierarchy = cv2.findContours(
-            np.array(thresholded,dtype=np.uint8),cv2.RETR_TREE,
-            cv2.CHAIN_APPROX_SIMPLE)
+    # Elements(Cells)
+    line = vtkfile.readline()
+    listtemp = " ".join(line.split())
+    listtemp = listtemp.split(" ")
+    numcells = int(listtemp[1])
+    print("numcells=", numcells)
+    # Elements connectivity
+    elems = np.zeros((numcells,3), dtype=int)
+    for ii in range(numcells):
+        line = vtkfile.readline()
+        #print("Line {}: {}".format(ii, line.strip()))
+        listtemp = " ".join(line.split())
+        listtemp = listtemp.split(" ")
+        elems[ii,0] = int(listtemp[1])
+        elems[ii,1] = int(listtemp[2])
+        elems[ii,2] = int(listtemp[3])
 
-    contour = max(contours, key=cv2.contourArea)
+    # CELL_TYPES
+    line = vtkfile.readline()
+    listtemp = " ".join(line.split())
+    listtemp = listtemp.split(" ")
+    iii = int(listtemp[1])
+    for ii in range(iii):
+        line = vtkfile.readline()
 
-    return contour
-    
+    if(nprocs > 1):
+        # CELL DATA - coloring
+        line = vtkfile.readline()
+        line = vtkfile.readline()
+        line = vtkfile.readline()
+        for ii in range(numcells):
+            line = vtkfile.readline()
 
-def compute_shift(depth_img,contour):
-    # computing mean distance in the contour
-    area = cv2.contourArea(contour)
-    cropped_distance=select_image_inside(depth_img,contour)
-    mean_distance_mm = cropped_distance.sum()/area
+    # Point data
+    line = vtkfile.readline()
+    line = vtkfile.readline()
+    line = vtkfile.readline()
 
-    print(f"Mean distance is: {mean_distance_mm} mm")
+    # Pressure
+    pressure = np.zeros((numpoints,1), dtype=float)
+    for ii in range(numpoints):
+        line = vtkfile.readline()
+        #print("Line {}: {}".format(ii, line.strip()))
+        listtemp = " ".join(line.split())
+        listtemp = listtemp.split(" ")
+        pressure[ii,0] = float(listtemp[0])
 
-    # parallax shift for the contour is only along x axis.
-    # should be sensor-camera distance /(field of view in radians/ no of pixel)
-    # sensor-camera distance must be in the same unit as the distance measured
-    # by the sensor
-    factor = kinect_sensor_camera_distance_mm/(np.sin(kinect_xfov_radians/2)/(kinect_xres/2))
-    xshift = factor/mean_distance_mm + kinect_sensor_camera_deltaphi_pixel
+    # Velocity
+    line = vtkfile.readline()
 
-    print(f"x-shift is: {xshift}")
-    return xshift
+    velocity = np.zeros((numpoints,3), dtype=float)
+    for ii in range(numpoints):
+        line = vtkfile.readline()
+        #print("Line {}: {}".format(ii, line.strip()))
+        listtemp = " ".join(line.split())
+        listtemp = listtemp.split(" ")
+        velocity[ii,0] = float(listtemp[0])
+        velocity[ii,1] = float(listtemp[1])
+        velocity[ii,2] = float(listtemp[2])
 
-def select_image_inside(img,contour):
-    ones = np.ones_like(img)
-    outside = cv2.drawContours(ones,[contour],0,(0),-1)
-    mask = np.ones_like(img)-outside
-    return img*mask
+    vtkfile.close()
+
+    return coords, elems,velocity
+
+def plot(coords,elems,velocity,dotri,dovector,docontour,subject_image,
+        velo_magn_max = None):
+
+    fig = plt.figure()
+    ax = fig.add_axes([0,0,1,1])
+    ax.axis('off')
+
+    xplotlims = (min(coords[:,0]),max(coords[:,0]))
+    yplotlims = (min(coords[:,1]),max(coords[:,1]))
+
+    if subject_image is not None:
+        xplotlim_m = max(min(coords[:,0]),0)
+        xplotlim_p = min(max(coords[:,0]),subject_image.shape[1])
+
+        yplotlim_m = max(min(coords[:,1]),0)
+        yplotlim_p = min(max(coords[:,1]),subject_image.shape[0])
+
+        xplotlims = (xplotlim_m,xplotlim_p)
+        yplotlims = (yplotlim_m,yplotlim_p)
+    else:
+        xplotlims = (min(coords[:,0]),max(coords[:,0]))
+        yplotlims = (min(coords[:,1]),max(coords[:,1]))
+
+    ax.set_xlim(xplotlims)
+    ax.set_ylim(yplotlims)
+
+    # In any case we plot the mesh 
+    if dotri:
+        ax.triplot(coords[:,0], coords[:,1], elems, color='red', linewidth=0.4)
+
+    if docontour:
+        velocity_magn = np.hypot(velocity[:,0],velocity[:,1])
+        if velo_magn_max is None:
+            velo_magn_max = velocity_magn.max()
+        VV=np.linspace(0.0, velo_magn_max, 20)
+
+        mappable = ax.tricontourf(coords[:,0], coords[:,1], elems, \
+                velocity_magn, VV, cmap="rainbow", extend='both')
+        
+        # this must go on another picture or it breaks the reference frame for 
+        # the subject image
+        # plt.figure( 
+        # plt.colorbar(mappable) 
+        # all the operations to save the colorbar in another picture
+
+    if dovector:
+        ax.quiver(coords[:,0], coords[:,1], velocity[:,0], velocity[:,1], 
+                angles='xy', scale_units='xy',color = 'lightgreen',width=0.005,scale=0.0325)
+
+    fig.canvas.draw()
+
+    if subject_image is not None:
+        #https://matplotlib.org/gallery/misc/agg_buffer_to_array.html
+        dypx,dxpx,_ = np.array(fig.canvas.renderer._renderer).shape
+        subject_image = subject_image[:,:,[2,1,0]]
+        M = np.float32([[1,0,0],[0,-1,dypx]])
+
+        subject_layer = cv2.warpAffine(subject_image,M,(dxpx,dypx))
+
+        ax.imshow(subject_layer)
+
+    return np.array(fig.canvas.renderer._renderer)
 
 
-def cropped_color_subject(color_img, depth_img,contour):
-    '''
-    Aim:
-        obtain a proper cropped version of the subject color image.
-    Method:
-        we get the contour of the subject from the depth image. The color image 
-        is shifted compared to the depth image, and the amount of the shift 
-        depends on the position in the image. If we had depth information for 
-        all pixels it would be possible to compute the shift and do a opencv 
-        inverseWarp, but unfortunately the depth information is missing for 
-        reflecting surfaces, and it is quite noisy.  
-        We can, though, recover the averavge depth inside the contour, assuming
-        that it is more or less constant, and from that compute the parallax
-        and then shift the color image so that it matches the depth image.
-    '''
-
-    xshift = compute_shift(depth_img,contour)
-
-    # we shift the contour...
-
-    shifted_contour = np.copy(contour)
-    shifted_contour[:,0] += int(xshift)
-
-    # ... get the cropped rgb image with the shifted contour ...
-    cropped_rgb_shifted = select_image_inside(color_img,shifted_contour)
-
-    # creating alpha channel
-    alpha_channel = np.ones_like(cropped_rgb_shifted,dtype=np.uint8)*255
-    alpha_channel = select_image_inside(alpha_channel,shifted_contour)
-
-    r_channel,g_channel,b_channel = cv2.split(img)
-    cropped_rgba_shifted = cv2.merge((r_channel,g_channel,
-        b_channel,alpha_channel))
-
-    # and shift again back the cropped rgb image
-    maxx_s,minx_s = shifted_contour[:,0].max(), shifted_contour[:,0].min()
-    maxy,miny = contour[:,1].max(), contour[:,1].min()
-
-    cropped_rgba = cropped_rgba_shifted[minx_s:maxx_s+1,miny:maxy+1]
-
-    subject_limits = ((minx,maxx+1),(miny,maxy+1))
-
-    return cropped_rgba,subject_limits
+def vtk_to_plot(vtk_filename, nprocs, dotri,dovector,docontour,subject_image,\
+        velocity_magn=None):
 
 
-
-
-
+    coords, elems,velocity = vtkfile_to_numpy(vtk_filename,nprocs)
+    return plot(coords,elems,velocity,dotri,dovector,docontour,subject_image,
+            velocity_magn)
 
 

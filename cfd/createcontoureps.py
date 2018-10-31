@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs,\
-        subject_img_data=None):
+def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
     global velo_magn_max
 
     # Open the file with read only permit
@@ -124,9 +123,6 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs,\
         ax1.axis('off')
         ax1.axes.set_aspect(1.0)
         fig1.canvas.draw()
-        if subject_img_data is not None:
-            dx,dy = np.array(fig1.canvas.renderer._renderer).shape()
-            M = np.float32([[1,0,0],[0,1,0]])
 
         outfile = fname_data[0]+"-velomagn.png"
         fig1.savefig(outfile, dpi=200)
