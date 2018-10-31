@@ -57,6 +57,7 @@ class ClusterSitterThread(QThread):
         Gets the resulting images as numpy arrays and 
         communicates them through a signal
     '''
+    Finalimage = Signal(QPixmap)
 
     def run(self):
         pass
