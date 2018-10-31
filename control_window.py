@@ -6,7 +6,7 @@ from qt_utils import load_ui
 import cv2, sys, time, os
 import numpy as np
 from kinect_to_points.kinect_lib import *
-from video_capture import QVideoWidget, frame_to_QPixmap
+from video_capture import QVideoWidget, frame_to_qimage
 from detail_form import DetailForm
 
 nmeasurements = 20
@@ -61,13 +61,12 @@ class ControlWindow(QMainWindow):
         self.index = int(time.time())
         write_outline(outline, self.index)
 
-        # set image
-        image = frame_to_QPixmap(rgb_frame)
-        self.ui.captured_rgb.setImage(image)
-        self.ui.captured_depth.setImage(frame_to_QPixmap(depthimage))
+        # set images
+        qimage = frame_to_qimage(rgb_frame)
+        self.ui.captured_rgb.setImage(qimage)
 
-        self.image = frame_to_QPixmap(rgb_frame)
-        self.ui.captured_rgb.setImage(self.image)
+        qimage = frame_to_qimage(depthimage)
+        self.ui.captured_depth.setImage(qimage)
 
     def calibrate(self):
         self.background = measure_depth(nmeasurements)

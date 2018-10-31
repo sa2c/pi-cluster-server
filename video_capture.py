@@ -5,8 +5,12 @@ from kinect_to_points.kinect_lib import *
 
 
 class QVideoWidget(QLabel):
-    @Slot(QPixmap)
+    @Slot(QImage)
     def setImage(self, image):
+        x = self.width()
+        y = self.height()
+        qimage = image.scaled(x, y, Qt.KeepAspectRatio)
+        image = QPixmap.fromImage(qimage)
         self.setPixmap(image)
 
 
@@ -14,8 +18,8 @@ class VideoCaptureThread(QThread):
     """ continuously captures video and a depth map from kinect. Signals output
     the depth map and frame as a QPixmap.
     """
-    changeFramePixmap = Signal(QPixmap)
-    changeDepthPixmap = Signal(QPixmap)
+    changeFramePixmap = Signal(QImage)
+    changeDepthPixmap = Signal(QImage)
 
     def run(self):
         while True:
@@ -27,7 +31,7 @@ class VideoCaptureThread(QThread):
         # Capture video frame
         frame = get_video()
 
-        p = frame_to_QPixmap(frame)
+        p = frame_to_qimage(frame)
 
         # Emit video frame QImage
         self.changeFramePixmap.emit(p)
@@ -38,15 +42,14 @@ class VideoCaptureThread(QThread):
 
         # create depth image
         depthimage = depth_to_depthimage(depth)
-        p = frame_to_QPixmap(depthimage)
+        p = frame_to_qimage(depthimage)
 
         self.changeDepthPixmap.emit(p)
 
 
-def frame_to_QPixmap(frame):
+def frame_to_qimage(frame):
     # Convert frame to QImage
     rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     qimage = QImage(rgbImage.data, rgbImage.shape[1], rgbImage.shape[0],
                     QImage.Format_RGB888)
-    image = qimage.scaled(320, 240, Qt.KeepAspectRatio)
-    return QPixmap.fromImage(image)
+    return qimage
