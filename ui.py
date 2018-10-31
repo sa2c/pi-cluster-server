@@ -9,24 +9,25 @@ from fabric import Connection
 from detail_form import DetailForm
 from video_capture import VideoCaptureThread
 from control_window import ControlWindow
+import os
 
 cluster_address = "pi@10.0.0.253"
 cluster_path = "Documents/picluster"
-local_path = "/home/kinectwrangler/picluster"
+local_path = os.environ['PWD']
 nmeasurements = 20
 cluster = Connection(cluster_address)
 
 
-def get_cfd_output( index ):
+def get_cfd_output(index):
     ''' Get the current stdout of the ongoing run
         or the previous run.
     '''
-    directory = '{}/outbox/run{}'.format(cluster_path,index)
+    directory = '{}/outbox/run{}'.format(cluster_path, index)
     with cluster.cd(directory):
         return cluster.run('cat output', hide=True).stdout
 
 
-def get_run_completion_percentage( index ):
+def get_run_completion_percentage(index):
     ''' Read the completion percentage of the run
     '''
     output = get_cfd_output(index)
@@ -62,11 +63,13 @@ def queue_run(contour, index):
 
 
 existing_runs = set(os.listdir("{}/outbox/signal/".format(local_path)))
-def run_complete( path ):
+
+
+def run_complete(path):
     runs = set(os.listdir(path))
     for run in runs - existing_runs:
-        index = run.replace("run",'')
-        print( "Run {} is complete!".format(index) )
+        index = run.replace("run", '')
+        print("Run {} is complete!".format(index))
         existing_runs.add(run)
 
 
@@ -75,12 +78,14 @@ class RunCompleteWatcher(QFileSystemWatcher):
         Gets the resulting images as numpy arrays and 
         communicates them through a signal
     '''
+
     def __init__(self):
         path = "{}/outbox/signal/".format(local_path)
         filepath = "{}/signal_file".format(path)
-        super().__init__([path,filepath])
-        
+        super().__init__([path, filepath])
+
         self.directoryChanged.connect(run_complete)
+
 
 def test_submit():
     contour = np.loadtxt("scf1540984574-outline-coords.dat")
@@ -89,12 +94,14 @@ def test_submit():
         print(get_run_completion_percentage(2))
         time.sleep(1)
 
+
 def test_app():
     app = QApplication(sys.argv)
     label = QLabel("<font color=red size=40>Hello World!</font>")
     label.show()
     rcw = RunCompleteWatcher()
     sys.exit(app.exec_())
+
 
 #test_submit()
 #test_app()
@@ -104,7 +111,6 @@ if __name__ == '__main__':
 
     # initialise another thread for video capture
     th = VideoCaptureThread()
-    cluster_sitter = ClusterSitterThread()
 
     data = np.load('kinect_to_points/color_kinect_data.npy')
     depths = np.load('kinect_to_points/kinect_data.npy')

@@ -18,7 +18,7 @@ nmeasurements = 20
 class ControlWindow(QMainWindow):
     def __init__(self, simulations, parent=None):
         self.offset = [0, 0]
-        self.scale = [1, 1]
+        self.scale = [0.95, 0.9]
 
         super().__init__(parent)
         self.ui = load_ui('designer/control_panel.ui')
@@ -147,5 +147,15 @@ class ControlWindow(QMainWindow):
             event.accept()
         elif event.text() == 'L':
             self.offset[0] += motion
+            self.process_image()
+            event.accept()
+        elif event.text() == '+':
+            self.scale[0] += 0.05
+            self.scale[1] += 0.05
+            self.process_image()
+            event.accept()
+        elif event.text() == '-':
+            self.scale[0] -= 0.05
+            self.scale[1] -= 0.05
             self.process_image()
             event.accept()
