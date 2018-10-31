@@ -34,6 +34,8 @@ class ClusterSitterThread(QThread):
         pass
 
 
+nmeasurements = 20
+
 
 def frame_to_QPixmap(frame):
     # Convert frame to QImage
@@ -45,16 +47,17 @@ def frame_to_QPixmap(frame):
 
 
 class VideoCaptureThread(QThread):
-    changeFramePixmap = Signal(QPixmap, np.ndarray)
-    changeDepthPixmap = Signal(QPixmap, np.ndarray)
+    """ continuously captures video and a depth map from kinect. Signals output
+    the depth map and frame as a QPixmap.
+    """
+    changeFramePixmap = Signal(QPixmap)
+    changeDepthPixmap = Signal(QPixmap)
 
     def run(self):
-        background = measure_depth(20)
-
         while True:
             self.capture_video_frame()
             self.capture_depth(background)
-            time.sleep(0.05)
+            time.sleep(0.1)
 
     def capture_video_frame(self):
         # Capture video frame
@@ -63,7 +66,7 @@ class VideoCaptureThread(QThread):
         p = frame_to_QPixmap(frame)
 
         # Emit video frame QImage
-        self.changeFramePixmap.emit(p, frame)
+        self.changeFramePixmap.emit(p)
 
     def capture_depth(self, background):
         # measure depth
@@ -73,14 +76,11 @@ class VideoCaptureThread(QThread):
         depthimage = depth_to_depthimage(depth)
         p = frame_to_QPixmap(depthimage)
 
-        # create depth image
-        depth = remove_background(depth, background)
-
-        self.changeDepthPixmap.emit(p, depth)
+        self.changeDepthPixmap.emit(p)
 
 
 class QVideoWidget(QLabel):
-    @Slot(QPixmap, np.ndarray)
+    @Slot(QPixmap)
     def setImage(self, image):
         self.setPixmap(image)
 
@@ -109,6 +109,8 @@ class ControlWindow(QMainWindow):
 
         self.ui.capture_button.released.connect(self.capture_action)
         self.ui.process_button.released.connect(self.run_cfd_action)
+
+        self.background = measure_depth(nmeasurements)
 
         self.calibrate()
 
@@ -150,7 +152,7 @@ class ControlWindow(QMainWindow):
         self.ui.captured_rgb.setImage(self.image)
 
     def calibrate(self):
-        self.background = measure_depth(20)
+        self.background = measure_depth(nmeasurements)
 
     def run_cfd_action(self):
         queue_run( self.index )
