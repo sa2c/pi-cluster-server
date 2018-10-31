@@ -11,24 +11,25 @@ cluster_address = "pi@10.0.0.253"
 nmeasurements = 20
 
 
-def get_cfd_output():
+def get_cfd_output( index ):
     ''' Get the current stdout of the ongoing run
-        or the previpous run.
+        or the previous run.
     '''
     cluster = Connection(cluster_address)
 
-    with cluster.cd('Documents/picluster/cfd/'):
-        return cluster.run('cat fabric_run_output', hide=True)
+    directory = 'Documents/picluster/outbox/run{}/'.format(index)
+    with cluster.cd(directory):
+        return cluster.run('cat output', hide=True)
 
 
 def queue_run( contour, index ):
     cluster = Connection(cluster_address)
 
     # save contour to file and copy to the cluster inbox
-    filename = "scf{}-outline-coords.dat".format(index)
+    filename = "contour.dat"
     write_outline( filename, contour )
 
-    remote_name = 'Documents/picluster/inbox/run{}-outline-coords.dat'.format(index)
+    remote_name = 'Documents/picluster/inbox/run{}'.format(index)
     cluster.put(filename,remote=remote_name)
 
 
@@ -40,7 +41,6 @@ class ClusterSitterThread(QThread):
 
     def run(self):
         pass
-
 
 
 def frame_to_QPixmap(frame):
