@@ -111,7 +111,7 @@ def step3_generate_polyline_from_outline(project_name, domain_area):
 
 # Generates the Finite Element mesh from the polyline file
 #
-def step3_generate_mesh_from_outline(project_name):
+def step3_generate_mesh_from_outline(project_name, nprocs):
     print("step3_generate_mesh_from_outline")
 
     domain_area=1.0
@@ -132,7 +132,7 @@ def step3_generate_mesh_from_outline(project_name):
     mesh_size = mesh_size.lstrip('.')
 
     #cmd = "./triangle-lib/triangle -pq32.0 -a0.05" + str(mesh_size) + " " + project_name
-    cmd = "./triangle -pq32.0 -a200 " + project_name
+    cmd = "./triangle-lib/triangle -pq32.0 -a2000 " + project_name
     print(cmd)
     os.system(cmd)
 
@@ -151,12 +151,20 @@ def step3_generate_mesh_from_outline(project_name):
     os.system(cmd)
 
     # generate the mesh using ElmerGrid
+    # also partition it if nprocs > 1
     ###################################
 
     os.chdir(project_dir)
-    cmd="ElmerGrid 11 2 " + project_name + ".1"
+
+    if(nprocs == 1):
+      cmd="ElmerGrid 11 2 " + project_name + ".1"
+    else:
+      nn = np.ceil(np.sqrt(nprocs))
+      cmd="ElmerGrid 11 2 " + project_name + ".1 " + "-partition " + str(nn) + " " + str(nn) + " " + str(nn)
+    print cmd
     os.system(cmd)
     os.rename(project_name,"mesh")
+
     print("The dir is: %s", os.getcwd())
     
     return

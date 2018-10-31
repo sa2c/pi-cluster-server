@@ -12,7 +12,11 @@ opencv-python = "*"
 opencv-contrib-python = "*"
 matplotlib = "*"
 "pyside2" = "*"
+<<<<<<< HEAD
 fabric = "*"
+=======
+shapely = "*"
+>>>>>>> 5ff610fac21e0820f909d9f2ec158e28f2170cb2
 
 [dev-packages]
 

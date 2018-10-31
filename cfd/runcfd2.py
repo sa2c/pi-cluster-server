@@ -6,20 +6,22 @@ from createcontoureps import *
 
 # Default entries
 project_name = "square"
-if_serial = True
+nprocs = 1
 
 if len(sys.argv) > 1:
     project_name = sys.argv[1]
 
-if_serial = True
+if len(sys.argv) > 2:
+    nprocs = int(sys.argv[2])
 
-num_timesteps = 100
+num_timesteps = 50
 
 dst="./" + project_name + "/mesh/"
+#dst="./" + project_name
 os.chdir(dst)
 
-#step5_generate_vtk_files(project_name, if_serial)
-step6_generate_images_vtk(project_name, if_serial, num_timesteps)
+#step5_generate_vtk_files(project_name, nprocs)
+step6_generate_images_vtk(project_name, nprocs, num_timesteps)
 
 print("Step 6 completed successfully\n\n")
 

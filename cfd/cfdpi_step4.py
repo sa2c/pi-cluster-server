@@ -2,7 +2,7 @@
 import os
 
 
-def step4_run_cfd_simulation(project_name):
+def step4_run_cfd_simulation(project_name, nprocs):
     print("step4_run_cfd_simulation")
 
     project_dir="./" + project_name + "/"
@@ -29,7 +29,10 @@ def step4_run_cfd_simulation(project_name):
     # run the simulation with Elmer solver
     #######################################
 
-    cmd="ElmerSolver"
+    if(nprocs == 1):
+      cmd="ElmerSolver"
+    else:
+      cmd="mpirun -np "+ str(nprocs) + " ElmerSolver_mpi"
     os.system(cmd)
 
     return
