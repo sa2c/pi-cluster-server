@@ -80,7 +80,7 @@
       <item>
        <widget class="QPushButton" name="process_button">
         <property name="text">
-         <string>PushButton</string>
+         <string>Run</string>
         </property>
        </widget>
       </item>

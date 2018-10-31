@@ -17,28 +17,21 @@ def get_cfd_output():
     with cluster.cd('Documents/picluster/cfd/'):
         return cluster.run('cat fabric_run_output', hide=True)
 
-class ClusterSitterThread(QThread):
-    ''' Copies contour.txt to the cluster and starts
-        the cfd run
 
-        Need to add a signal to report execution as finished
-        (or can I just check if the thread is alive?)
+def queue_run( index ):
+    cluster = Connection("pi@10.0.0.253")
+
+    remote_name = 'Documents/picluster/inbox/run{}-outline-coords.dat'.format(index)
+    cluster.put('contour.txt',remote=remote_name)
+
+class ClusterSitterThread(QThread):
+    ''' Periodically polls the cluster to check for finished jobs
+        Gets the resulting images as numpy arrays and 
+        communicates them through a signal
     '''
 
-    def __init__(self, index):
-        super().__init__()
-        self.index = index
-
     def run(self):
-        cluster = Connection("pi@10.0.0.253")
-
-        cluster.put('contour.txt',remote='Documents/picluster/cfd/run-outline-coords.dat')
-        with cluster.cd('Documents/picluster/cfd/'):
-            print("Starting run")
-            cluster.run('python runcfd.py run > fabric_run_output', hide=True)
-            print("Run ended")
-            cluster.run('rm run-outline-coords.dat', hide=True)
-
+        pass
 
 
 
@@ -115,6 +108,7 @@ class ControlWindow(QMainWindow):
         self.setCentralWidget(self.ui)
 
         self.ui.capture_button.released.connect(self.capture_action)
+        self.ui.process_button.released.connect(self.run_cfd_action)
 
         self.calibrate()
 
@@ -143,6 +137,10 @@ class ControlWindow(QMainWindow):
         cv2.drawContours(depthimage, [outline], -1, (0, 0, 255), 2)
         cv2.drawContours(rgb_frame, [transformed_outline], -1, (0, 0, 255), 2)
 
+        # save contour to file
+        self.index = int( time.time() )
+        write_outline( outline, self.index )
+
         # set image
         image = frame_to_QPixmap(rgb_frame)
         self.ui.captured_rgb.setImage(image)
@@ -153,6 +151,9 @@ class ControlWindow(QMainWindow):
 
     def calibrate(self):
         self.background = measure_depth(20)
+
+    def run_cfd_action(self):
+        queue_run( self.index )
 
     def keyPressEvent(self, event):
 
@@ -186,6 +187,7 @@ if __name__ == '__main__':
 
     # initialise another thread for video capture
     th = VideoCaptureThread()
+    cluster_sitter = ClusterSitterThread()
     window = ControlWindow(th)
 
     th.setParent(window)
