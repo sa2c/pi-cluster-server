@@ -2,6 +2,8 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+import datetime
+import calendar
 from qt_utils import load_ui
 import cv2, sys, time, os
 import numpy as np
@@ -14,7 +16,7 @@ nmeasurements = 20
 
 
 class ControlWindow(QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, simulations, parent=None):
         self.offset = [0, 0]
         self.scale = [1, 1]
 
@@ -35,10 +37,15 @@ class ControlWindow(QMainWindow):
         self.viewfinder.show()
 
         # create leaderboard
-        self.simulations = []
-        self.leaderboard = LeaderboardWidget(self.simulations)
+        self.simulations = simulations
+        self.leaderboard = LeaderboardWidget(self.best_simulations())
+        self.leaderboard.show()
 
         self.reset_action()
+
+    def best_simulations(self):
+        # returns all simulations for now
+        return self.simulations.values()
 
     def capture_action(self):
         self.capture_depth = measure_depth()
@@ -84,7 +91,18 @@ class ControlWindow(QMainWindow):
             print('name change cancelled')
 
     def run_cfd_action(self):
-        queue_run(self.index)
+        index = get_epoch()
+        self.simulations[index] = {
+            'index': index,
+            'name': self.current_name,
+            'email': self.current_email,
+        }
+        queue_run(index)
+
+    def get_epoch():
+        now = datetime.datetime.utcnow()
+        timestamp = calendar.timegm(now.utctimetuple())
+        return timestamp
 
     def reset_action(self):
         self.name_changed_action('', '')

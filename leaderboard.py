@@ -15,6 +15,7 @@ def frame_to_QPixmap(frame):
     image = qimage.scaled(320, 240, Qt.KeepAspectRatio)
     return QPixmap.fromImage(image)
 
+
 def load_leaderboard_widget():
     filename = 'designer/leaderboard_list_item.ui'
     loader = QUiLoader()
@@ -36,10 +37,11 @@ class LeaderboardWidget(QListWidget):
         super().__init__(parent)
 
         # setup list item styles
-        self.stylesheets = [ "background-color: #FCF7F8;", "background-color: #90C2E7;" ]
+        self.stylesheets = [
+            "background-color: #FCF7F8;", "background-color: #90C2E7;"
+        ]
 
         self.setSimulations(simulations)
-
 
     def setSimulations(self, simulations):
 
@@ -52,7 +54,7 @@ class LeaderboardWidget(QListWidget):
             widget = load_leaderboard_widget()
 
             # set background color
-            widget.setStyleSheet(self.stylesheets[i%2])
+            widget.setStyleSheet(self.stylesheets[i % 2])
 
             # populate data
             widget.name.setText(sim['name'])
@@ -76,35 +78,40 @@ if __name__ == '__main__':
 
     data = np.load('kinect_to_points/color_kinect_data.npy')
     depths = np.load('kinect_to_points/kinect_data.npy')
-    depthimages = [ depth_to_depthimage(depth) for depth in depths ]
+    depthimages = [depth_to_depthimage(depth) for depth in depths]
 
-    simulations = [ {
-        'name' : 'Bob Jones',
-        'score' : 10.5,
-        'time' : '10:00 12/15/2018',
-        'rgb_frame' : data[0],
-        'depth_frame' : depthimages[0]
-        }, {
-        'name' : 'Terry Berry',
-        'score' : 9.5,
-        'time' : '11:15 12/15/2018',
-        'rgb_frame' : data[1],
-        'depth_frame' : depthimages[1]
-        }, {
-        'name' : 'Bob Jones',
-        'score' : 10.5,
-        'time' : '10:00 12/15/2018',
-        'rgb_frame' : data[0],
-        'depth_frame' : depthimages[0]
-        }, {
-        'name' : 'Terry Berry',
-        'score' : 9.5,
-        'time' : '11:15 12/15/2018',
-        'rgb_frame' : data[1],
-        'depth_frame' : depthimages[1]
-        }]
-    lb = LeaderboardWidget(simulations)
-    lb.resize(2000,1000)
+    simulations = {
+        '23454325': {
+            'name': 'Bob Jones',
+            'score': 10.5,
+            'time': '10:00 12/15/2018',
+            'rgb_frame': data[0],
+            'depth_frame': depthimages[0]
+        },
+        '3445345': {
+            'name': 'Terry Berry',
+            'score': 9.5,
+            'time': '11:15 12/15/2018',
+            'rgb_frame': data[1],
+            'depth_frame': depthimages[1]
+        },
+        '234523452': {
+            'name': 'Bob Jones',
+            'score': 10.5,
+            'time': '10:00 12/15/2018',
+            'rgb_frame': data[0],
+            'depth_frame': depthimages[0]
+        },
+        '23452345': {
+            'name': 'Terry Berry',
+            'score': 9.5,
+            'time': '11:15 12/15/2018',
+            'rgb_frame': data[1],
+            'depth_frame': depthimages[1]
+        }
+    }
+    lb = LeaderboardWidget(simulations.values())
+    lb.resize(2000, 1000)
 
     def change_name():
         simulations[0]['name'] = 'Another Name'
@@ -115,5 +122,3 @@ if __name__ == '__main__':
     lb.show()
 
     sys.exit(app.exec_())
-
-
