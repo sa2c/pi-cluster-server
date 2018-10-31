@@ -57,10 +57,6 @@ class ControlWindow(QMainWindow):
         cv2.drawContours(depthimage, [outline], -1, (0, 0, 255), 2)
         cv2.drawContours(rgb_frame, [transformed_outline], -1, (0, 0, 255), 2)
 
-        # save contour to file
-        self.index = int(time.time())
-        write_outline(outline, self.index)
-
         # set images
         qimage = frame_to_qimage(rgb_frame)
         self.ui.captured_rgb.setImage(qimage)
