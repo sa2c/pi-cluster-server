@@ -1,6 +1,14 @@
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 import numpy as np
-from matplotlib import pyplot as plt
-import cv2
+from matplotlib_widget import PlotCanvas
+import matplotlib
+matplotlib.use('Qt5Agg')
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
+import cv2, sys
 
 def vtkfile_to_numpy(filename,nprocs):
     # Open the file with read only permit
@@ -95,11 +103,11 @@ def vtkfile_to_numpy(filename,nprocs):
 
     return coords, elems,velocity
 
-def plot(coords,elems,velocity,dotri,dovector,docontour,subject_image,
+def plot(canvas,coords,elems,velocity,dotri,dovector,docontour,subject_image,
         velo_magn_max = None):
 
-    fig = plt.figure()
-    ax = fig.add_axes([0,0,1,1])
+    fig = canvas.figure
+    ax = fig.axes[0]
     ax.axis('off')
 
     xplotlims = (min(coords[:,0]),max(coords[:,0]))
@@ -159,12 +167,22 @@ def plot(coords,elems,velocity,dotri,dovector,docontour,subject_image,
     return np.array(fig.canvas.renderer._renderer)
 
 
-def vtk_to_plot(vtk_filename, nprocs, dotri,dovector,docontour,subject_image,\
+def vtk_to_plot(canvas, vtk_filename, nprocs, dotri,dovector,docontour,subject_image,\
         velocity_magn=None):
 
 
     coords, elems,velocity = vtkfile_to_numpy(vtk_filename,nprocs)
-    return plot(coords,elems,velocity,dotri,dovector,docontour,subject_image,
+    return plot(canvas, coords,elems,velocity,dotri,dovector,docontour,subject_image,
             velocity_magn)
 
 
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = PlotCanvas()
+    vtk_file = 'playground/scf1/mesh/elmeroutput0001.vtk'
+    image_file = 'playground/kinect/scf1-fullcolorimage.png'
+    image = plt.imread(image_file)
+    vtk_to_plot(window, vtk_file, 1, False, True, False, image )
+    window.show()
+    sys.exit(app.exec_())

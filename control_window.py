@@ -47,6 +47,9 @@ class ControlWindow(QMainWindow):
 
         self.calibrate()
 
+        # set control window size
+        self.resize(500, 500)
+
         # create viewfinder
         self.viewfinder = ViewfinderDialog()
         self.viewfinder.show()
