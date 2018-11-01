@@ -28,7 +28,7 @@ def vtkfile_to_numpy(filename, nprocs):
     listtemp = " ".join(line.split())
     listtemp = listtemp.split(" ")
     numpoints = int(listtemp[1])
-    print("numpoints=", numpoints)
+
     # Point coordinates
     coords = np.zeros((numpoints, 3), dtype=float)
     for ii in range(numpoints):
@@ -45,7 +45,6 @@ def vtkfile_to_numpy(filename, nprocs):
     listtemp = " ".join(line.split())
     listtemp = listtemp.split(" ")
     numcells = int(listtemp[1])
-    print("numcells=", numcells)
     # Elements connectivity
     elems = np.zeros((numcells, 3), dtype=int)
     for ii in range(numcells):
@@ -180,7 +179,6 @@ def plot(canvas,
 
         dypx, dxpx, _ = np.array(fig.canvas.renderer._renderer).shape
         subject_layer = cv2.warpAffine(subject_image, M, (dxpx, dypx))
-
 
         ax.imshow(subject_layer)
 
