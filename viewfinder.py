@@ -6,6 +6,7 @@ import numpy as np
 from leaderboard import LeaderboardWidget
 from video_capture import QVideoWidget
 from pyside_dynamic import loadUi
+from matplotlib_widget import PlotCanvas
 
 SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
@@ -18,7 +19,8 @@ class ViewfinderDialog(QDialog):
             self,
             customWidgets={
                 'QVideoWidget': QVideoWidget,
-                'LeaderboardWidget': LeaderboardWidget
+                'LeaderboardWidget': LeaderboardWidget,
+                'PlotCanvas': PlotCanvas
             })
 
 
