@@ -157,7 +157,7 @@ class ControlWindow(QMainWindow):
             'email': self.current_email,
         }
         queue_run(self.contour, index)
-        self.viewfinder.queue_simulation(index, name)
+        self.viewfinder.queue_simulation(index, self.current_name)
 
     def get_epoch(self):
         now = datetime.datetime.utcnow()
