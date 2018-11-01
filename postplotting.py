@@ -116,7 +116,7 @@ def plot(canvas,
          velo_magn_max=None):
 
     fig = canvas.figure
-    ax = fig.axes[0]
+    ax = fig.add_axes([0, 0, 1, 1])
     ax.axis('off')
 
     xplotlims = (min(coords[:, 0]), max(coords[:, 0]))
@@ -195,10 +195,10 @@ def vtk_to_plot(canvas, vtk_filename, nprocs, dotri,dovector,docontour,subject_i
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = PlotCanvas()
+    canvas = PlotCanvas()
     vtk_file = 'outbox/testrun1/elmeroutput0001.vtk'
     image_file = 'outbox/testrun1/kinect/scf1-fullcolorimage.png'
     image = plt.imread(image_file)
-    vtk_to_plot(window, vtk_file, 1, False, True, False, image)
-    window.show()
+    vtk_to_plot(canvas, vtk_file, 1, False, True, False, image)
+    canvas.show()
     sys.exit(app.exec_())
