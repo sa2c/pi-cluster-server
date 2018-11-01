@@ -4,8 +4,8 @@ from PySide2.QtWidgets import *
 from PySide2.QtUiTools import QUiLoader
 import cv2, sys, time, os
 import numpy as np
-from video_capture import frame_to_qimage
-from qt_utils import load_ui
+from video_capture import frame_to_qimage, QVideoWidget
+from pyside_dynamic import loadUi
 from kinect_to_points.kinect_lib import depth_to_depthimage
 
 image_width = 300
@@ -23,9 +23,9 @@ class LeaderboardWidget(QListWidget):
             "background-color: #FCF7F8;", "background-color: #90C2E7;"
         ]
 
-        self.setSimulations(simulations)
+        self.update(simulations)
 
-    def setSimulations(self, simulations):
+    def update(self, simulations):
 
         self.clear()
 
@@ -33,7 +33,11 @@ class LeaderboardWidget(QListWidget):
             rgb_image = frame_to_qimage(sim['rgb_frame'])
             depth_image = frame_to_qimage(sim['depth_frame'])
 
-            widget = load_ui('designer/leaderboard_list_item.ui')
+            widget = QWidget()
+            loadUi(
+                'designer/leaderboard_list_item.ui',
+                widget,
+                customWidgets={'QVideoWidget': QVideoWidget})
 
             # set background color
             widget.setStyleSheet(self.stylesheets[i % 2])
@@ -98,7 +102,7 @@ if __name__ == '__main__':
 
     def change_name():
         simulations[0]['name'] = 'Another Name'
-        lb.setSimulations(simulations)
+        lb.update(simulations)
 
     QTimer.singleShot(3000, change_name)
 

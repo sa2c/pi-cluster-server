@@ -4,7 +4,7 @@ from PySide2.QtWidgets import *
 
 import datetime
 import calendar
-from qt_utils import load_ui
+from pyside_dynamic import loadUi
 import cv2, sys, time, os
 import numpy as np
 from kinect_to_points.kinect_lib import *
@@ -12,6 +12,9 @@ from video_capture import QVideoWidget, frame_to_qimage
 from detail_form import DetailForm
 from leaderboard import LeaderboardWidget
 from queue_run import queue_run
+from viewfinder import ViewfinderDialog
+from cluster_run import queue_run, RunCompleteWatcher
+from color_calibration import ColorCalibration
 
 nmeasurements = 20
 
@@ -24,20 +27,34 @@ class ControlWindow(QMainWindow):
         self.contour = np.array([[]])
 
         super().__init__(parent)
-        self.ui = load_ui('designer/control_panel.ui')
+        self.ui = QWidget()
+        loadUi(
+            'designer/control_panel.ui',
+            self.ui,
+            customWidgets={'QVideoWidget': QVideoWidget})
         self.setCentralWidget(self.ui)
+
+        # instance variables
+        self.outline = None
+        self.transformed_outline = None
 
         self.ui.capture_button.released.connect(self.capture_action)
         self.ui.process_button.released.connect(self.run_cfd_action)
         self.ui.details_button.released.connect(self.fill_in_details_action)
         self.ui.calibrate_button.released.connect(self.calibrate)
+        self.ui.show_button.released.connect(self.show_capture_action)
+        self.ui.color_calibrate_button.released.connect(
+            self.calibrate_color_action)
 
         self.background = measure_depth(nmeasurements)
 
         self.calibrate()
 
+        # set control window size
+        self.resize(500, 500)
+
         # create viewfinder
-        self.viewfinder = load_ui('designer/viewfinder.ui')
+        self.viewfinder = ViewfinderDialog()
         self.viewfinder.show()
 
         # create leaderboard
@@ -45,11 +62,33 @@ class ControlWindow(QMainWindow):
         self.leaderboard = LeaderboardWidget(self.best_simulations())
         self.leaderboard.show()
 
+        # create color calibration window
+        self.calibration_window = ColorCalibration()
+        self.calibration_window.color_changed.connect(set_color_scale)
+
+        # create file system watcher
+        self.run_watcher = RunCompleteWatcher(self)
+        self.run_watcher.completed.connect(self.run_completed)
+
         self.reset_action()
+
+    def run_completed(self, index):
+        print(f'finished {index}')
+        self.leaderboard.update(self.best_simulations())
 
     def best_simulations(self):
         # returns all simulations for now
         return self.simulations.values()
+
+    def show_capture_action(self):
+        # get rgb image with current transformed outline
+        rgb_frame = np.copy(self.capture_rgb_frame)
+        cv2.drawContours(rgb_frame, [self.transformed_outline], -1,
+                         (0, 0, 255), 2)
+
+        # set images
+        qimage = frame_to_qimage(rgb_frame)
+        self.viewfinder.main_video.setStaticImage(qimage)
 
     def capture_action(self):
         self.capture_depth = measure_depth()
@@ -66,12 +105,13 @@ class ControlWindow(QMainWindow):
         # compute contour
         contour = normalised_depth_to_contour(clean_depth)
 
-        outline, transformed_outline = contour_to_outline(
+        self.outline, self.transformed_outline = contour_to_outline(
             contour, self.scale, self.offset)
 
         # add contour to images
-        cv2.drawContours(depthimage, [outline], -1, (0, 0, 255), 2)
-        cv2.drawContours(rgb_frame, [transformed_outline], -1, (0, 0, 255), 2)
+        cv2.drawContours(depthimage, [self.outline], -1, (0, 0, 255), 2)
+        cv2.drawContours(rgb_frame, [self.transformed_outline], -1,
+                         (0, 0, 255), 2)
 
         # Remember the contour for the next run
         self.contour = transformed_outline
@@ -85,6 +125,14 @@ class ControlWindow(QMainWindow):
 
     def calibrate(self):
         self.background = measure_depth(nmeasurements)
+
+    def calibrate_color_action(self):
+        old = get_color_scale()
+
+        accepted = self.calibration_window.exec()
+
+        if not accepted:
+            set_color_scale(old)
 
     def fill_in_details_action(self):
         prev_name = self.current_name

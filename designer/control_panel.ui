@@ -64,6 +64,20 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
+       <widget class="QPushButton" name="calibrate_button">
+        <property name="text">
+         <string>Calibrate</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="color_calibrate_button">
+        <property name="text">
+         <string>Colour</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="details_button">
         <property name="text">
          <string>Details...</string>
@@ -78,9 +92,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="calibrate_button">
+       <widget class="QPushButton" name="show_button">
         <property name="text">
-         <string>Calibrate</string>
+         <string>Show</string>
         </property>
        </widget>
       </item>
