@@ -96,10 +96,12 @@ class ControlWindow(QMainWindow):
 
             # change button text
             self.ui.show_button.setText('Resume Video')
+            self.ui.capture_button.setEnabled(False)
         else:
             # resume video feed
             self.viewfinder.main_video.resumeDynamicUpdate()
             self.viewfinder.depth_video.resumeDynamicUpdate()
+            self.ui.capture_button.setEnabled(True)
 
             # change button text
             self.ui.show_button.setText('Show Capture')
