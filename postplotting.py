@@ -158,6 +158,10 @@ def plot(canvas,
         # all the operations to save the colorbar in another picture
 
     if dovector:
+        norm = matplotlib.colors.Normalize()
+        cm = matplotlib.cm.jet
+        speed = np.sqrt(velocity[:,0]**2 + velocity[:,1]**2)
+        colors = cm(norm(speed))
         ax.quiver(
             coords[:, 0],
             coords[:, 1],
@@ -165,11 +169,11 @@ def plot(canvas,
             velocity[:, 1],
             angles='xy',
             scale_units='xy',
-            color='lightgreen',
-            width=0.005,
+            color=colors,
+            width=0.0075,
             scale=0.0325)
 
-    if not hasattr(fig.canvas,'renderer'):
+    if not hasattr(fig.canvas, 'renderer'):
         fig.canvas.draw()
 
     if subject_image is not None:
