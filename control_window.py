@@ -70,7 +70,8 @@ class ControlWindow(QMainWindow):
     def show_capture_action(self):
         # get rgb image with current transformed outline
         rgb_frame = np.copy(self.capture_rgb_frame)
-        cv2.drawContours(rgb_frame, [self.transformed_outline], -1, (0, 0, 255), 2)
+        cv2.drawContours(rgb_frame, [self.transformed_outline], -1,
+                         (0, 0, 255), 2)
 
         # set images
         qimage = frame_to_qimage(rgb_frame)
@@ -96,7 +97,8 @@ class ControlWindow(QMainWindow):
 
         # add contour to images
         cv2.drawContours(depthimage, [self.outline], -1, (0, 0, 255), 2)
-        cv2.drawContours(rgb_frame, [self.transformed_outline], -1, (0, 0, 255), 2)
+        cv2.drawContours(rgb_frame, [self.transformed_outline], -1,
+                         (0, 0, 255), 2)
 
         # set images
         qimage = frame_to_qimage(rgb_frame)
