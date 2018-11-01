@@ -47,6 +47,7 @@ class ControlWindow(QMainWindow):
         self.ui.details_button.released.connect(self.fill_in_details_action)
         self.ui.calibrate_button.released.connect(self.calibrate)
         self.ui.show_button.released.connect(self.show_capture_action)
+        self.ui.toggle_view_button.released.connect(self.toggle_views)
         self.ui.color_calibrate_button.released.connect(
             self.calibrate_color_action)
 
@@ -67,6 +68,14 @@ class ControlWindow(QMainWindow):
         self.run_watcher.completed.connect(self.run_completed)
 
         self.reset_action()
+
+    def toggle_views(self):
+        if self.viewfinder.leftStack.currentIndex() == 1:
+            self.viewfinder.switch_to_viewfinder()
+            self.ui.toggle_view_button.setText('Simulation View')
+        else:
+            self.viewfinder.switch_to_simulation_view()
+            self.ui.toggle_view_button.setText('Viewfinder')
 
     def run_completed(self, index):
         print(f'finished {index}')

@@ -23,33 +23,36 @@
       </sizepolicy>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="1">
+      <item row="2" column="1">
        <widget class="QVideoWidget" name="video_rgb">
         <property name="text">
          <string>Video RGB</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
+      <item row="4" column="1">
        <widget class="QVideoWidget" name="captured_rgb">
         <property name="text">
          <string>Video RGB Captured</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
+      <item row="4" column="0">
        <widget class="QVideoWidget" name="captured_depth">
         <property name="text">
          <string>Video Depth Captured</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="2" column="0">
        <widget class="QVideoWidget" name="video_depth">
         <property name="text">
          <string>Video Depth</string>
         </property>
        </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QWidget" name="widget" native="true"/>
       </item>
      </layout>
     </widget>
@@ -67,6 +70,13 @@
        <widget class="QPushButton" name="calibrate_button">
         <property name="text">
          <string>Calibrate</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="toggle_view_button">
+        <property name="text">
+         <string>View...</string>
         </property>
        </widget>
       </item>
