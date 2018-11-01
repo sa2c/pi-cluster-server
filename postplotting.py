@@ -185,12 +185,17 @@ def plot(canvas,
     return np.array(fig.canvas.renderer._renderer)
 
 
-def vtk_to_plot(canvas, vtk_filename, nprocs, dotri,dovector,docontour,subject_image,\
+def vtk_to_plot(canvas, vtk_filename, nprocs, dotri,dovector,docontour,image_file,\
         velocity_magn=None):
+
+    if image_file is not None:
+        image = plt.imread(image_file)
+    else:
+        image = None
 
     coords, elems, velocity = vtkfile_to_numpy(vtk_filename, nprocs)
     return plot(canvas, coords, elems, velocity, dotri, dovector, docontour,
-                subject_image, velocity_magn)
+                image, velocity_magn)
 
 
 if __name__ == '__main__':
@@ -198,7 +203,6 @@ if __name__ == '__main__':
     canvas = PlotCanvas()
     vtk_file = 'outbox/testrun1/elmeroutput0001.vtk'
     image_file = 'outbox/testrun1/kinect/scf1-fullcolorimage.png'
-    image = plt.imread(image_file)
     vtk_to_plot(canvas, vtk_file, 1, False, True, False, image)
     canvas.show()
     sys.exit(app.exec_())

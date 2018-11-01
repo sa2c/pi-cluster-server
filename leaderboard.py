@@ -13,7 +13,7 @@ image_height = 300
 
 
 class LeaderboardWidget(QListWidget):
-    def __init__(self, simulations, parent=None):
+    def __init__(self, parent=None):
         """ Initialised with an iterable of simulation dicts to display """
 
         super().__init__(parent)
@@ -22,8 +22,6 @@ class LeaderboardWidget(QListWidget):
         self.stylesheets = [
             "background-color: #FCF7F8;", "background-color: #90C2E7;"
         ]
-
-        self.update(simulations)
 
     def update(self, simulations):
 
@@ -64,11 +62,10 @@ class LeaderboardWidget(QListWidget):
             self.setItemWidget(item, widget)
 
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-
-    data = np.load('kinect_to_points/color_kinect_data.npy')
-    depths = np.load('kinect_to_points/kinect_data.npy')
+def get_test_simulations():
+    print('loading simulations...')
+    data = np.load('sim.npy')
+    depths = np.load('sim.npy')
     depthimages = [depth_to_depthimage(depth) for depth in depths]
 
     simulations = {
@@ -97,7 +94,16 @@ if __name__ == '__main__':
             'depth_frame': depthimages[1]
         }
     }
-    lb = LeaderboardWidget(simulations.values())
+
+    print('simulations loaded')
+    return simulations
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+
+    lb = LeaderboardWidget()
+    lb.update(simulations.values())
     lb.resize(2000, 1000)
 
     def change_name():

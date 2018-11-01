@@ -20,10 +20,7 @@ def get_cfd_output(index):
         return cluster.run('cat output', hide=True).stdout
 
 
-def write_outline(filename, outline):
-    flipped_outline = outline.reshape((-1, 2))
-    flipped_outline[:, 1:] = 480 - flipped_outline[:, 1:]
-    np.savetxt(filename, flipped_outline, fmt='%i %i')
+
 
 
 def queue_run(contour, index):

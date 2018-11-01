@@ -38,17 +38,23 @@ def get_run_completion_percentage(index):
     return percentage
 
 
+def write_outline(filename, outline):
+    flipped_outline = np.copy(outline.reshape((-1, 2)))
+    flipped_outline[:, 1:] = 480 - flipped_outline[:, 1:]
+    np.savetxt(filename, flipped_outline, fmt='%i %i')
+
+
 def queue_run(contour, index):
     # save contour to file and copy to the cluster inbox
     filename = "contour.dat"
     write_outline(filename, contour)
 
     # copy the contour
-    remote_name = '{}/contour.dat'.format(cluster_path)
+    remote_name = '{}/inbox/run{}'.format(cluster_path, index)
     cluster.put(filename, remote=remote_name)
 
     # copy a signal file accross
-    remote_name = '{}/inbox/run{}'.format(cluster_path, index)
+    remote_name = '{}/signal/run{}'.format(cluster_path, index)
     cluster.put(filename, remote=remote_name)
 
 
@@ -68,17 +74,18 @@ class RunCompleteWatcher(QFileSystemWatcher):
 
         self.directoryChanged.connect(self.run_complete)
 
-    def run_complete(path):
+    def run_complete(self, path):
+        print(path)
         runs = set(os.listdir(path))
 
-        new_run = runs - self.existing_runs
+        new_runs = runs - self.existing_runs
 
         for run in new_runs:
             index = run.replace("run", '')
             index = int(index)
             print("Run {} is complete!".format(index))
-            existing_runs.add(run)
-            completed(index)
+            self.existing_runs.add(run)
+            self.completed.emit(index)
 
 
 
