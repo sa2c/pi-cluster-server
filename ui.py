@@ -103,7 +103,7 @@ def test_app():
     sys.exit(app.exec_())
 
 
-test_submit()
+#test_submit()
 #test_app()
 
 if __name__ == '__main__':
