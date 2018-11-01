@@ -11,6 +11,7 @@ from kinect_to_points.kinect_lib import *
 from video_capture import QVideoWidget, frame_to_qimage
 from detail_form import DetailForm
 from leaderboard import LeaderboardWidget
+from queue_run import queue_run
 
 nmeasurements = 20
 
@@ -19,6 +20,8 @@ class ControlWindow(QMainWindow):
     def __init__(self, simulations, parent=None):
         self.offset = [0, 0]
         self.scale = [0.95, 0.9]
+
+        self.contour = np.array([[]])
 
         super().__init__(parent)
         self.ui = load_ui('designer/control_panel.ui')
@@ -70,6 +73,9 @@ class ControlWindow(QMainWindow):
         cv2.drawContours(depthimage, [outline], -1, (0, 0, 255), 2)
         cv2.drawContours(rgb_frame, [transformed_outline], -1, (0, 0, 255), 2)
 
+        # Remember the contour for the next run
+        self.contour = transformed_outline
+
         # set images
         qimage = frame_to_qimage(rgb_frame)
         self.ui.captured_rgb.setImage(qimage)
@@ -92,15 +98,15 @@ class ControlWindow(QMainWindow):
             print('name change cancelled')
 
     def run_cfd_action(self):
-        index = get_epoch()
+        index = self.get_epoch()
         self.simulations[index] = {
             'index': index,
             'name': self.current_name,
             'email': self.current_email,
         }
-        queue_run(index)
+        queue_run(self.contour, index)
 
-    def get_epoch():
+    def get_epoch(self):
         now = datetime.datetime.utcnow()
         timestamp = calendar.timegm(now.utctimetuple())
         return timestamp

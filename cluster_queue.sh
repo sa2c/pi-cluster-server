@@ -33,6 +33,7 @@ do
 			# Move cfd image output to outbox
 			cd $WORKDIR
 			mv cfd/${file}/mesh/*.png outbox/${file}/
+			mv cfd/${file}/mesh/*.vtk outbox/${file}/
 			
 			# Copy to the UI node
 			rsync -r outbox/${file} ${UI_ADDRESS}:${UI_OUTPUTDIR}/outbox/${file}

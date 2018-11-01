@@ -5,26 +5,12 @@ from PySide2.QtUiTools import QUiLoader
 import cv2, sys, time, os
 import numpy as np
 from kinect_to_points.kinect_lib import *
-from fabric import Connection
 from detail_form import DetailForm
 from video_capture import VideoCaptureThread
 from control_window import ControlWindow
 import os
 
-cluster_address = "pi@10.0.0.253"
-cluster_path = "Documents/picluster"
-local_path = os.environ['PWD']
-nmeasurements = 20
-cluster = Connection(cluster_address)
-
-
-def get_cfd_output(index):
-    ''' Get the current stdout of the ongoing run
-        or the previous run.
-    '''
-    directory = '{}/outbox/run{}'.format(cluster_path, index)
-    with cluster.cd(directory):
-        return cluster.run('cat output', hide=True).stdout
+from queue_run import local_path, queue_run
 
 
 def get_run_completion_percentage(index):
@@ -48,22 +34,7 @@ def get_run_completion_percentage(index):
     return percentage
 
 
-def queue_run(contour, index):
-    # save contour to file and copy to the cluster inbox
-    filename = "contour.dat"
-    write_outline(filename, contour)
-
-    # copy the contour
-    remote_name = '{}/inbox/run{}'.format(cluster_path, index)
-    cluster.put(filename, remote=remote_name)
-
-    # copy a signal file accross
-    remote_name = '{}/signal/run{}'.format(cluster_path, index)
-    cluster.put(filename, remote=remote_name)
-
-
 existing_runs = set(os.listdir("{}/signal/".format(local_path)))
-
 
 def run_complete(path):
     runs = set(os.listdir(path))
@@ -112,41 +83,43 @@ if __name__ == '__main__':
     # initialise another thread for video capture
     th = VideoCaptureThread()
 
-    data = np.load('kinect_to_points/color_kinect_data.npy')
-    depths = np.load('kinect_to_points/kinect_data.npy')
-    depthimages = [depth_to_depthimage(depth) for depth in depths]
-    simulations = {
-        '23454325': {
-            'name': 'Bob Jones',
-            'score': 10.5,
-            'time': '10:00 12/15/2018',
-            'rgb_frame': data[0],
-            'depth_frame': depthimages[0]
-        },
-        '3445345': {
-            'name': 'Terry Berry',
-            'score': 9.5,
-            'time': '11:15 12/15/2018',
-            'rgb_frame': data[1],
-            'depth_frame': depthimages[1]
-        },
-        '234523452': {
-            'name': 'Bob Jones',
-            'score': 10.5,
-            'time': '10:00 12/15/2018',
-            'rgb_frame': data[0],
-            'depth_frame': depthimages[0]
-        },
-        '23452345': {
-            'name': 'Terry Berry',
-            'score': 9.5,
-            'time': '11:15 12/15/2018',
-            'rgb_frame': data[1],
-            'depth_frame': depthimages[1]
-        }
-    }
+    # initialise a thread to wait for 
 
-    window = ControlWindow(simulations)
+    #data = np.load('kinect_to_points/color_kinect_data.npy')
+    #depths = np.load('kinect_to_points/kinect_data.npy')
+    #depthimages = [depth_to_depthimage(depth) for depth in depths]
+    #simulations = {
+    #    '23454325': {
+    #        'name': 'Bob Jones',
+    #        'score': 10.5,
+    #        'time': '10:00 12/15/2018',
+    #        'rgb_frame': data[0],
+    #        'depth_frame': depthimages[0]
+    #    },
+    #    '3445345': {
+    #        'name': 'Terry Berry',
+    #        'score': 9.5,
+    #        'time': '11:15 12/15/2018',
+    #        'rgb_frame': data[1],
+    #        'depth_frame': depthimages[1]
+    #    },
+    #    '234523452': {
+    #        'name': 'Bob Jones',
+    #        'score': 10.5,
+    #        'time': '10:00 12/15/2018',
+    #        'rgb_frame': data[0],
+    #        'depth_frame': depthimages[0]
+    #    },
+    #    '23452345': {
+    #        'name': 'Terry Berry',
+    #        'score': 9.5,
+    #        'time': '11:15 12/15/2018',
+    #        'rgb_frame': data[1],
+    #        'depth_frame': depthimages[1]
+    #    }
+    #}
+
+    window = ControlWindow({})
 
     th.changeFramePixmap.connect(window.ui.video_rgb.setImage)
     th.changeFramePixmap.connect(window.viewfinder.main_video.setImage)
