@@ -13,6 +13,7 @@ from detail_form import DetailForm
 from leaderboard import LeaderboardWidget
 from viewfinder import ViewfinderDialog
 from cluster_run import queue_run, RunCompleteWatcher
+from color_calibration import ColorCalibration
 
 nmeasurements = 20
 
@@ -39,6 +40,8 @@ class ControlWindow(QMainWindow):
         self.ui.details_button.released.connect(self.fill_in_details_action)
         self.ui.calibrate_button.released.connect(self.calibrate)
         self.ui.show_button.released.connect(self.show_capture_action)
+        self.ui.color_calibrate_button.released.connect(
+            self.calibrate_color_action)
 
         self.background = measure_depth(nmeasurements)
 
@@ -52,6 +55,10 @@ class ControlWindow(QMainWindow):
         self.simulations = simulations
         self.leaderboard = LeaderboardWidget(self.best_simulations())
         self.leaderboard.show()
+
+        # create color calibration window
+        self.calibration_window = ColorCalibration()
+        self.calibration_window.color_changed.connect(set_color_scale)
 
         # create file system watcher
         self.run_watcher = RunCompleteWatcher(self)
@@ -109,6 +116,14 @@ class ControlWindow(QMainWindow):
 
     def calibrate(self):
         self.background = measure_depth(nmeasurements)
+
+    def calibrate_color_action(self):
+        old = get_color_scale()
+
+        accepted = self.calibration_window.exec()
+
+        if not accepted:
+            set_color_scale(old)
 
     def fill_in_details_action(self):
         prev_name = self.current_name

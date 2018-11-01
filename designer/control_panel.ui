@@ -71,6 +71,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="color_calibrate_button">
+        <property name="text">
+         <string>Colour</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="details_button">
         <property name="text">
          <string>Details...</string>
