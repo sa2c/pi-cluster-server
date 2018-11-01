@@ -45,7 +45,6 @@ class QVideoWidget(QLabel):
         self.dynamic_update = True
 
 
-
 class VideoCaptureThread(QThread):
     """ continuously captures video and a depth map from kinect. Signals output
     the depth map and frame as a QPixmap.

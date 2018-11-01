@@ -20,13 +20,16 @@ nmeasurements = 20
 
 
 class ControlWindow(QMainWindow):
-    def __init__(self, simulations, parent=None):
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.offset = [0, 0]
         self.scale = [0.95, 0.9]
 
+        # set control window size
+        self.resize(1920, 1080)
+
         self.contour = np.array([[]])
 
-        super().__init__(parent)
         self.ui = QWidget()
         loadUi(
             'designer/control_panel.ui',
@@ -50,17 +53,9 @@ class ControlWindow(QMainWindow):
 
         self.calibrate()
 
-        # set control window size
-        self.resize(500, 500)
-
         # create viewfinder
         self.viewfinder = ViewfinderDialog()
         self.viewfinder.show()
-
-        # create leaderboard
-        self.simulations = simulations
-        self.leaderboard = LeaderboardWidget(self.best_simulations())
-        self.leaderboard.show()
 
         # create color calibration window
         self.calibration_window = ColorCalibration()
@@ -114,8 +109,8 @@ class ControlWindow(QMainWindow):
         cv2.drawContours(rgb_frame, [self.transformed_outline], -1,
                          (0, 0, 255), 2)
 
-        # Remember the contour for the next run
-        self.contour = transformed_outline
+        # Remember the contour for submission of the run
+        self.contour = self.transformed_outline
 
         # set images
         qimage = frame_to_qimage(rgb_frame)

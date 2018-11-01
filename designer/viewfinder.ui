@@ -56,8 +56,26 @@
       <item>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <widget class="QWidget" name="widget_2" native="true">
+         <widget class="QFrame" name="frame">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
           <layout class="QGridLayout" name="gridLayout">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
            <item row="0" column="0">
             <widget class="QVideoWidget" name="main_video">
              <property name="text">
@@ -76,24 +94,17 @@
             </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QVideoWidget" name="bottom_left">
-             <property name="text">
-              <string>Ready...</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+            <widget class="LeaderboardWidget" name="leaderboard">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>300</height>
+              </size>
              </property>
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QVideoWidget" name="bottom_right">
-             <property name="text">
-              <string>Ready...</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
+            <widget class="QWidget" name="activity_monitor" native="true"/>
            </item>
           </layout>
          </widget>
@@ -111,6 +122,19 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>email:</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
      </layout>
@@ -123,6 +147,11 @@
    <class>QVideoWidget</class>
    <extends>QLabel</extends>
    <header>qvideowidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>LeaderboardWidget</class>
+   <extends>QListWidget</extends>
+   <header>leaderboardwidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

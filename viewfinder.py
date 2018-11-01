@@ -3,6 +3,7 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 import cv2, sys, time, os
 import numpy as np
+from leaderboard import LeaderboardWidget
 from video_capture import QVideoWidget
 from pyside_dynamic import loadUi
 
@@ -15,7 +16,10 @@ class ViewfinderDialog(QDialog):
         loadUi(
             os.path.join(SCRIPT_DIRECTORY, 'designer/viewfinder.ui'),
             self,
-            customWidgets={'QVideoWidget': QVideoWidget})
+            customWidgets={
+                'QVideoWidget': QVideoWidget,
+                'LeaderboardWidget': LeaderboardWidget
+            })
 
 
 def main():

@@ -7,6 +7,7 @@ from kinect_to_points.kinect_lib import *
 from detail_form import DetailForm
 from video_capture import VideoCaptureThread
 from control_window import ControlWindow
+from leaderboard import get_test_simulations
 import os
 
 from queue_run import local_path, queue_run
@@ -34,6 +35,7 @@ def get_run_completion_percentage(index):
 
 
 existing_runs = set(os.listdir("{}/signal/".format(local_path)))
+
 
 def run_complete(path):
     runs = set(os.listdir(path))
@@ -82,7 +84,10 @@ if __name__ == '__main__':
     # initialise another thread for video capture
     th = VideoCaptureThread()
 
-    window = ControlWindow({})
+    simulations = get_test_simulations()
+
+    window = ControlWindow()
+    window.viewfinder.leaderboard.update(simulations.values())
 
     th.changeFramePixmap.connect(window.ui.video_rgb.setImage)
     th.changeDepthPixmap.connect(window.ui.video_depth.setImage)
