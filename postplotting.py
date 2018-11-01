@@ -174,10 +174,10 @@ def plot(canvas,
 
     if subject_image is not None:
         #https://matplotlib.org/gallery/misc/agg_buffer_to_array.html
-        dypx, dxpx, _ = np.array(fig.canvas.renderer._renderer).shape
-        subject_image = subject_image[:, :, [2, 1, 0]]
-        M = np.float32([[1, 0, 0], [0, -1, dypx]])
+        #subject_image = subject_image[:, :, [0, 1, 2]]
+        M = np.float32([[1, 0, 0], [0, -1, subject_image.shape[0]]])
 
+        dypx, dxpx, _ = np.array(fig.canvas.renderer._renderer).shape
         subject_layer = cv2.warpAffine(subject_image, M, (dxpx, dypx))
 
         ax.imshow(subject_layer)

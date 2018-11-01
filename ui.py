@@ -85,8 +85,10 @@ if __name__ == '__main__':
     window = ControlWindow({})
 
     th.changeFramePixmap.connect(window.ui.video_rgb.setImage)
-    th.changeFramePixmap.connect(window.viewfinder.main_video.setImage)
     th.changeDepthPixmap.connect(window.ui.video_depth.setImage)
+
+    th.changeFramePixmap.connect(window.viewfinder.main_video.setImage)
+    th.changeDepthPixmap.connect(window.viewfinder.depth_video.setImage)
 
     th.setParent(window)
     th.start()
