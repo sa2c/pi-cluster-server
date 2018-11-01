@@ -28,7 +28,7 @@ do
 
 			# Copy the input file into cfd and run
 			cp inbox/$file cfd/${file}-outline-coords.dat
-			cd cfd && python runcfd.py $file 4 >> ../outbox/$file/output
+			cd cfd && python runcfd.py $file 4 hostfile1 >> ../outbox/$file/output
 
 			# Move cfd image output to outbox
 			cd $WORKDIR

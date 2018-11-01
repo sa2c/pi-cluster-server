@@ -2,7 +2,7 @@
 import os
 
 
-def step4_run_cfd_simulation(project_name, nprocs):
+def step4_run_cfd_simulation(project_name, hostfile, nprocs):
     print("step4_run_cfd_simulation")
 
     project_dir="./" + project_name + "/"
@@ -32,7 +32,8 @@ def step4_run_cfd_simulation(project_name, nprocs):
     if(nprocs == 1):
       cmd="ElmerSolver"
     else:
-      cmd="mpirun -np "+ str(nprocs) + " ElmerSolver_mpi"
+      # Here copy the files over to pi@10.0.0.254:/nfs/nodeimg/home/pi/
+      cmd="mpirun --hostfile ../"+hostfile+" -np "+ str(nprocs) + " ElmerSolver_mpi"
     os.system(cmd)
 
     return
