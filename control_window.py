@@ -104,6 +104,9 @@ class ControlWindow(QMainWindow):
     def process_image(self):
         rgb_frame = np.copy(self.capture_rgb_frame)
 
+        # fix inverted color order - not sure why I need to do this again
+        rgb_frame = invert_color_order(rgb_frame)
+
         # set rgb image visible
         clean_depth = remove_background(self.capture_depth, self.background)
         depthimage = depth_to_depthimage(self.capture_depth)
@@ -115,9 +118,9 @@ class ControlWindow(QMainWindow):
             contour, self.scale, self.offset)
 
         # add contour to images
-        cv2.drawContours(depthimage, [self.outline], -1, (0, 0, 255), 2)
+        cv2.drawContours(depthimage, [self.outline], -1, (255, 0, 0), 2)
         cv2.drawContours(rgb_frame, [self.transformed_outline], -1,
-                         (0, 0, 255), 2)
+                         (255, 0, 0), 2)
 
         # Remember the contour for submission of the run
         self.contour = self.transformed_outline
