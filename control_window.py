@@ -8,7 +8,7 @@ from pyside_dynamic import loadUi
 import cv2, sys, time, os
 import numpy as np
 from kinect_to_points.kinect_lib import *
-from video_capture import QVideoWidget, frame_to_qimage
+from video_capture import QVideoWidget
 from detail_form import DetailForm
 from leaderboard import LeaderboardWidget
 from queue_run import queue_run
@@ -93,19 +93,16 @@ class ControlWindow(QMainWindow):
                          (0, 0, 255), 2)
 
         # set images
-        qimage = frame_to_qimage(rgb_frame)
-        self.viewfinder.main_video.setStaticImage(qimage)
+        self.viewfinder.main_video.setStaticImage(rgb_frame)
 
     def capture_action(self):
         self.capture_depth = measure_depth()
         self.capture_rgb_frame = get_video()
+
         self.process_image()
 
     def process_image(self):
         rgb_frame = np.copy(self.capture_rgb_frame)
-
-        # fix inverted color order - not sure why I need to do this again
-        rgb_frame = invert_color_order(rgb_frame)
 
         # set rgb image visible
         clean_depth = remove_background(self.capture_depth, self.background)
@@ -126,11 +123,9 @@ class ControlWindow(QMainWindow):
         self.contour = self.transformed_outline
 
         # set images
-        qimage = frame_to_qimage(rgb_frame)
-        self.ui.captured_rgb.setImage(qimage)
+        self.ui.captured_rgb.setImage(rgb_frame)
 
-        qimage = frame_to_qimage(depthimage)
-        self.ui.captured_depth.setImage(qimage)
+        self.ui.captured_depth.setImage(depthimage)
 
     def calibrate(self):
         self.background = measure_depth(nmeasurements)

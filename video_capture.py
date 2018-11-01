@@ -74,9 +74,3 @@ class VideoCaptureThread(QThread):
 
         # Emit video frame
         self.changeDepthPixmap.emit(depthimage)
-
-
-def frame_to_qimage(frame):
-    # Convert frame to QImage
-    rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    return rgbImage
