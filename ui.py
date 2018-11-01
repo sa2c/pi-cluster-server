@@ -84,7 +84,7 @@ if __name__ == '__main__':
     # initialise another thread for video capture
     th = VideoCaptureThread()
 
-    simulations = get_test_simulations()
+    simulations = {}
 
     window = ControlWindow()
     window.viewfinder.leaderboard.update(simulations.values())
