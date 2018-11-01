@@ -35,6 +35,7 @@ from createcontoureps import *
 # Default entries
 project_name = "Square"
 nprocs = 1
+hostfile = "hostfile1"
 
 if len(sys.argv) > 1:
     project_name = sys.argv[1]
@@ -42,6 +43,8 @@ if len(sys.argv) > 1:
 if len(sys.argv) > 2:
     nprocs = int(sys.argv[2])
 
+if len(sys.argv) > 3:
+    hostfile = sys.argv[3]
 
 
 # Check if a directory with the given project name exists,
@@ -96,7 +99,7 @@ print("###################################################################\n")
 #
 ##########################################################
 
-step4_run_cfd_simulation(project_name, nprocs)
+step4_run_cfd_simulation(project_name, hostfile, nprocs)
 
 
 
