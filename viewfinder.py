@@ -33,11 +33,6 @@ class ViewfinderDialog(QDialog):
         timer.timeout.connect(self.update_simulation_views)
         timer.start(5)
 
-        # check for progress every 10 seconds
-        progress_timer = QTimer(self)
-        progress_timer.timeout.connect(self.update_progress)
-        progress_timer.start(10000)
-
         self.progress_slots = [self.slot1, self.slot2, self.slot3, self.slot4]
         self.indices_in_slots = [None, None, None, None]
 
@@ -110,8 +105,14 @@ class ViewfinderDialog(QDialog):
         self.indices_in_slots[slot_number] = None
         pbar.setFormat(f'Slot {slot_number} : %p%')
 
+    def start_progress_checking(self):
+        # check for progress every 10 seconds
+        progress_timer = QTimer(self)
+        progress_timer.timeout.connect(self.update_progress)
+        progress_timer.start(10000)
+
     def update_progress(self):
-        print('check progress')
+        print('checking progress')
         for index in self.indices_in_slots:
             percent = get_run_completion_percentage(index)
             self.set_progress(index, percent)
