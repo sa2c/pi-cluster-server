@@ -4,32 +4,45 @@
 # the input file gets removed.
 
 UI_ADDRESS=kinectwrangler@10.0.0.252
-UI_OUTPUTDIR=picluster/outbox/
-UI_PW=sa2cpi
+UI_OUTPUTDIR=picluster/
 WORKDIR=$(pwd)
 
-mkdir -p signals
+mkdir -p signal
 mkdir -p inbox
 mkdir -p outbox
 
 while true
 do
 	cd $WORKDIR
-	files=$(ls inbox)
+	# Check for first file in signal
+	files=$(ls signal | awk '{print $1;}')
 	for file in $files
 	do
 		echo $file
-		mkdir -p outbox/${file} 
-		cp contour.dat cfd/${file}-outline-coords.dat
-		mkdir -p outbox/
-		cd cfd && python runcfd.py $file 4 >> ../outbox/$file/output
-		cd $WORKDIR
-		mv cfd/${file}/mesh/*.png outbox/${file}/
-		echo $file > outbox/${file}/runname
-		echo $UI_PW > rsync -r outbox/${file} ${UI_ADDRESS}:${UI_OUTPUTDIR}/current/${file}
-		touch signals/${file}
-		scp signals/${file} ${UI_ADDRESS}:${UI_OUTPUTDIR}signal/
-		rm inbox/$file
+		# remove the file. If this fails, someone else is probably
+		# running this job.
+		if rm signal/$file
+		then
+			# Create output directory
+			mkdir -p outbox/${file}
+
+			# Copy the input file into cfd and run
+			cp inbox/$file cfd/${file}-outline-coords.dat
+			cd cfd && python runcfd.py $file 4 >> ../outbox/$file/output
+
+			# Move cfd image output to outbox
+			cd $WORKDIR
+			mv cfd/${file}/mesh/*.png outbox/${file}/
+			
+			# Copy to the UI node
+			rsync -r outbox/${file} ${UI_ADDRESS}:${UI_OUTPUTDIR}/outbox/${file}
+
+			# Send an empty signal file to the UI machine
+			rm inbox/$file
+			touch inbox/${file}
+			scp inbox/${file} ${UI_ADDRESS}:${UI_OUTPUTDIR}signal/
+			rm inbox/$file
+		fi
 	done
 done
 
