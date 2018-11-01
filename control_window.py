@@ -4,13 +4,14 @@ from PySide2.QtWidgets import *
 
 import datetime
 import calendar
-from qt_utils import load_ui
+from pyside_dynamic import loadUi
 import cv2, sys, time, os
 import numpy as np
 from kinect_to_points.kinect_lib import *
 from video_capture import QVideoWidget, frame_to_qimage
 from detail_form import DetailForm
 from leaderboard import LeaderboardWidget
+from viewfinder import ViewfinderDialog
 from cluster_run import queue_run, RunCompleteWatcher
 
 nmeasurements = 20
@@ -22,7 +23,11 @@ class ControlWindow(QMainWindow):
         self.scale = [0.95, 0.9]
 
         super().__init__(parent)
-        self.ui = load_ui('designer/control_panel.ui')
+        self.ui = QWidget()
+        loadUi(
+            'designer/control_panel.ui',
+            self.ui,
+            customWidgets={'QVideoWidget': QVideoWidget})
         self.setCentralWidget(self.ui)
 
         # instance variables
@@ -40,7 +45,7 @@ class ControlWindow(QMainWindow):
         self.calibrate()
 
         # create viewfinder
-        self.viewfinder = load_ui('designer/viewfinder.ui')
+        self.viewfinder = ViewfinderDialog()
         self.viewfinder.show()
 
         # create leaderboard
