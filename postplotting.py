@@ -170,7 +170,8 @@ def plot(canvas,
             width=0.005,
             scale=0.0325)
 
-    fig.canvas.draw()
+    if not hasattr(fig.canvas,'renderer'):
+        fig.canvas.draw()
 
     if subject_image is not None:
         #https://matplotlib.org/gallery/misc/agg_buffer_to_array.html
@@ -180,8 +181,10 @@ def plot(canvas,
         dypx, dxpx, _ = np.array(fig.canvas.renderer._renderer).shape
         subject_layer = cv2.warpAffine(subject_image, M, (dxpx, dypx))
 
+
         ax.imshow(subject_layer)
 
+    fig.canvas.draw()
     return np.array(fig.canvas.renderer._renderer)
 
 
