@@ -13,6 +13,8 @@ opencv-contrib-python = "*"
 matplotlib = "*"
 "pyside2" = "*"
 fabric = "*"
+pdfrw = "*"
+reportlab = "*"
 
 [dev-packages]
 
