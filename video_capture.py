@@ -41,7 +41,7 @@ class QVideoWidget(QLabel):
         self.dynamic_update = False
         self._set_image(image)
 
-    def resumeDynamicUpdate():
+    def resumeDynamicUpdate(self):
         self.dynamic_update = True
 
 

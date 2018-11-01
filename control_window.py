@@ -87,13 +87,22 @@ class ControlWindow(QMainWindow):
         return self.simulations.values()
 
     def show_capture_action(self):
-        # get rgb image with current transformed outline
-        rgb_frame = np.copy(self.capture_rgb_frame)
-        cv2.drawContours(rgb_frame, [self.transformed_outline], -1,
-                         (0, 0, 255), 2)
+        if self.viewfinder.main_video.dynamic_update:
+            rgb_frame, depthimage = self.__get_static_images()
 
-        # set images
-        self.viewfinder.main_video.setStaticImage(rgb_frame)
+            # set images
+            self.viewfinder.main_video.setStaticImage(rgb_frame)
+            self.viewfinder.depth_video.setStaticImage(depthimage)
+
+            # change button text
+            self.ui.show_button.setText('Resume Video')
+        else:
+            # resume video feed
+            self.viewfinder.main_video.resumeDynamicUpdate()
+            self.viewfinder.depth_video.resumeDynamicUpdate()
+
+            # change button text
+            self.ui.show_button.setText('Show Capture')
 
     def capture_action(self):
         self.capture_depth = measure_depth()
@@ -102,8 +111,15 @@ class ControlWindow(QMainWindow):
         self.process_image()
 
     def process_image(self):
-        rgb_frame = np.copy(self.capture_rgb_frame)
+        rgb_frame, depthimage = self.__get_static_images()
 
+        # set images
+        self.ui.captured_rgb.setImage(rgb_frame)
+
+        self.ui.captured_depth.setImage(depthimage)
+
+    def __get_static_images(self):
+        rgb_frame = np.copy(self.capture_rgb_frame)
         # set rgb image visible
         clean_depth = remove_background(self.capture_depth, self.background)
         depthimage = depth_to_depthimage(self.capture_depth)
@@ -115,17 +131,14 @@ class ControlWindow(QMainWindow):
             contour, self.scale, self.offset)
 
         # add contour to images
-        cv2.drawContours(depthimage, [self.outline], -1, (255, 0, 0), 2)
+        cv2.drawContours(depthimage, [self.outline], -1, (0, 0, 255), 2)
         cv2.drawContours(rgb_frame, [self.transformed_outline], -1,
-                         (255, 0, 0), 2)
+                         (0, 0, 255), 2)
 
         # Remember the contour for submission of the run
         self.contour = self.transformed_outline
 
-        # set images
-        self.ui.captured_rgb.setImage(rgb_frame)
-
-        self.ui.captured_depth.setImage(depthimage)
+        return rgb_frame, depthimage
 
     def calibrate(self):
         self.background = measure_depth(nmeasurements)

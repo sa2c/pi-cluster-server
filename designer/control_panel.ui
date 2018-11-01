@@ -104,7 +104,7 @@
       <item>
        <widget class="QPushButton" name="show_button">
         <property name="text">
-         <string>Show</string>
+         <string>Show Capture</string>
         </property>
        </widget>
       </item>
