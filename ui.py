@@ -54,15 +54,15 @@ def queue_run(contour, index):
     write_outline(filename, contour)
 
     # copy the contour
-    remote_name = '{}/contour.dat'.format(cluster_path)
-    cluster.put(filename, remote=remote_name)
-
-    # copy a signal file accross
     remote_name = '{}/inbox/run{}'.format(cluster_path, index)
     cluster.put(filename, remote=remote_name)
 
+    # copy a signal file accross
+    remote_name = '{}/signal/run{}'.format(cluster_path, index)
+    cluster.put(filename, remote=remote_name)
 
-existing_runs = set(os.listdir("{}/outbox/signal/".format(local_path)))
+
+existing_runs = set(os.listdir("{}/signal/".format(local_path)))
 
 
 def run_complete(path):
@@ -80,7 +80,7 @@ class RunCompleteWatcher(QFileSystemWatcher):
     '''
 
     def __init__(self):
-        path = "{}/outbox/signal/".format(local_path)
+        path = "{}/signal/".format(local_path)
         filepath = "{}/signal_file".format(path)
         super().__init__([path, filepath])
 
@@ -103,7 +103,7 @@ def test_app():
     sys.exit(app.exec_())
 
 
-#test_submit()
+test_submit()
 #test_app()
 
 if __name__ == '__main__':
