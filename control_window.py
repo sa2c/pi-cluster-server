@@ -74,6 +74,7 @@ class ControlWindow(QMainWindow):
 
     def run_completed(self, index):
         print(f'finished {index}')
+        self.viewfinder.show_completed(index)
         self.leaderboard.update(self.best_simulations())
 
     def best_simulations(self):

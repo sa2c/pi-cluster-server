@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>922</width>
+    <height>743</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -56,13 +56,46 @@
       <item>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <widget class="QVideoWidget" name="main_video">
-          <property name="text">
-           <string>Video Placeholder</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
+         <widget class="QWidget" name="widget_2" native="true">
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="0">
+            <widget class="QVideoWidget" name="main_video">
+             <property name="text">
+              <string>Video Placeholder</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QVideoWidget" name="depth_video">
+             <property name="text">
+              <string>Depth Placeholder</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QVideoWidget" name="bottom_left">
+             <property name="text">
+              <string>Ready...</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QVideoWidget" name="bottom_right">
+             <property name="text">
+              <string>Ready...</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
