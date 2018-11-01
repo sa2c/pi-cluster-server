@@ -61,11 +61,10 @@ class RunCompleteWatcher(QFileSystemWatcher):
     completed = Signal(int)
 
     def __init__(self, parent=None):
-        self.existing_runs = set(os.listdir("{}/outbox/signal/".format(local_path)))
+        self.existing_runs = set(os.listdir("{}/signal/".format(local_path)))
 
-        path = "{}/outbox/signal/".format(local_path)
-        filepath = "{}/signal_file".format(path)
-        super().__init__([path, filepath], parent)
+        path = "{}/signal/".format(local_path)
+        super().__init__([path], parent)
 
         self.directoryChanged.connect(self.run_complete)
 
