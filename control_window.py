@@ -40,6 +40,7 @@ class ControlWindow(QMainWindow):
         # instance variables
         self.outline = None
         self.transformed_outline = None
+        self.simulations = {}
 
         self.ui.capture_button.released.connect(self.capture_action)
         self.ui.process_button.released.connect(self.run_cfd_action)

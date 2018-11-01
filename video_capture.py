@@ -79,6 +79,4 @@ class VideoCaptureThread(QThread):
 def frame_to_qimage(frame):
     # Convert frame to QImage
     rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    qimage = QImage(rgbImage.data, rgbImage.shape[1], rgbImage.shape[0],
-                    QImage.Format_RGB888)
-    return qimage
+    return rgbImage
