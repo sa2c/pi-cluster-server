@@ -88,7 +88,6 @@ class RunCompleteWatcher(QFileSystemWatcher):
             self.completed.emit(index)
 
 
-
 def test_submit():
     contour = np.loadtxt("scf1540984574-outline-coords.dat")
     queue_run(contour, 2)
@@ -107,4 +106,3 @@ def test_app():
 
 #test_submit()
 #test_app()
-

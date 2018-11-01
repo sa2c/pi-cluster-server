@@ -8,6 +8,7 @@ from video_capture import QVideoWidget
 from pyside_dynamic import loadUi
 from matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
+from cluster_run import get_run_completion_percentage
 
 SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
@@ -25,9 +26,17 @@ class ViewfinderDialog(QDialog):
             })
 
         self.image_index = 0
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_simulation_views)
-        self.timer.start(5)
+        self.run_queue = []
+
+        # cycle simulation image every 5ms seconds (for video effect)
+        timer = QTimer(self)
+        timer.timeout.connect(self.update_simulation_views)
+        timer.start(5)
+
+        # check for progress every 10 seconds
+        progress_timer = QTimer(self)
+        progress_timer.timeout.connect(self.update_progress)
+        progress_timer.start(10000)
 
         self.progress_slots = [self.slot1, self.slot2, self.slot3, self.slot4]
         self.indices_in_slots = [None, None, None, None]
@@ -70,8 +79,25 @@ class ViewfinderDialog(QDialog):
         slot_number = self.indices_in_slots.index(index_run)
         self.progress_slots[slot_number].setValue(progress)
 
-    def start_simulation(self, index_run, slot, name):
-        # reset progress
+    def queue_simulation(self, index_run, name):
+        self.run_queue.append((index_run, name))
+        self.update_queue()
+
+    def update_queue(self):
+        text = 'Queue: ' + ', '.join([q[1] for q in self.run_queue])
+        self.queue.setText(text)
+
+    def start_simulation(self, index_run, slot):
+        # remove from queue
+        names = [q[1] for q in self.run_queue]
+        run_indices = [q[0] for q in self.run_queue]
+        i = run_indices.index(index_run)
+        name = names[i]
+
+        del self.run_queue[i]
+        self.update_queue()
+
+        # move from queue to progress + reset progress
         pbar = self.progress_slots[slot]
         pbar.setValue(0)
         pbar.setFormat(f'{name} : %p%')
@@ -84,7 +110,11 @@ class ViewfinderDialog(QDialog):
         self.indices_in_slots[slot_number] = None
         pbar.setFormat(f'Slot {slot_number} : %p%')
 
-        self._start_drawing_result()
+    def update_progress(self):
+        print('check progress')
+        for index in self.indices_in_slots:
+            percent = get_run_completion_percentage(index)
+            self.set_progress(index, percent)
 
 
 def main():
@@ -101,11 +131,16 @@ def main():
         QTimer.singleShot(1000, finish_simulation)
 
     def start_simulation():
-        window.start_simulation(15, 1, 'My Name')
-        window.start_simulation(25, 2, 'Another Name')
+        window.start_simulation(15, 1)
+        window.start_simulation(25, 2)
         QTimer.singleShot(1000, update_progress)
 
-    QTimer.singleShot(1000, start_simulation)
+    def queue_simulation():
+        window.queue_simulation(15, 'My Name')
+        window.queue_simulation(25, 'Another Name')
+        QTimer.singleShot(1000, start_simulation)
+
+    QTimer.singleShot(1000, queue_simulation)
     window.show()
     app.exec_()
 

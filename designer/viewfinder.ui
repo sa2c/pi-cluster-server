@@ -14,7 +14,7 @@
    <string/>
   </property>
   <property name="autoFillBackground">
-   <bool>true</bool>
+   <bool>false</bool>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: white;</string>
@@ -322,6 +322,13 @@
                  </property>
                  <property name="format">
                   <string>Slot 4 : %p%</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="queue">
+                 <property name="text">
+                  <string>Queue:</string>
                  </property>
                 </widget>
                </item>
