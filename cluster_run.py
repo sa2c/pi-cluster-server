@@ -10,8 +10,24 @@ nmeasurements = 20
 cluster = Connection(cluster_address)
 
 
+def all_available_indices_and_names():
+    dir = 'outbox'
+    simulations = []
+
+    for file in os.listdir(dir):
+        if 'run' in file:
+            try:
+                index = int(file.replace('run', ''))
+                name = str(np.load(run_filepath(index, 'name.npy')))
+                simulations.append([index, name])
+            except:
+                print(f'failed to load file: {file}')
+
+    return simulations
+
+
 def run_directory(index):
-    directory = 'outbox/run{index}'
+    directory = 'outbox/run{index}'.format(index=index)
 
     while not os.path.exists(directory):
         try:
@@ -64,7 +80,7 @@ def write_outline(filename, outline):
 
 def queue_run(contour, index):
     # save contour to file and copy to the cluster inbox
-    filename = run_filepath(index,"contour.dat")
+    filename = run_filepath(index, "contour.dat")
     write_outline(filename, contour)
 
     # copy the contour
