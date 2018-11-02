@@ -40,8 +40,6 @@ class ControlWindow(QMainWindow):
         # instance variables
         self.outline = None
         self.transformed_outline = None
-        self.simulations = {}
-
         self.ui.capture_button.released.connect(self.capture_action)
         self.ui.process_button.released.connect(self.run_cfd_action)
         self.ui.details_button.released.connect(self.fill_in_details_action)
@@ -84,7 +82,7 @@ class ControlWindow(QMainWindow):
 
     def best_simulations(self):
         # returns all simulations for now
-        return self.simulations.values()
+        return {}
 
     def show_capture_action(self):
         if self.viewfinder.ui.main_video.dynamic_update:
@@ -165,13 +163,23 @@ class ControlWindow(QMainWindow):
             print('name change cancelled')
 
     def run_cfd_action(self):
+
         index = self.get_epoch()
-        self.simulations[index] = {
+
+        # save simulation details for later
+        rgb_frame, depthimage = self._get_static_images()
+        simulation = {
             'index': index,
             'name': self.current_name,
             'email': self.current_email,
+            'rgb': rgb_frame,
+            'depthimage': depthimage,
+            'contour': self.contour
         }
+        np.save(simulation, run_filepath('simulation.npy'))
+
         queue_run(self.contour, index)
+
         self.viewfinder.queue_simulation(index, self.current_name)
 
     def get_epoch(self):

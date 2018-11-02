@@ -11,7 +11,15 @@ cluster = Connection(cluster_address)
 
 
 def run_directory(index):
-    return 'outbox/run{index}'.format(index)
+    directory = 'outbox/run{index}'.format(index)
+
+    while not os.path.exists(directory):
+        try:
+            os.makedirs(directory)
+        except OSError as e:
+            print(f'directory creation failed: {directory}')
+
+    return directory
 
 
 def run_filepath(index, filename):
@@ -103,7 +111,6 @@ class RunCompleteWatcher(QFileSystemWatcher):
                 self.completed.emit(index)
 
 
-
 def test_submit():
     contour = np.loadtxt("scf1540984574-outline-coords.dat")
     queue_run(contour, 2)
@@ -118,5 +125,3 @@ def test_app():
     label.show()
     rcw = RunCompleteWatcher()
     sys.exit(app.exec_())
-
-

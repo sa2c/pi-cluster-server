@@ -27,6 +27,7 @@ class ViewfinderDialog(QDialog):
 
         self.image_index = 0
         self.run_queue = []
+        self.currently_shown_simulation = None
 
         # cycle simulation image every 5ms seconds (for video effect)
         timer = QTimer(self)
@@ -59,19 +60,26 @@ class ViewfinderDialog(QDialog):
         if self.ui.leftStack.currentIndex() == 0:
             return
 
-        vtk_file = f'outbox/testrun1/elmeroutput{self.image_index:04}.vtk'
-        imagefile = 'outbox/testrun1/kinect/scf1-fullcolorimage.png'
-
+        # clear screen
         self.ui.left_view.figure.clear()
         self.ui.right_view.figure.clear()
 
-        if self.image_index > 0:
-            vtk_to_plot(self.ui.left_view, vtk_file, 1, False, True, False,
-                        imagefile)
-            vtk_to_plot(self.ui.right_view, vtk_file, 1, True, False, True,
-                        None)
+        if not self.currently_shown_simulation is None:
+            image = self.currently_shown_simulation['rgb']
+            vtk_file = run_directory(self.currently_shown_simulation['index'],
+                                     f'elmeroutput{self.image_index:04}.vtk')
 
-        self.image_index = (self.image_index + 1) % (ntimesteps + 1)
+            if self.image_index > 0:
+                vtk_to_plot(self.ui.left_view, vtk_file, 1, False, True, False,
+                            image)
+                vtk_to_plot(self.ui.right_view, vtk_file, 1, True, False, True,
+                            None)
+
+            self.image_index = (self.image_index + 1) % (ntimesteps + 1)
+
+    def set_currently_shown_simulation(self, index):
+        datafile = run_filepath(index, 'simulation.npy')
+        self.currently_shown_simulation = np.load(datafile)
 
     def set_progress(self, index_run, progress):
         slot_number = self.indices_in_slots.index(index_run)
