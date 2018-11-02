@@ -34,13 +34,17 @@ from createcontoureps import *
 
 # Default entries
 project_name = "Square"
-if_serial = True
+nprocs = 1
+hostfile = "hostfile1"
 
 if len(sys.argv) > 1:
     project_name = sys.argv[1]
 
 if len(sys.argv) > 2:
-    if_serial = (sys.argv[2] == 1)
+    nprocs = int(sys.argv[2])
+
+if len(sys.argv) > 3:
+    hostfile = sys.argv[3]
 
 
 # Check if a directory with the given project name exists,
@@ -84,7 +88,7 @@ print("###################################################################\n")
 #################################################
 
 
-step3_generate_mesh_from_outline(project_name)
+step3_generate_mesh_from_outline(project_name, nprocs)
 
 
 print("Step 3 completed successfully\n\n")
@@ -95,7 +99,7 @@ print("###################################################################\n")
 #
 ##########################################################
 
-step4_run_cfd_simulation(project_name)
+step4_run_cfd_simulation(project_name, hostfile, nprocs)
 
 
 
@@ -107,7 +111,7 @@ print("###################################################################\n")
 #
 #####################################################
 
-step5_generate_vtk_files(project_name, if_serial)
+step5_generate_vtk_files(project_name, nprocs)
 
 
 print("Step 5 completed successfully\n\n")
@@ -118,9 +122,9 @@ print("###################################################################\n")
 #
 ##################################################################
 
-num_timesteps = 100
+num_timesteps = 10
 
-step6_generate_images_vtk(project_name, if_serial, num_timesteps)
+step6_generate_images_vtk(project_name, nprocs, num_timesteps)
 
 
 print("Step 6 completed successfully\n\n")

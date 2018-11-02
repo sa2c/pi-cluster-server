@@ -6,8 +6,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
+    global velo_magn_max
 
-def generate_velocityvectorplots_from_vtk(filename, compute_bound, velo_magn_max):
     # Open the file with read only permit
     vtkfile = open(filename, "r")
 
@@ -23,9 +24,8 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, velo_magn_max
     line = vtkfile.readline()
     listtemp = " ".join(line.split())
     listtemp = listtemp.split(" ")
-    #print listtemp
     numpoints = int(listtemp[1])
-    #print "numpoints=", numpoints
+    print("numpoints=", numpoints)
     # Point coordinates
     coords = np.zeros((numpoints,3), dtype=float)
     for ii in range(numpoints):
@@ -41,9 +41,8 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, velo_magn_max
     line = vtkfile.readline()
     listtemp = " ".join(line.split())
     listtemp = listtemp.split(" ")
-    #print listtemp
     numcells = int(listtemp[1])
-    #print "numcells=", numcells
+
     # Elements connectivity
     elems = np.zeros((numcells,3), dtype=int)
     for ii in range(numcells):
@@ -62,6 +61,14 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, velo_magn_max
     iii = int(listtemp[1])
     for ii in range(iii):
         line = vtkfile.readline()
+
+    if(nprocs > 1):
+        # CELL DATA - coloring
+        line = vtkfile.readline()
+        line = vtkfile.readline()
+        line = vtkfile.readline()
+        for ii in range(numcells):
+            line = vtkfile.readline()
 
     # Point data
     line = vtkfile.readline()
@@ -95,42 +102,43 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, velo_magn_max
     vtkfile.close()
 
     if(compute_bound == True):
-        velo_magn_max = 1.25*np.max(velocity_magn[:,0])
-
+        velo_magn_max = np.max(velocity_magn[:,0])
+    VV=np.linspace(0.0, velo_magn_max, 20)
 
     # generate images
 
     fname_data = filename.split(".")
     # Velocity magnitude contour plot
 
-    veloplots = True
-    vectorplots = False
+    contourplots = True
+    vectorplots = True
 
-    if(veloplots == True):
-        plt.figure(1)
-        plt.triplot(coords[:,0], coords[:,1], elems, color='black', linewidth=0.2)
-        VV=np.linspace(0.0, 3.5, 20)
-        plt.tricontourf(coords[:,0], coords[:,1], elems, velocity_magn[:,0], VV, cmap="rainbow", extend='both')
-        plt.colorbar()
-        plt.axis('off')
-        plt.axes().set_aspect(1.0)
+    if(contourplots == True):
+        # https://matplotlib.org/gallery/misc/agg_buffer_to_array.html
+        fig1 = plt.figure(1)
+        ax1 = fig1.add_subplot(111)
+        ax1.triplot(coords[:,0], coords[:,1], elems, color='black', linewidth=0.2)
+        mappable = ax1.tricontourf(coords[:,0], coords[:,1], elems, velocity_magn[:,0], VV, cmap="rainbow", extend='both')
+        plt.colorbar(mappable)
+        ax1.axis('off')
+        ax1.axes.set_aspect(1.0)
+        fig1.canvas.draw()
+
         outfile = fname_data[0]+"-velomagn.png"
-        plt.savefig(outfile, dpi=200)
+        fig1.savefig(outfile, dpi=200)
         plt.close()
 
     if(vectorplots == True):
         # Quiver plot
-        plt.figure(2)
-        plt.triplot(coords[:,0], coords[:,1], elems, color='black', linewidth=0.2)
-        #plt.colorbar()
-        plt.quiver(coords[:,0], coords[:,1], velocity[:,0], velocity[:,1])
-        #ax=plt.subplots()
-        #ax.quiver(coords[:,0], coords[:,1], velocity[:,0], velocity[:,1])
-        #ax.quiverkey(q,X=1.0, Y=1.0, U=1.0)
-        plt.axis('off')
+        fig2 = plt.figure(2)
+        ax2 = fig2.add_subplot(111)
+        ax2.quiver(coords[:,0], coords[:,1], velocity[:,0], velocity[:,1], angles='xy', scale_units='xy')
+        ax2.triplot(coords[:,0], coords[:,1], elems, color='black', linewidth=0.2)
+        ax2.axes.set_aspect(1.0)
+        ax2.axis('off')
         #plt.show()
         outfile = fname_data[0]+"-quiver.png"
-        plt.savefig(outfile, dpi=200)
+        fig2.savefig(outfile, dpi=200)
         plt.close()
 
     return
@@ -138,7 +146,7 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, velo_magn_max
 
 # Generates the images for all the time steps requested
 #
-def step6_generate_images_vtk(project_name, if_serial, num_timesteps):
+def step6_generate_images_vtk(project_name, nprocs, num_timesteps):
     #print("Loading ", filename_prefix)
 
     print("The dir is: %s", os.getcwd())
@@ -147,19 +155,15 @@ def step6_generate_images_vtk(project_name, if_serial, num_timesteps):
     #os.chdir(dst)
 
     fname_temp="elmeroutput"
-    velo_magn_max=2.0
+    global velo_magn_max
 
-    if if_serial:
-        for fnum in range(num_timesteps):
-            filename = fname_temp + str(fnum+1) + ".vtk"
-            print(filename)
-            generate_velocityvectorplots_from_vtk(filename, (fnum ==0), velo_magn_max)
-    else:
-        filename_prefix=test.vtk
-    
-        for fnum in range(num_timesteps):
-            filename = filename_prefix + "." + str(fnum-1)
-            generate_velocityvectorplots_from_vtk(filename, (fnum ==0), velo_magn_max)
+    for fnum in range(num_timesteps):
+        vtkfilename = fname_temp + str(fnum+1).zfill(4) + ".vtk"
+        print(vtkfilename)
+        if(os.path.isfile(vtkfilename) == True):
+            generate_velocityvectorplots_from_vtk(vtkfilename, (fnum == 0), nprocs)
+        #else:
+            #print("{} file does not exist".format(vtkfilename))
 
     return
 ##################################################
