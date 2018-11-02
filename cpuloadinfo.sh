@@ -11,7 +11,7 @@ INTERVAL=1.0 # seconds.tenths
 COLUMN=2 # userspace cpu load column in the output files
 
 RESDIR=cpu_times
-mkdir -p 
+mkdir -p $RESDIR
 out_ip_name(){
   echo $RESDIR/out_$1
 }
