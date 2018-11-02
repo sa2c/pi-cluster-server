@@ -3,7 +3,7 @@
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Paragraph, KeepInFrame
 
-from brand import erdf_logo, scw_logo, get_styles
+from brand import erdf_logo, scw_logo, scw_bg, get_styles
 
 
 def build_document(output_filename,
@@ -15,6 +15,8 @@ def build_document(output_filename,
     )
 
     styles = get_styles()
+
+    scw_bg.drawOn(page, 0, 0)
 
     img_width = 136.417
     img_height = 102.313

@@ -65,6 +65,7 @@ def get_logo(filename, target_width, width_in_file, height_in_file):
 
 erdf_logo = get_logo('ERDF.pdf', 127.56, 370, 269)
 scw_logo = get_logo('scw.pdf', 126, 447, 303)
+scw_bg = get_logo('scw-bg.pdf', 216, 84.86, 84.86)
 
 
 def get_styles():
