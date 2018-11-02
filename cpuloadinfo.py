@@ -18,19 +18,18 @@ import random
 
 
 
-
 # gets the CPU usage information for one node
-def get_cpu_usage_node(cluster_address, timeperiod, cpu_usage):
+def get_cpu_usage(num_nodes):
+    global cpu_usage
+    print("Gathering data from nodes \n")
 
-    #cluster_address = "pi@137.44.2.181"
+    cluster_address = "pi@137.44.2.181"
     cluster = Connection(host=cluster_address,connect_kwargs={"password":"sa2cpi"})
 
-    for ii in range(timeperiod):
-        #cpu_usage[ii] = psutil.cpu_percent(interval=0.1)
-
-        #cpu_usage[ii] = float(os.popen('''grep 'cpu ' /proc/stat | awk '{usage=($2+$3+$4)*100/($2+$3+$4+$5)} END {print usage }' ''').readline())
-        cpu_usage[ii] = round(float(cluster.run('''grep 'cpu ' /proc/stat | awk '{usage=($2+$3+$4)*100/($2+$3+$4+$5)} END {print usage }' ''', hide=True).stdout),4)
-        #time.sleep(0.1)
+    cpu_usage = cluster.run('''bash cpuloadinfo.sh''', hide=True).stdout
+    print(cpu_usage)
+    cpu_usage = list(float(cpu_usage[:,1]))
+    #cpu_usage = 100.0*np.random.rand(num_nodes)
 
     return
 ###################################################
@@ -76,21 +75,19 @@ class PlotCanvas(FigureCanvas):
         ax = self.figure.add_subplot(111)
 
         # gets the CPU usage from all the nodes and plots the data
-        cluster_address = "pi@137.44.2.181"
-        num_nodes=5
-        timeperiod=10
+        num_nodes  = 14
+        global cpu_usage
 
-        cpu_usage_global = np.zeros((timeperiod,num_nodes), dtype=float)
+        #cpu_usage_global = np.zeros((timeperiod,num_nodes), dtype=float)
+        cpu_usage = np.zeros(num_nodes, dtype=float)
 
-        for ii in range(num_nodes):
-            get_cpu_usage_node(cluster_address, timeperiod, cpu_usage_global[:,ii])
-            print(cpu_usage_global[:,ii])
+        get_cpu_usage(num_nodes)
+        print(cpu_usage)
 
-        time = np.linspace(1,timeperiod,timeperiod)
-        ax.plot(time, cpu_usage_global)
-        ax.set_xlabel("Time (s)")
+        time = np.linspace(1,num_nodes,num_nodes)
+        ax.bar(time, cpu_usage)
+        ax.set_xlabel("Node number")
         ax.set_ylabel("CPU usage (%)")
-        #ax.set_title('CPU usage from all nodes')
         self.draw()
 
 
@@ -102,4 +99,3 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = App()
     sys.exit(app.exec_())
-
