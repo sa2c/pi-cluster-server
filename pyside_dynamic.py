@@ -160,6 +160,19 @@ def loadUi(uifile,
     return widget
 
 
+def loadUiWidget(uifilename, parent=None, customWidgets=[]):
+    loader = QUiLoader()
+
+    for widget in customWidgets:
+        loader.registerCustomWidget(widget)
+
+    uifile = QFile(uifilename)
+    uifile.open(QFile.ReadOnly)
+    ui = loader.load(uifile, parent)
+    uifile.close()
+    return ui
+
+
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)

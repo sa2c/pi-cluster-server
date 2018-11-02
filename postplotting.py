@@ -28,7 +28,7 @@ def vtkfile_to_numpy(filename, nprocs):
     listtemp = " ".join(line.split())
     listtemp = listtemp.split(" ")
     numpoints = int(listtemp[1])
-    print("numpoints=", numpoints)
+
     # Point coordinates
     coords = np.zeros((numpoints, 3), dtype=float)
     for ii in range(numpoints):
@@ -45,7 +45,6 @@ def vtkfile_to_numpy(filename, nprocs):
     listtemp = " ".join(line.split())
     listtemp = listtemp.split(" ")
     numcells = int(listtemp[1])
-    print("numcells=", numcells)
     # Elements connectivity
     elems = np.zeros((numcells, 3), dtype=int)
     for ii in range(numcells):
@@ -159,6 +158,10 @@ def plot(canvas,
         # all the operations to save the colorbar in another picture
 
     if dovector:
+        norm = matplotlib.colors.Normalize()
+        cm = matplotlib.cm.jet
+        speed = np.sqrt(velocity[:,0]**2 + velocity[:,1]**2)
+        colors = cm(norm(speed))
         ax.quiver(
             coords[:, 0],
             coords[:, 1],
@@ -166,11 +169,12 @@ def plot(canvas,
             velocity[:, 1],
             angles='xy',
             scale_units='xy',
-            color='lightgreen',
-            width=0.005,
+            color=colors,
+            width=0.0075,
             scale=0.0325)
 
-    fig.canvas.draw()
+    if not hasattr(fig.canvas, 'renderer'):
+        fig.canvas.draw()
 
     if subject_image is not None:
         #https://matplotlib.org/gallery/misc/agg_buffer_to_array.html
@@ -182,6 +186,7 @@ def plot(canvas,
 
         ax.imshow(subject_layer)
 
+    fig.canvas.draw()
     return np.array(fig.canvas.renderer._renderer)
 
 

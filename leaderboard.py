@@ -4,7 +4,7 @@ from PySide2.QtWidgets import *
 from PySide2.QtUiTools import QUiLoader
 import cv2, sys, time, os
 import numpy as np
-from video_capture import frame_to_qimage, QVideoWidget
+from video_capture import QVideoWidget
 from pyside_dynamic import loadUi
 from kinect_to_points.kinect_lib import depth_to_depthimage
 
@@ -28,8 +28,8 @@ class LeaderboardWidget(QListWidget):
         self.clear()
 
         for i, sim in enumerate(simulations):
-            rgb_image = frame_to_qimage(sim['rgb_frame'])
-            depth_image = frame_to_qimage(sim['depth_frame'])
+            rgb_image = sim['rgb_frame']
+            depth_image = sim['depth_frame']
 
             widget = QWidget()
             loadUi(

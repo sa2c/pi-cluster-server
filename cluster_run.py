@@ -10,6 +10,24 @@ nmeasurements = 20
 cluster = Connection(cluster_address)
 
 
+def run_directory(index):
+    directory = 'outbox/run{index}'.format(index)
+
+    while not os.path.exists(directory):
+        try:
+            os.makedirs(directory)
+        except OSError as e:
+            print(f'directory creation failed: {directory}')
+
+    return directory
+
+
+def run_filepath(index, filename):
+    directory = run_directory(index)
+    path = os.path.join(directory, filename)
+    return path
+
+
 def get_cfd_output(index):
     ''' Get the current stdout of the ongoing run
         or the previous run.
@@ -46,7 +64,7 @@ def write_outline(filename, outline):
 
 def queue_run(contour, index):
     # save contour to file and copy to the cluster inbox
-    filename = "contour.dat"
+    filename = run_filepath(index,"contour.dat")
     write_outline(filename, contour)
 
     # copy the contour
@@ -64,6 +82,7 @@ class RunCompleteWatcher(QFileSystemWatcher):
         communicates them through a signal
     '''
 
+    started = Signal(int)
     completed = Signal(int)
 
     def __init__(self, parent=None):
@@ -75,18 +94,20 @@ class RunCompleteWatcher(QFileSystemWatcher):
         self.directoryChanged.connect(self.run_complete)
 
     def run_complete(self, path):
-        print(path)
         runs = set(os.listdir(path))
 
         new_runs = runs - self.existing_runs
 
         for run in new_runs:
+            run, signal = run.split('_')
             index = run.replace("run", '')
             index = int(index)
-            print("Run {} is complete!".format(index))
+            print("{} signal for run {}!".format(signal, index))
             self.existing_runs.add(run)
-            self.completed.emit(index)
-
+            if signal == "start":
+                self.started.emit(index)
+            elif signal == "end":
+                self.completed.emit(index)
 
 
 def test_submit():
@@ -103,8 +124,3 @@ def test_app():
     label.show()
     rcw = RunCompleteWatcher()
     sys.exit(app.exec_())
-
-
-#test_submit()
-#test_app()
-
