@@ -10,6 +10,16 @@ nmeasurements = 20
 cluster = Connection(cluster_address)
 
 
+def run_directory(index):
+    return 'outbox/run{index}'.format(index)
+
+
+def run_filepath(index, filename):
+    directory = run_directory(index)
+    path = os.join.path(directory, filename)
+    return path
+
+
 def get_cfd_output(index):
     ''' Get the current stdout of the ongoing run
         or the previous run.
@@ -46,7 +56,7 @@ def write_outline(filename, outline):
 
 def queue_run(contour, index):
     # save contour to file and copy to the cluster inbox
-    filename = "contour.dat"
+    filename = run_filepath("contour.dat")
     write_outline(filename, contour)
 
     # copy the contour
