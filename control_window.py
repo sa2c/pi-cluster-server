@@ -113,7 +113,8 @@ class ControlWindow(QMainWindow):
         self.ui.view_selector.set_to_viewfinder()
         if self.viewfinder.ui.main_video.dynamic_update:
             # Show capture
-            rgb_frame, depthimage = self.__get_static_images()
+            rgb_frame, depthimage = self.__get_static_images(
+                contour_on_rgb=False)
 
             # set images
             self.viewfinder.ui.main_video.setStaticImage(rgb_frame)
@@ -145,7 +146,7 @@ class ControlWindow(QMainWindow):
 
         self.ui.captured_depth.setImage(depthimage)
 
-    def __get_static_images(self):
+    def __get_static_images(self, contour_on_rgb=True)
         rgb_frame = np.copy(self.capture_rgb_frame)
         # set rgb image visible
         clean_depth = remove_background(self.capture_depth, self.background)
@@ -159,8 +160,10 @@ class ControlWindow(QMainWindow):
 
         # add contour to images
         cv2.drawContours(depthimage, [self.outline], -1, (0, 0, 255), 2)
-        cv2.drawContours(rgb_frame, [self.transformed_outline], -1,
-                         (0, 0, 255), 2)
+
+        if contour_on_rgb:
+            cv2.drawContours(rgb_frame, [self.transformed_outline], -1,
+                             (0, 0, 255), 2)
 
         # Remember the contour for submission of the run
         self.contour = self.transformed_outline
