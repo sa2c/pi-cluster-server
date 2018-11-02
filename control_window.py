@@ -183,7 +183,7 @@ class ControlWindow(QMainWindow):
 
         save_simulation(simulation)
 
-        self.viewfinder.queue_simulation()
+        self.viewfinder.queue_simulation(index, self.current_name)
         queue_run(self.contour, index)
 
         self.viewfinder.queue_simulation(index, self.current_name)
