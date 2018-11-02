@@ -24,6 +24,7 @@ class DetailForm(QDialog):
         self.callback = parent.name_changed_action
 
         self.name.textChanged.connect(self.change_details)
+        self.email.textChanged.connect(self.change_details)
 
     def change_details(self):
         self.callback(self.name.text(), self.email.text())

@@ -224,6 +224,7 @@ class ControlWindow(QMainWindow):
         self.current_name = name
         self.current_email = email
         self.viewfinder.ui.name.setText(f'Name: {name}')
+        self.viewfinder.ui.email.setText(f'e-mail (optional): {email}')
 
     def keyPressEvent(self, event):
 
