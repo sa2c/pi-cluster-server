@@ -13,7 +13,7 @@ from detail_form import DetailForm
 from leaderboard import LeaderboardWidget
 from queue_run import queue_run
 from viewfinder import ViewfinderDialog
-from cluster_run import queue_run, RunCompleteWatcher
+from cluster_run import queue_run, RunCompleteWatcher, run_filepath
 from color_calibration import ColorCalibration
 
 nmeasurements = 20
@@ -60,6 +60,7 @@ class ControlWindow(QMainWindow):
 
         # create file system watcher
         self.run_watcher = RunCompleteWatcher(self)
+        self.run_watcher.started.connect(self.run_started)
         self.run_watcher.completed.connect(self.run_completed)
 
         self.reset_action()
@@ -76,6 +77,12 @@ class ControlWindow(QMainWindow):
         print(f'finished {index}')
         self.viewfinder.finish_simulation(index)
         self.leaderboard.update(self.best_simulations())
+
+
+    def run_started(self, index, slot):
+        print(f'started {index}')
+        self.viewfinder.start_simulation(index, slot)
+        
 
     def best_simulations(self):
         # returns all simulations for now
@@ -173,7 +180,7 @@ class ControlWindow(QMainWindow):
             'depthimage': depthimage,
             'contour': self.contour
         }
-        np.save(simulation, run_filepath('simulation.npy'))
+        np.save(run_filepath(index, 'simulation.npy'), simulation)
 
         queue_run(self.contour, index)
 

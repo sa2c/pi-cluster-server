@@ -11,7 +11,7 @@ cluster = Connection(cluster_address)
 
 
 def run_directory(index):
-    directory = 'outbox/run{index}'.format(index)
+    directory = 'outbox/run{index}'
 
     while not os.path.exists(directory):
         try:
@@ -82,7 +82,7 @@ class RunCompleteWatcher(QFileSystemWatcher):
         communicates them through a signal
     '''
 
-    started = Signal(int)
+    started = Signal(int, int)
     completed = Signal(int)
 
     def __init__(self, parent=None):
@@ -99,13 +99,13 @@ class RunCompleteWatcher(QFileSystemWatcher):
         new_runs = runs - self.existing_runs
 
         for run in new_runs:
-            run, signal = run.split('_')
+            run, signal, slot = run.split('_')
             index = run.replace("run", '')
             index = int(index)
             print("{} signal for run {}!".format(signal, index))
             self.existing_runs.add(run)
             if signal == "start":
-                self.started.emit(index)
+                self.started.emit(index, slot)
             elif signal == "end":
                 self.completed.emit(index)
 

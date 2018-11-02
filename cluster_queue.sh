@@ -8,9 +8,11 @@ UI_OUTPUTDIR=picluster/
 WORKDIR=$(pwd)
 
 if [ "$#" -ne 1 ]; then
-    echo "Pass the hostfile name as the first parameter"
+    echo "Pass the slot name as the first parameter"
 fi
-hostfile=$1
+
+slot=$1
+hostfile=hostfile$slot
 
 mkdir -p send_signal
 
@@ -31,8 +33,8 @@ do
 		if rm signal/$file
 		then
 			# Push the start simulation signal
-			touch send_signal/${file}_start
-			scp send_signal/${file}_start ${UI_ADDRESS}:${UI_OUTPUTDIR}signal/
+			touch send_signal/${file}_start_$slot
+			scp send_signal/${file}_start_$slot ${UI_ADDRESS}:${UI_OUTPUTDIR}signal/
 
 			# Create output directory
 			mkdir -p outbox/${file}
@@ -50,8 +52,8 @@ do
 			rsync -r outbox/${file} ${UI_ADDRESS}:${UI_OUTPUTDIR}/outbox/
 
 			# Send an empty signal file to the UI machine
-			touch send_signal/${file}_end
-			scp send_signal/${file}_end ${UI_ADDRESS}:${UI_OUTPUTDIR}signal/
+			touch send_signal/${file}_end_$slot
+			scp send_signal/${file}_end_$slot ${UI_ADDRESS}:${UI_OUTPUTDIR}signal/
 		fi
 	done
 done
