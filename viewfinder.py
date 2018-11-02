@@ -125,8 +125,9 @@ class ViewfinderDialog(QDialog):
     def update_progress(self):
         print('checking progress')
         for index in self.indices_in_slots:
-            percent = get_run_completion_percentage(index)
-            self.set_progress(index, percent)
+            if index is not None:
+                percent = get_run_completion_percentage(index)
+                self.set_progress(index, percent)
 
 
 def main():
