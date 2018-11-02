@@ -190,8 +190,6 @@ class ControlWindow(QMainWindow):
         self.viewfinder.queue_simulation(index, self.current_name)
         queue_run(self.contour, simulation['index'])
 
-        self.viewfinder.queue_simulation(index, self.current_name)
-
     def get_epoch(self):
         now = datetime.datetime.utcnow()
         timestamp = calendar.timegm(now.utctimetuple())
