@@ -2,6 +2,7 @@ from PySide2.QtCore import *
 import numpy as np
 from fabric import Connection
 import os
+import pickle
 
 cluster_address = "pi@10.0.0.253"
 cluster_path = "Documents/picluster"
@@ -18,10 +19,11 @@ def all_available_indices_and_names():
         if 'run' in file:
             try:
                 index = int(file.replace('run', ''))
-                name = str(np.load(run_filepath(index, 'name.npy')))
+                name = load_simulation_name(index)
                 simulations.append([index, name])
-            except:
+            except Exception as e:
                 print(f'failed to load file: {file}')
+                print(str(e))
 
     return simulations
 
@@ -137,3 +139,33 @@ def test_app():
     label.show()
     rcw = RunCompleteWatcher()
     sys.exit(app.exec_())
+
+
+def save_simulation(simulation):
+
+    name = simulation['name']
+    index = simulation['index']
+
+    # save name
+    with open(run_filepath(index, 'name.npy'), 'wb') as file:
+        pickle.dump(name, file, protocol=pickle.HIGHEST_PROTOCOL)
+
+    # save simulation
+    with open(run_filepath(index, 'simulation.npy'), 'wb') as file:
+        pickle.dump(simulation, file, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+def load_simulation_name(index):
+    # save simulation
+    with open(run_filepath(index, 'name.npy'), 'rb') as file:
+        return pickle.load(file)
+
+
+def load_simulation(index):
+    # save simulation
+    with open(run_filepath(index, 'simulation.npy'), 'rb') as file:
+        return pickle.load(file)
+
+
+if __name__ == '__main__':
+    all_available_indices_and_names()
