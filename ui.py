@@ -21,7 +21,7 @@ while not os.path.exists(directory):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-
+    #app.setStyle(QStyleFactory.create("Fusion"))
     # initialise another thread for video capture
     th = VideoCaptureThread()
 
