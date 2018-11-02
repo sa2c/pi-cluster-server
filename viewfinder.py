@@ -9,7 +9,7 @@ from pyside_dynamic import loadUiWidget
 from activity_monitor import ActivityPlotter
 from matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
-from cluster_run import get_run_completion_percentage
+from cluster_run import get_run_completion_percentage, run_filepath
 
 SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
@@ -66,8 +66,8 @@ class ViewfinderDialog(QDialog):
 
         if not self.currently_shown_simulation is None:
             image = self.currently_shown_simulation['rgb']
-            vtk_file = run_directory(self.currently_shown_simulation['index'],
-                                     f'elmeroutput{self.image_index:04}.vtk')
+            vtk_file = run_filepath(self.currently_shown_simulation['index'],
+                                    f'elmeroutput{self.image_index:04}.vtk')
 
             if self.image_index > 0:
                 vtk_to_plot(self.ui.left_view, vtk_file, 1, False, True, False,

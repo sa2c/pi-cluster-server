@@ -13,8 +13,9 @@ from detail_form import DetailForm
 from leaderboard import LeaderboardWidget
 from queue_run import queue_run
 from viewfinder import ViewfinderDialog
-from cluster_run import queue_run, RunCompleteWatcher, run_filepath
+from cluster_run import queue_run, RunCompleteWatcher, run_filepath, save_simulation
 from color_calibration import ColorCalibration
+from simulation_selector import SimulationSelector
 
 nmeasurements = 20
 
@@ -31,7 +32,8 @@ class ControlWindow(QMainWindow):
         self.contour = np.array([[]])
 
         self.ui = loadUiWidget(
-            'designer/control_panel.ui', customWidgets=[QVideoWidget])
+            'designer/control_panel.ui',
+            customWidgets=[QVideoWidget, SimulationSelector])
         self.setCentralWidget(self.ui)
 
         # instance variables
@@ -42,7 +44,6 @@ class ControlWindow(QMainWindow):
         self.ui.details_button.released.connect(self.fill_in_details_action)
         self.ui.calibrate_button.released.connect(self.calibrate)
         self.ui.show_button.released.connect(self.show_capture_action)
-        self.ui.toggle_view_button.released.connect(self.toggle_views)
         self.ui.color_calibrate_button.released.connect(
             self.calibrate_color_action)
 
@@ -53,6 +54,12 @@ class ControlWindow(QMainWindow):
         # create viewfinder
         self.viewfinder = ViewfinderDialog()
         self.viewfinder.show()
+
+        # connect view selector
+        self.ui.view_selector.simulation_view_changed.connect(
+            self.viewfinder.switch_to_simulation_view)
+        self.ui.view_selector.viewfinder_view_selected.connect(
+            self.viewfinder.switch_to_viewfinder)
 
         # create color calibration window
         self.calibration_window = ColorCalibration()
@@ -65,31 +72,23 @@ class ControlWindow(QMainWindow):
 
         self.reset_action()
 
-    def toggle_views(self):
-        if self.viewfinder.ui.leftStack.currentIndex() == 1:
-            self.viewfinder.switch_to_viewfinder()
-            self.ui.toggle_view_button.setText('Simulation &View')
-        else:
-            self.viewfinder.switch_to_simulation_view()
-            self.ui.toggle_view_button.setText('&Viewfinder')
-
     def run_completed(self, index):
         print(f'finished {index}')
         self.viewfinder.finish_simulation(index)
         self.leaderboard.update(self.best_simulations())
 
-
     def run_started(self, index, slot):
         print(f'started {index}')
         self.viewfinder.start_simulation(index, slot)
-        
 
     def best_simulations(self):
         # returns all simulations for now
         return {}
 
     def show_capture_action(self):
+        self.ui.view_selector.set_to_viewfinder()
         if self.viewfinder.ui.main_video.dynamic_update:
+            # Show capture
             rgb_frame, depthimage = self.__get_static_images()
 
             # set images
@@ -177,10 +176,11 @@ class ControlWindow(QMainWindow):
             'name': self.current_name,
             'email': self.current_email,
             'rgb': rgb_frame,
-            'depthimage': depthimage,
+            'depth': self.capture_depth,
             'contour': self.contour
         }
-        np.save(run_filepath(index, 'simulation.npy'), simulation)
+
+        save_simulation(simulation)
 
         self.viewfinder.queue_simulation()
         queue_run(self.contour, index)
