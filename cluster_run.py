@@ -99,11 +99,11 @@ class RunCompleteWatcher(QFileSystemWatcher):
         new_runs = runs - self.existing_runs
 
         for run in new_runs:
+            self.existing_runs.add(run)
             run, signal, slot = run.split('_')
             index = run.replace("run", '')
             index = int(index)
-            print("{} signal for run {}!".format(signal, index))
-            self.existing_runs.add(run)
+            print("{} signal for run {} in slot {}!".format(signal, index, slot))
             if signal == "start":
                 self.started.emit(index, slot)
             elif signal == "end":
