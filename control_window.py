@@ -17,6 +17,7 @@ from cluster_run import queue_run, RunCompleteWatcher, run_filepath, save_simula
 from color_calibration import ColorCalibration
 from simulation_selector import SimulationSelector
 from cfd.computedrag import compute_drag_for_simulation
+import PDFGenerator
 
 nmeasurements = 20
 

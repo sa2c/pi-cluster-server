@@ -25,7 +25,7 @@ def load_drag():
 
 
 def save_drag(drag):
-    np.save(drag)
+    np.save(drag_file(),drag)
 
 
 def all_available_indices_and_names():
@@ -129,6 +129,7 @@ class RunCompleteWatcher(QFileSystemWatcher):
         for run in new_runs:
             self.existing_runs.add(run)
             run, signal, slot = run.split('_')
+            slot = int(slot)
             index = run.replace("run", '')
             index = int(index)
 

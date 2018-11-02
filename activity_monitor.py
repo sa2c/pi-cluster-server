@@ -8,7 +8,7 @@ from fabric import Connection
 import time
 
 already_set_up = False
-cluster_address = "pi@137.44.2.181"
+cluster_address = "pi@10.0.0.253"
 
 def setup(frontend):
     ''' Copies cpuloadinfo.sh to the cluster'''
