@@ -90,28 +90,28 @@
       <item>
        <widget class="QPushButton" name="details_button">
         <property name="text">
-         <string>Details...</string>
+         <string>&amp;Details...</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="capture_button">
         <property name="text">
-         <string>Capture</string>
+         <string>&amp;Capture</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="show_button">
         <property name="text">
-         <string>Show Capture</string>
+         <string>&amp;Show Capture</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="process_button">
         <property name="text">
-         <string>Run...</string>
+         <string>&amp;Go...</string>
         </property>
        </widget>
       </item>

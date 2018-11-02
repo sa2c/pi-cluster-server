@@ -234,3 +234,13 @@ class ControlWindow(QMainWindow):
             self.scale[1] -= 0.05
             self.process_image()
             event.accept()
+        elif event.text() == 'd':
+            # show details
+            self.fill_in_details_action()
+        elif event.text() == 'c':
+            self.capture_action()
+        elif event.text() == 's' or event.text() == 'r':
+            # Show or resume
+            self.show_capture_action()
+        elif event.text() == 'g':
+            self.run_cfd_action()
