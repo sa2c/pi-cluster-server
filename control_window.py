@@ -13,7 +13,7 @@ from detail_form import DetailForm
 from leaderboard import LeaderboardWidget
 from queue_run import queue_run
 from viewfinder import ViewfinderDialog
-from cluster_run import queue_run, RunCompleteWatcher, run_filepath, save_simulation
+from cluster_run import queue_run, RunCompleteWatcher, run_filepath, save_simulation, load_drag, save_drag
 from color_calibration import ColorCalibration
 from simulation_selector import SimulationSelector
 from cfd.computedrag import compute_drag_for_simulation
@@ -93,8 +93,17 @@ class ControlWindow(QMainWindow):
         
 
     def best_simulations(self):
-        # returns all simulations for now
-        return {}
+        nsims = 10
+        drag = np.array(self.drag)
+        drag_sorted_indices = np.argsort(drag[:, 1])
+        drag_sorted_indices.reverse()
+        best_indices = drag[drag_sorted_indices[0:nsims], :]
+
+        simulations = {}
+        for index in best_indices:
+            simulations[index] = load_simulation(index)
+
+        return simulations
 
     def show_capture_action(self):
         self.ui.view_selector.set_to_viewfinder()
