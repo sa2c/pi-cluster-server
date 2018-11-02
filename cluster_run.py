@@ -11,12 +11,15 @@ cluster = Connection(cluster_address)
 
 
 def run_directory(index):
-    return 'outbox/run{index}'.format(index)
+    directory = 'outbox/run{index}'.format(index=index)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    return directory
 
 
 def run_filepath(index, filename):
     directory = run_directory(index)
-    path = os.join.path(directory, filename)
+    path = os.path.join(directory, filename)
     return path
 
 
@@ -56,7 +59,7 @@ def write_outline(filename, outline):
 
 def queue_run(contour, index):
     # save contour to file and copy to the cluster inbox
-    filename = run_filepath("contour.dat")
+    filename = run_filepath(index,"contour.dat")
     write_outline(filename, contour)
 
     # copy the contour
