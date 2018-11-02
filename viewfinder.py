@@ -34,10 +34,8 @@ class ViewfinderDialog(QDialog):
         timer.timeout.connect(self.update_simulation_views)
         timer.start(5)
 
-        self.progress_slots = [
-            self.ui.slot1, self.ui.slot2, self.ui.slot3, self.ui.slot4
-        ]
-        self.indices_in_slots = [None, None, None, None]
+        self.progress_slots = [self.ui.slot1, self.ui.slot2, self.ui.slot3]
+        self.indices_in_slots = [None, None, None]
 
     def switch_stack(self, index):
         self.ui.leftStack.setCurrentIndex(index)
@@ -52,7 +50,9 @@ class ViewfinderDialog(QDialog):
     def switch_to_viewfinder(self):
         self.switch_stack(0)
 
-    def switch_to_simulation_view(self):
+    def switch_to_simulation_view(self, simulation):
+        self.currently_shown_simulation = simulation
+        self.update_simulation_views()
         self.switch_stack(1)
 
     def update_simulation_views(self):
@@ -91,7 +91,7 @@ class ViewfinderDialog(QDialog):
 
     def update_queue(self):
         text = 'Queue: ' + ', '.join([q[1] for q in self.run_queue])
-        self.queue.setText(text)
+        self.ui.queue.setText(text)
 
     def start_simulation(self, index_run, slot):
         # remove from queue
@@ -114,7 +114,7 @@ class ViewfinderDialog(QDialog):
         pbar = self.progress_slots[slot_number]
         pbar.setValue(0)
         self.indices_in_slots[slot_number] = None
-        pbar.setFormat(f'Slot {slot_number} : %p%')
+        pbar.setFormat('Idle')
 
     def start_progress_checking(self):
         # check for progress every 10 seconds

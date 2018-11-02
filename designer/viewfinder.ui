@@ -404,7 +404,7 @@
                   <number>0</number>
                  </property>
                  <property name="format">
-                  <string>Slot 1: %p%</string>
+                  <string>Idle</string>
                  </property>
                 </widget>
                </item>
@@ -414,7 +414,7 @@
                   <number>0</number>
                  </property>
                  <property name="format">
-                  <string>Slot 2: %p%</string>
+                  <string>Idle</string>
                  </property>
                 </widget>
                </item>
@@ -424,17 +424,7 @@
                   <number>0</number>
                  </property>
                  <property name="format">
-                  <string>Slot 3: %p%</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QProgressBar" name="slot4">
-                 <property name="value">
-                  <number>0</number>
-                 </property>
-                 <property name="format">
-                  <string>Slot 4 : %p%</string>
+                  <string>Idle</string>
                  </property>
                 </widget>
                </item>
