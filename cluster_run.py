@@ -89,7 +89,6 @@ class RunCompleteWatcher(QFileSystemWatcher):
         self.directoryChanged.connect(self.run_complete)
 
     def run_complete(self, path):
-        print(path)
         runs = set(os.listdir(path))
 
         new_runs = runs - self.existing_runs

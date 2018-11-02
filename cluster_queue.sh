@@ -7,6 +7,11 @@ UI_ADDRESS=kinectwrangler@10.0.0.252
 UI_OUTPUTDIR=picluster/
 WORKDIR=$(pwd)
 
+if [ "$#" -ne 1 ]; then
+    echo "Pass the hostfile name as the first parameter"
+fi
+hostfile=$1
+
 mkdir -p send_signal
 
 mkdir -p signal
@@ -34,7 +39,7 @@ do
 
 			# Copy the input file into cfd and run
 			cp inbox/$file cfd/${file}-outline-coords.dat
-			cd cfd && python runcfd.py $file 4 hostfile1 >> ../outbox/$file/output
+			cd cfd && python runcfd.py $file 4 $hostfile >> ../outbox/$file/output
 
 			# Move cfd image output to outbox
 			cd $WORKDIR
