@@ -98,7 +98,7 @@ class PDFGenerator(QRunnable):
         images = []
         for image_array in self.image_arrays:
             image_io = BytesIO()
-            Image.fromarray(uint8(image_array)).save(image_io, format='JPEG')
+            Image.fromarray(uint8(image_array)).save(image_io, format='PNG')
             image_io.seek(0)
             images.append(ImageReader(image_io))
 
