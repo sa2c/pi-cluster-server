@@ -16,6 +16,7 @@ from viewfinder import ViewfinderDialog
 from cluster_run import queue_run, RunCompleteWatcher, run_filepath, save_simulation
 from color_calibration import ColorCalibration
 from simulation_selector import SimulationSelector
+from cfd.computedrag import compute_drag_for_simulation
 
 nmeasurements = 20
 
@@ -25,6 +26,7 @@ class ControlWindow(QMainWindow):
         super().__init__(parent)
         self.offset = [0, 0]
         self.scale = [1.0, 1.0]
+        self.drag = load_drag()
 
         # set control window size
         self.resize(1920, 1080)
@@ -77,6 +79,10 @@ class ControlWindow(QMainWindow):
         print(f'finished {index}')
         self.viewfinder.finish_simulation(index)
         self.ui.view_selector.simulation_finished_action(index)
+
+        self.drag.append([index, compute_drag_for_simulation(index)])
+        save_drag(self.drag)
+
         self.leaderboard.update(self.best_simulations())
 
 

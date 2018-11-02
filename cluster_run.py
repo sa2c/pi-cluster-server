@@ -11,6 +11,23 @@ nmeasurements = 20
 cluster = Connection(cluster_address)
 
 
+def drag_file():
+    return 'drag_cache.npy'
+
+
+def load_drag():
+    try:
+        drag = np.load(drag_file())
+    except FileNotFoundError:
+        drag = []
+
+    return drag
+
+
+def save_drag(drag):
+    np.save(drag)
+
+
 def all_available_indices_and_names():
     dir = 'outbox'
     simulations = []
@@ -57,13 +74,10 @@ def get_run_completion_percentage(index):
         command = grep + get_last + get_time
 
         with cluster.cd(directory):
-            output = cluster.run(
-                command,
-                hide=True
-            ).stdout
-        
+            output = cluster.run(command, hide=True).stdout
+
         numbers = output.split('/')
-        percentage = int( 100*float(numbers[0]) / float(numbers[1]))
+        percentage = int(100 * float(numbers[0]) / float(numbers[1]))
     except:
         # Most likely file not found
         percentage = 0
@@ -117,8 +131,10 @@ class RunCompleteWatcher(QFileSystemWatcher):
             run, signal, slot = run.split('_')
             index = run.replace("run", '')
             index = int(index)
-            slot = int(slot)
-            print("{} signal for run {} in slot {}!".format(signal, index, slot))
+
+            print("{} signal for run {} in slot {}!".format(
+                signal, index, slot))
+
             if signal == "start":
                 self.started.emit((index, slot))
             elif signal == "end":
