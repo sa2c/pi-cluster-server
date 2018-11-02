@@ -76,7 +76,7 @@
       <item>
        <widget class="QPushButton" name="toggle_view_button">
         <property name="text">
-         <string>View...</string>
+         <string>&amp;View...</string>
         </property>
        </widget>
       </item>

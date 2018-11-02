@@ -72,10 +72,10 @@ class ControlWindow(QMainWindow):
     def toggle_views(self):
         if self.viewfinder.leftStack.currentIndex() == 1:
             self.viewfinder.switch_to_viewfinder()
-            self.ui.toggle_view_button.setText('Simulation View')
+            self.ui.toggle_view_button.setText('Simulation &View')
         else:
             self.viewfinder.switch_to_simulation_view()
-            self.ui.toggle_view_button.setText('Viewfinder')
+            self.ui.toggle_view_button.setText('&Viewfinder')
 
     def run_completed(self, index):
         print(f'finished {index}')
@@ -95,7 +95,7 @@ class ControlWindow(QMainWindow):
             self.viewfinder.depth_video.setStaticImage(depthimage)
 
             # change button text
-            self.ui.show_button.setText('Resume Video')
+            self.ui.show_button.setText('&Resume Video')
             self.ui.capture_button.setEnabled(False)
         else:
             # resume video feed
@@ -104,7 +104,7 @@ class ControlWindow(QMainWindow):
             self.ui.capture_button.setEnabled(True)
 
             # change button text
-            self.ui.show_button.setText('Show Capture')
+            self.ui.show_button.setText('&Show Capture')
 
     def capture_action(self):
         self.capture_depth = measure_depth()
@@ -244,3 +244,5 @@ class ControlWindow(QMainWindow):
             self.show_capture_action()
         elif event.text() == 'g':
             self.run_cfd_action()
+        elif event.text() == 'v':
+            self.toggle_views()
