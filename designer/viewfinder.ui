@@ -411,7 +411,7 @@
                   <number>0</number>
                  </property>
                  <property name="format">
-                  <string>Idle</string>
+                  <string/>
                  </property>
                 </widget>
                </item>
@@ -428,7 +428,7 @@
                   <number>0</number>
                  </property>
                  <property name="format">
-                  <string>Idle</string>
+                  <string/>
                  </property>
                 </widget>
                </item>
@@ -445,7 +445,7 @@
                   <number>0</number>
                  </property>
                  <property name="format">
-                  <string>Idle</string>
+                  <string/>
                  </property>
                 </widget>
                </item>
