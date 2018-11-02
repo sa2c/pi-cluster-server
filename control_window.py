@@ -4,7 +4,7 @@ from PySide2.QtWidgets import *
 
 import datetime
 import calendar
-from pyside_dynamic import loadUi
+from pyside_dynamic import loadUiWidget
 import cv2, sys, time, os
 import numpy as np
 from kinect_to_points.kinect_lib import *
@@ -30,11 +30,8 @@ class ControlWindow(QMainWindow):
 
         self.contour = np.array([[]])
 
-        self.ui = QWidget()
-        loadUi(
-            'designer/control_panel.ui',
-            self.ui,
-            customWidgets={'QVideoWidget': QVideoWidget})
+        self.ui = loadUiWidget(
+            'designer/control_panel.ui', customWidgets=[QVideoWidget])
         self.setCentralWidget(self.ui)
 
         # instance variables
@@ -167,7 +164,7 @@ class ControlWindow(QMainWindow):
         index = self.get_epoch()
 
         # save simulation details for later
-        rgb_frame, depthimage = self._get_static_images()
+        rgb_frame, depthimage = self.__get_static_images()
         simulation = {
             'index': index,
             'name': self.current_name,
