@@ -11,17 +11,6 @@ nmeasurements = 20
 cluster = Connection(cluster_address)
 
 
-def get_cfd_output(index):
-    ''' Get the current stdout of the ongoing run
-        or the previous run.
-    '''
-    directory = '{}/outbox/run{}'.format(cluster_path, index)
-    with cluster.cd(directory):
-        return cluster.run('cat output', hide=True).stdout
-
-
-
-
 
 def queue_run(contour, index):
     # save contour to file and copy to the cluster inbox

@@ -177,6 +177,16 @@
        <height>0</height>
       </size>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <item>
+      <property name="text">
+       <string>test</string>
+      </property>
+     </item>
     </widget>
    </item>
   </layout>

@@ -54,6 +54,7 @@ class ControlWindow(QMainWindow):
         # create viewfinder
         self.viewfinder = ViewfinderDialog()
         self.viewfinder.show()
+        self.viewfinder.start_progress_checking()
 
         # connect view selector
         self.ui.view_selector.simulation_view_changed.connect(
@@ -78,9 +79,12 @@ class ControlWindow(QMainWindow):
         self.ui.view_selector.simulation_finished_action(index)
         self.leaderboard.update(self.best_simulations())
 
-    def run_started(self, index, slot):
-        print(f'started {index}')
-        self.viewfinder.start_simulation(index, slot)
+
+    def run_started(self, signal):
+        index, slot = signal
+        print(f'started {index} in {slot}')
+        self.viewfinder.start_simulation(index, slot-1)
+        
 
     def best_simulations(self):
         # returns all simulations for now
@@ -184,9 +188,7 @@ class ControlWindow(QMainWindow):
         save_simulation(simulation)
 
         self.viewfinder.queue_simulation(index, self.current_name)
-        queue_run(self.contour, index)
-
-        self.viewfinder.queue_simulation(index, self.current_name)
+        queue_run(self.contour, simulation['index'])
 
     def get_epoch(self):
         now = datetime.datetime.utcnow()

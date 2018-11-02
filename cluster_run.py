@@ -46,30 +46,26 @@ def run_filepath(index, filename):
     return path
 
 
-def get_cfd_output(index):
-    ''' Get the current stdout of the ongoing run
-        or the previous run.
-    '''
-    directory = '{}/outbox/run{}'.format(cluster_path, index)
-    with cluster.cd(directory):
-        return cluster.run('cat output', hide=True).stdout
-
-
 def get_run_completion_percentage(index):
     ''' Read the completion percentage of the run
     '''
-    output = get_cfd_output(index)
-
-    found = False
     try:
-        for line in output.split("\n"):
-            if "MAIN:  Time:" in line:
-                timestring = line.split(' ')[3]
-            numbers = timestring.split('/')
-            percentage = float(numbers[0]) / float(numbers[1])
-        else:
-            percentage = 0
+        directory = '{}/outbox/run{}'.format(cluster_path, index)
+        grep = "grep 'MAIN:  Time:' output"
+        get_last = " | tail -n 1"
+        get_time = " | awk '{print $3}'"
+        command = grep + get_last + get_time
+
+        with cluster.cd(directory):
+            output = cluster.run(
+                command,
+                hide=True
+            ).stdout
+        
+        numbers = output.split('/')
+        percentage = int( 100*float(numbers[0]) / float(numbers[1]))
     except:
+        # Most likely file not found
         percentage = 0
     return percentage
 
@@ -100,7 +96,7 @@ class RunCompleteWatcher(QFileSystemWatcher):
         communicates them through a signal
     '''
 
-    started = Signal(int, int)
+    started = Signal(object)
     completed = Signal(int)
 
     def __init__(self, parent=None):
@@ -121,9 +117,10 @@ class RunCompleteWatcher(QFileSystemWatcher):
             run, signal, slot = run.split('_')
             index = run.replace("run", '')
             index = int(index)
+            slot = int(slot)
             print("{} signal for run {} in slot {}!".format(signal, index, slot))
             if signal == "start":
-                self.started.emit(index, slot)
+                self.started.emit((index, slot))
             elif signal == "end":
                 self.completed.emit(index)
 

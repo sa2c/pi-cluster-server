@@ -56,5 +56,6 @@ do
 			scp send_signal/${file}_end_$slot ${UI_ADDRESS}:${UI_OUTPUTDIR}signal/
 		fi
 	done
+	sleep 1
 done
 
