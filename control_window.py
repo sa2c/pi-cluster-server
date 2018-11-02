@@ -24,6 +24,7 @@ nmeasurements = 20
 class ControlWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.thread_pool = QThreadPool.globalInstance()
         self.offset = [0, 0]
         self.scale = [1.0, 1.0]
         self.drag = load_drag()
@@ -83,14 +84,16 @@ class ControlWindow(QMainWindow):
         self.drag.append([index, compute_drag_for_simulation(index)])
         save_drag(self.drag)
 
-        self.leaderboard.update(self.best_simulations())
+        generator = PDFGenerator('test_pil.pdf', image1, image2, image3,
+                                 image4, 'Test user with PIL', 69)
+        self.thread_pool.start(generator)
 
+        self.leaderboard.update(self.best_simulations())
 
     def run_started(self, signal):
         index, slot = signal
         print(f'started {index} in {slot}')
-        self.viewfinder.start_simulation(index, slot-1)
-        
+        self.viewfinder.start_simulation(index, slot - 1)
 
     def best_simulations(self):
         nsims = 10
