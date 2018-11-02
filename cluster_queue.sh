@@ -42,7 +42,7 @@ do
 			mv cfd/${file}/mesh/*.vtk outbox/${file}/
 			
 			# Copy to the UI node
-			rsync -r outbox/${file} ${UI_ADDRESS}:${UI_OUTPUTDIR}/outbox/${file}
+			rsync -r outbox/${file} ${UI_ADDRESS}:${UI_OUTPUTDIR}/outbox/
 
 			# Send an empty signal file to the UI machine
 			touch send_signal/${file}_end
