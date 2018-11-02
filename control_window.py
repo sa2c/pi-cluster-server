@@ -164,7 +164,7 @@ class ControlWindow(QMainWindow):
         index = self.get_epoch()
 
         # save simulation details for later
-        rgb_frame, depthimage = self._get_static_images()
+        rgb_frame, depthimage = self.__get_static_images()
         simulation = {
             'index': index,
             'name': self.current_name,
