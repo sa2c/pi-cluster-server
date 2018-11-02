@@ -12,6 +12,13 @@ import os
 
 from queue_run import local_path, queue_run
 
+directory = 'outbox/signal'
+while not os.path.exists(directory):
+    try:
+        os.makedirs(directory)
+    except OSError as e:
+        print(f'directory creation failed: {directory}')
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
