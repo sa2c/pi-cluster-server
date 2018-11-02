@@ -146,7 +146,7 @@ class ControlWindow(QMainWindow):
 
         self.ui.captured_depth.setImage(depthimage)
 
-    def __get_static_images(self, contour_on_rgb=True)
+    def __get_static_images(self, contour_on_rgb=True):
         rgb_frame = np.copy(self.capture_rgb_frame)
         # set rgb image visible
         clean_depth = remove_background(self.capture_depth, self.background)
