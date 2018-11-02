@@ -19,7 +19,7 @@ def build_document(output_filename,
     img_width = 136.417
     img_height = 102.313
     page.drawImage(
-        top_left, 6, 178.5,
+        top_left, 12, 178.5,
         width=img_width, height=img_height
     )
     page.drawImage(
@@ -27,7 +27,7 @@ def build_document(output_filename,
         width=img_width, height=img_height
     )
     page.drawImage(
-        bottom_left, 6, 60,
+        bottom_left, 12, 60,
         width=img_width, height=img_height
     )
     page.drawImage(
@@ -35,8 +35,8 @@ def build_document(output_filename,
         width=img_width, height=img_height
     )
 
-    scw_logo.drawOn(page, 297.076, 107.587)
-    erdf_logo.drawOn(page, 297.076, 7.184)
+    scw_logo.drawOn(page, 294, 107.587)
+    erdf_logo.drawOn(page, 294, 7.184)
 
     name = KeepInFrame(
         283,
@@ -45,7 +45,7 @@ def build_document(output_filename,
         mode='shrink'
     )
     name.wrapOn(page, 283, 46)
-    name.drawOn(page, 6, 9)
+    name.drawOn(page, 12, 9)
 
     drag_caption = KeepInFrame(
         127.559,
