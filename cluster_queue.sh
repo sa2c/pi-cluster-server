@@ -7,6 +7,8 @@ UI_ADDRESS=kinectwrangler@10.0.0.252
 UI_OUTPUTDIR=picluster/
 WORKDIR=$(pwd)
 
+mkdir -p send_signal
+
 mkdir -p signal
 mkdir -p inbox
 mkdir -p outbox
@@ -23,6 +25,10 @@ do
 		# running this job.
 		if rm signal/$file
 		then
+			# Push the start simulation signal
+			touch send_signal/${file}_start
+			scp send_signal/${file}_start ${UI_ADDRESS}:${UI_OUTPUTDIR}signal/
+
 			# Create output directory
 			mkdir -p outbox/${file}
 
@@ -39,10 +45,8 @@ do
 			rsync -r outbox/${file} ${UI_ADDRESS}:${UI_OUTPUTDIR}/outbox/${file}
 
 			# Send an empty signal file to the UI machine
-			rm inbox/$file
-			touch inbox/${file}
-			scp inbox/${file} ${UI_ADDRESS}:${UI_OUTPUTDIR}signal/
-			rm inbox/$file
+			touch send_signal/${file}_end
+			scp send_signal/${file}_end ${UI_ADDRESS}:${UI_OUTPUTDIR}signal/
 		fi
 	done
 done
