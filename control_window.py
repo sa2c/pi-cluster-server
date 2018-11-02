@@ -23,7 +23,7 @@ class ControlWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.offset = [0, 0]
-        self.scale = [0.95, 0.9]
+        self.scale = [1.0, 1.0]
 
         # set control window size
         self.resize(1920, 1080)
