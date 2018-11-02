@@ -393,6 +393,13 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_5">
                <item>
+                <widget class="QLabel" name="slot1_progress">
+                 <property name="text">
+                  <string>Slot 1: Idle</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QProgressBar" name="slot1">
                  <property name="maximumSize">
                   <size>
@@ -409,12 +416,26 @@
                 </widget>
                </item>
                <item>
+                <widget class="QLabel" name="slot2_progress">
+                 <property name="text">
+                  <string>Slot 2: Idle</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QProgressBar" name="slot2">
                  <property name="value">
                   <number>0</number>
                  </property>
                  <property name="format">
                   <string>Idle</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="slot3_progress">
+                 <property name="text">
+                  <string>Slot 3: Idle</string>
                  </property>
                 </widget>
                </item>
