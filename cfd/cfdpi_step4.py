@@ -38,6 +38,10 @@ def step4_run_cfd_simulation(project_name, hostfile, nprocs):
       os.system(cmd)
       cmd="mpirun --hostfile ../"+hostfile+" -np "+ str(nprocs) + " ElmerSolver_mpi"
       os.system(cmd)
+      time.sleep(2)
+      cmd="scp -r pi@10.0.0.12:Documents/picluster/cfd/"+project_name+"/* ./"
+      os.system(cmd)
+
 
     return
 ##################################################

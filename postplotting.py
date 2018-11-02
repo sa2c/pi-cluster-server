@@ -160,7 +160,7 @@ def plot(canvas,
     if dovector:
         norm = matplotlib.colors.Normalize()
         cm = matplotlib.cm.jet
-        speed = np.sqrt(velocity[:,0]**2 + velocity[:,1]**2)
+        speed = np.sqrt(velocity[:, 0]**2 + velocity[:, 1]**2)
         colors = cm(norm(speed))
         ax.quiver(
             coords[:, 0],
@@ -190,13 +190,8 @@ def plot(canvas,
     return np.array(fig.canvas.renderer._renderer)
 
 
-def vtk_to_plot(canvas, vtk_filename, nprocs, dotri,dovector,docontour,image_file,\
+def vtk_to_plot(canvas, vtk_filename, nprocs, dotri,dovector,docontour,image,\
         velocity_magn=None):
-
-    if image_file is not None:
-        image = plt.imread(image_file)
-    else:
-        image = None
 
     coords, elems, velocity = vtkfile_to_numpy(vtk_filename, nprocs)
     return plot(canvas, coords, elems, velocity, dotri, dovector, docontour,

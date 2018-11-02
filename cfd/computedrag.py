@@ -5,11 +5,21 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
+nprocs = 4
 
 
+def compute_drag_for_simulation(index):
+    final_vtk_file = run_filepath(index, f'elmeroutput10.vtk')
 
-def compute_drag_from_vtk(project_name, vtkfilename, nprocs):
-    global drag
+    fname_poly = glob.glob(run_filepath(index, '*.poly'))
+
+    if len(fname_poly) > 0:
+        return compute_drag_from_vtk(poly_file, final_vtk_file, nprocs)
+    else:
+        return 9999
+
+
+def compute_drag_from_vtk(fname_poly, vtkfilename, nprocs):
 
     # Open the file with read only permit
     vtkfile = open(vtkfilename, "r")
@@ -29,15 +39,15 @@ def compute_drag_from_vtk(project_name, vtkfilename, nprocs):
     numpoints = int(listtemp[1])
     #print "numpoints=", numpoints
     # Point coordinates
-    coords = np.zeros((numpoints,3), dtype=float)
+    coords = np.zeros((numpoints, 3), dtype=float)
     for ii in range(numpoints):
         line = vtkfile.readline()
         #print("Line {}: {}".format(ii, line.strip()))
         listtemp = " ".join(line.split())
         listtemp = listtemp.split(" ")
-        coords[ii,0] = float(listtemp[0])
-        coords[ii,1] = float(listtemp[1])
-        coords[ii,2] = float(listtemp[2])
+        coords[ii, 0] = float(listtemp[0])
+        coords[ii, 1] = float(listtemp[1])
+        coords[ii, 2] = float(listtemp[2])
 
     # Elements(Cells)
     line = vtkfile.readline()
@@ -56,7 +66,7 @@ def compute_drag_from_vtk(project_name, vtkfilename, nprocs):
     for ii in range(iii):
         line = vtkfile.readline()
 
-    if(nprocs > 1):
+    if (nprocs > 1):
         # CELL DATA - coloring
         line = vtkfile.readline()
         line = vtkfile.readline()
@@ -70,21 +80,19 @@ def compute_drag_from_vtk(project_name, vtkfilename, nprocs):
     line = vtkfile.readline()
 
     # Pressure
-    pressure = np.zeros((numpoints,1), dtype=float)
+    pressure = np.zeros((numpoints, 1), dtype=float)
     for ii in range(numpoints):
         line = vtkfile.readline()
         #print("Line {}: {}".format(ii, line.strip()))
         listtemp = " ".join(line.split())
         listtemp = listtemp.split(" ")
-        pressure[ii,0] = float(listtemp[0])
+        pressure[ii, 0] = float(listtemp[0])
 
     vtkfile.close()
 
     ##########
     ##
     # read the .poly file and get the points on the outline
-    fname_poly = "../" + project_name + ".poly"
-
     polyfile = open(fname_poly, "r")
 
     # read the first line and get the number of points on the outline
@@ -93,7 +101,7 @@ def compute_drag_from_vtk(project_name, vtkfilename, nprocs):
     listtemp = listtemp.split(" ")
     numpoints_outline = int(listtemp[0]) - 4
     #print "numpoints_outline", numpoints_outline
-    coords_outline = np.zeros((numpoints_outline,3), dtype=float)
+    coords_outline = np.zeros((numpoints_outline, 3), dtype=float)
 
     # read the next six lines
     line = polyfile.readline()
@@ -108,32 +116,35 @@ def compute_drag_from_vtk(project_name, vtkfilename, nprocs):
         #print("Line {}: {}".format(ii, line.strip()))
         listtemp = " ".join(line.split())
         listtemp = listtemp.split(" ")
-        coords_outline[ii,0] = float(listtemp[1])
-        coords_outline[ii,1] = float(listtemp[2])
+        coords_outline[ii, 0] = float(listtemp[1])
+        coords_outline[ii, 1] = float(listtemp[2])
 
     # Compute drag by summing pressure at all the nodes on the outline
     drag = 0.0
     for ii in range(numpoints_outline):
-        xx = coords_outline[ii,0]
-        yy = coords_outline[ii,0]
+        xx = coords_outline[ii, 0]
+        yy = coords_outline[ii, 0]
 
         for jj in range(numpoints):
-            if ( (abs(xx-coords[jj,0]) < 1.0e-6) and (abs(yy-coords[jj,0]) < 1.0e-6) ):
-                drag = drag + pressure[jj,0]
+            if ((abs(xx - coords[jj, 0]) < 1.0e-6)
+                    and (abs(yy - coords[jj, 0]) < 1.0e-6)):
+                drag = drag + pressure[jj, 0]
                 break
 
     polyfile.close()
 
+    return drag
 
-    return
+
 ######################################################
+
 
 # Compute drag from the pressure at the nodes on the outline
 #
 def compute_drag(project_name, nprocs, num_timesteps):
     #print("The dir is: %s", os.getcwd())
 
-    fname_temp="elmeroutput"
+    fname_temp = "elmeroutput"
     global drag
 
     filename_drag = project_name + "-drag.dat"
@@ -142,20 +153,20 @@ def compute_drag(project_name, nprocs, num_timesteps):
     dragfile.write("FileCount \t Dragforce \n")
 
     drag_list = np.zeros(num_timesteps, dtype=float)
-    count=0
+    count = 0
     for fnum in range(num_timesteps):
-        vtkfilename = fname_temp + str(fnum+1).zfill(4) + ".vtk"
+        vtkfilename = fname_temp + str(fnum + 1).zfill(4) + ".vtk"
         #print vtkfilename
-        if(os.path.isfile(vtkfilename) == True):
+        if (os.path.isfile(vtkfilename) == True):
             compute_drag_from_vtk(project_name, vtkfilename, nprocs)
             drag = -drag
             drag_list[fnum] = drag
             #print("FileCount=%04d \t Dragforce=%12.6f \n" % ((fnum+1), drag))
-            dragfile.write("%04d \t %12.6f \n" % ((fnum+1), drag))
-            count = count+1
+            dragfile.write("%04d \t %12.6f \n" % ((fnum + 1), drag))
+            count = count + 1
 
     plt.figure(1)
-    xval=np.linspace(2,count,count-1)
+    xval = np.linspace(2, count, count - 1)
     yval = drag_list[1:count]
     print xval
     print yval
@@ -165,12 +176,12 @@ def compute_drag(project_name, nprocs, num_timesteps):
     #plt.ylim(0,np.ceil(yval[min(5,count)]))
     plt.xlabel("Time step")
     plt.ylabel("Drag force")
-    outfile = project_name+"-dragforce.png"
+    outfile = project_name + "-dragforce.png"
     plt.savefig(outfile, dpi=200)
     plt.close()
 
-
     return
-##################################################
-##################################################
 
+
+##################################################
+##################################################

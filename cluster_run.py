@@ -2,6 +2,7 @@ from PySide2.QtCore import *
 import numpy as np
 from fabric import Connection
 import os
+import pickle
 
 cluster_address = "pi@10.0.0.253"
 cluster_path = "Documents/picluster"
@@ -10,8 +11,25 @@ nmeasurements = 20
 cluster = Connection(cluster_address)
 
 
+def all_available_indices_and_names():
+    dir = 'outbox'
+    simulations = []
+
+    for file in os.listdir(dir):
+        if 'run' in file:
+            try:
+                index = int(file.replace('run', ''))
+                name = load_simulation_name(index)
+                simulations.append([index, name])
+            except Exception as e:
+                print(f'failed to load file: {file}')
+                print(str(e))
+
+    return simulations
+
+
 def run_directory(index):
-    directory = 'outbox/run{index}'
+    directory = 'outbox/run{index}'.format(index=index)
 
     while not os.path.exists(directory):
         try:
@@ -64,7 +82,7 @@ def write_outline(filename, outline):
 
 def queue_run(contour, index):
     # save contour to file and copy to the cluster inbox
-    filename = run_filepath(index,"contour.dat")
+    filename = run_filepath(index, "contour.dat")
     write_outline(filename, contour)
 
     # copy the contour
@@ -99,11 +117,11 @@ class RunCompleteWatcher(QFileSystemWatcher):
         new_runs = runs - self.existing_runs
 
         for run in new_runs:
+            self.existing_runs.add(run)
             run, signal, slot = run.split('_')
             index = run.replace("run", '')
             index = int(index)
-            print("{} signal for run {}!".format(signal, index))
-            self.existing_runs.add(run)
+            print("{} signal for run {} in slot {}!".format(signal, index, slot))
             if signal == "start":
                 self.started.emit(index, slot)
             elif signal == "end":
@@ -124,3 +142,33 @@ def test_app():
     label.show()
     rcw = RunCompleteWatcher()
     sys.exit(app.exec_())
+
+
+def save_simulation(simulation):
+
+    name = simulation['name']
+    index = simulation['index']
+
+    # save name
+    with open(run_filepath(index, 'name.npy'), 'wb') as file:
+        pickle.dump(name, file, protocol=pickle.HIGHEST_PROTOCOL)
+
+    # save simulation
+    with open(run_filepath(index, 'simulation.npy'), 'wb') as file:
+        pickle.dump(simulation, file, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+def load_simulation_name(index):
+    # save simulation
+    with open(run_filepath(index, 'name.npy'), 'rb') as file:
+        return pickle.load(file)
+
+
+def load_simulation(index):
+    # save simulation
+    with open(run_filepath(index, 'simulation.npy'), 'rb') as file:
+        return pickle.load(file)
+
+
+if __name__ == '__main__':
+    all_available_indices_and_names()
