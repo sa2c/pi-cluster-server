@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1920</width>
+    <width>1922</width>
     <height>1200</height>
    </rect>
   </property>
@@ -20,6 +20,12 @@
    <string notr="true">background-color: white;</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="autoFillBackground">
     <bool>false</bool>
    </property>
@@ -44,6 +50,15 @@
     </property>
     <item>
      <widget class="QWidget" name="widget" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <property name="spacing">
         <number>0</number>
@@ -67,6 +82,12 @@
          </property>
          <item>
           <widget class="QFrame" name="frame">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
            </property>
@@ -91,10 +112,25 @@
             </property>
             <item row="0" column="1">
              <widget class="QStackedWidget" name="rightStack">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="page_5">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="styleSheet">
+                <string notr="true"/>
+               </property>
                <layout class="QHBoxLayout" name="horizontalLayout_3">
                 <property name="spacing">
                  <number>0</number>
@@ -114,16 +150,19 @@
                 <item>
                  <widget class="QVideoWidget" name="depth_video">
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
                   <property name="minimumSize">
                    <size>
-                    <width>960</width>
+                    <width>600</width>
                     <height>0</height>
                    </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true"/>
                   </property>
                   <property name="text">
                    <string>Depth Placeholder</string>
@@ -133,6 +172,12 @@
                </layout>
               </widget>
               <widget class="QWidget" name="page_6">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <layout class="QHBoxLayout" name="horizontalLayout">
                 <property name="spacing">
                  <number>0</number>
@@ -150,7 +195,14 @@
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="PlotCanvas" name="right_view" native="true"/>
+                 <widget class="PlotCanvas" name="right_view" native="true">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -158,10 +210,22 @@
             </item>
             <item row="0" column="0">
              <widget class="QStackedWidget" name="leftStack">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="page">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <layout class="QHBoxLayout" name="horizontalLayout_5">
                 <property name="spacing">
                  <number>0</number>
@@ -181,16 +245,19 @@
                 <item>
                  <widget class="QVideoWidget" name="main_video">
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
                   <property name="minimumSize">
                    <size>
-                    <width>960</width>
+                    <width>600</width>
                     <height>0</height>
                    </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true"/>
                   </property>
                   <property name="text">
                    <string>Video Placeholder</string>
@@ -203,6 +270,12 @@
                </layout>
               </widget>
               <widget class="QWidget" name="page_2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <layout class="QHBoxLayout" name="horizontalLayout_2">
                 <property name="spacing">
                  <number>0</number>
@@ -220,7 +293,14 @@
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="PlotCanvas" name="left_view" native="true"/>
+                 <widget class="PlotCanvas" name="left_view" native="true">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -240,12 +320,30 @@
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>100</height>
+             <height>300</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>300</height>
             </size>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
              <widget class="LeaderboardWidget" name="leaderboard">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>1000</width>
+                <height>0</height>
+               </size>
+              </property>
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
@@ -255,17 +353,32 @@
              </widget>
             </item>
             <item>
-             <widget class="PlotCanvas" name="activity_monitor" native="true">
+             <widget class="ActivityPlotter" name="activity_monitor" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="minimumSize">
                <size>
                 <width>400</width>
                 <height>200</height>
                </size>
               </property>
+              <property name="styleSheet">
+               <string notr="true">background-color:lightblue; border: 1px solid red;</string>
+              </property>
              </widget>
             </item>
             <item>
-             <widget class="QWidget" name="widget_4" native="true">
+             <widget class="QWidget" name="queue_widget" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="minimumSize">
                <size>
                 <width>400</width>
@@ -418,6 +531,12 @@
    <class>PlotCanvas</class>
    <extends>QWidget</extends>
    <header>plotcanvas.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ActivityPlotter</class>
+   <extends>QWidget</extends>
+   <header>activityplotter.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

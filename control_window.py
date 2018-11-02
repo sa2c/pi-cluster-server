@@ -70,7 +70,7 @@ class ControlWindow(QMainWindow):
         self.reset_action()
 
     def toggle_views(self):
-        if self.viewfinder.leftStack.currentIndex() == 1:
+        if self.viewfinder.ui.leftStack.currentIndex() == 1:
             self.viewfinder.switch_to_viewfinder()
             self.ui.toggle_view_button.setText('Simulation &View')
         else:
@@ -79,7 +79,7 @@ class ControlWindow(QMainWindow):
 
     def run_completed(self, index):
         print(f'finished {index}')
-        self.viewfinder.show_completed(index)
+        self.viewfinder.finish_simulation(index)
         self.leaderboard.update(self.best_simulations())
 
     def best_simulations(self):
@@ -87,20 +87,20 @@ class ControlWindow(QMainWindow):
         return self.simulations.values()
 
     def show_capture_action(self):
-        if self.viewfinder.main_video.dynamic_update:
+        if self.viewfinder.ui.main_video.dynamic_update:
             rgb_frame, depthimage = self.__get_static_images()
 
             # set images
-            self.viewfinder.main_video.setStaticImage(rgb_frame)
-            self.viewfinder.depth_video.setStaticImage(depthimage)
+            self.viewfinder.ui.main_video.setStaticImage(rgb_frame)
+            self.viewfinder.ui.depth_video.setStaticImage(depthimage)
 
             # change button text
             self.ui.show_button.setText('&Resume Video')
             self.ui.capture_button.setEnabled(False)
         else:
             # resume video feed
-            self.viewfinder.main_video.resumeDynamicUpdate()
-            self.viewfinder.depth_video.resumeDynamicUpdate()
+            self.viewfinder.ui.main_video.resumeDynamicUpdate()
+            self.viewfinder.ui.depth_video.resumeDynamicUpdate()
             self.ui.capture_button.setEnabled(True)
 
             # change button text
@@ -185,7 +185,7 @@ class ControlWindow(QMainWindow):
     def name_changed_action(self, name, email):
         self.current_name = name
         self.current_email = email
-        self.viewfinder.name.setText(f'Name: {name}')
+        self.viewfinder.ui.name.setText(f'Name: {name}')
 
     def keyPressEvent(self, event):
 

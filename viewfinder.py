@@ -5,7 +5,8 @@ import cv2, sys, time, os
 import numpy as np
 from leaderboard import LeaderboardWidget
 from video_capture import QVideoWidget
-from pyside_dynamic import loadUi
+from pyside_dynamic import loadUiWidget
+from activity_monitor import ActivityPlotter
 from matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
 from cluster_run import get_run_completion_percentage
@@ -16,14 +17,13 @@ SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 class ViewfinderDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        loadUi(
+        self.ui = loadUiWidget(
             os.path.join(SCRIPT_DIRECTORY, 'designer/viewfinder.ui'),
-            self,
-            customWidgets={
-                'QVideoWidget': QVideoWidget,
-                'LeaderboardWidget': LeaderboardWidget,
-                'PlotCanvas': PlotCanvas
-            })
+            customWidgets=[
+                QVideoWidget, LeaderboardWidget, ActivityPlotter, PlotCanvas
+            ])
+        self.setLayout(QVBoxLayout())
+        self.layout().addWidget(self.ui)
 
         self.image_index = 0
         self.run_queue = []
@@ -33,12 +33,14 @@ class ViewfinderDialog(QDialog):
         timer.timeout.connect(self.update_simulation_views)
         timer.start(5)
 
-        self.progress_slots = [self.slot1, self.slot2, self.slot3, self.slot4]
+        self.progress_slots = [
+            self.ui.slot1, self.ui.slot2, self.ui.slot3, self.ui.slot4
+        ]
         self.indices_in_slots = [None, None, None, None]
 
     def switch_stack(self, index):
-        self.leftStack.setCurrentIndex(index)
-        self.rightStack.setCurrentIndex(index)
+        self.ui.leftStack.setCurrentIndex(index)
+        self.ui.rightStack.setCurrentIndex(index)
 
     def set_current_simulation_index(self, index):
         self.current_simulation_index = index
@@ -54,19 +56,20 @@ class ViewfinderDialog(QDialog):
 
     def update_simulation_views(self):
         ntimesteps = 10
-        if self.leftStack.currentIndex() == 0:
+        if self.ui.leftStack.currentIndex() == 0:
             return
 
         vtk_file = f'outbox/testrun1/elmeroutput{self.image_index:04}.vtk'
         imagefile = 'outbox/testrun1/kinect/scf1-fullcolorimage.png'
 
-        self.left_view.figure.clear()
-        self.right_view.figure.clear()
+        self.ui.left_view.figure.clear()
+        self.ui.right_view.figure.clear()
 
         if self.image_index > 0:
-            vtk_to_plot(self.left_view, vtk_file, 1, False, True, False,
+            vtk_to_plot(self.ui.left_view, vtk_file, 1, False, True, False,
                         imagefile)
-            vtk_to_plot(self.right_view, vtk_file, 1, True, False, True, None)
+            vtk_to_plot(self.ui.right_view, vtk_file, 1, True, False, True,
+                        None)
 
         self.image_index = (self.image_index + 1) % (ntimesteps + 1)
 
