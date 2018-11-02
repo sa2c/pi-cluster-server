@@ -13,9 +13,10 @@ from detail_form import DetailForm
 from leaderboard import LeaderboardWidget
 from queue_run import queue_run
 from viewfinder import ViewfinderDialog
-from cluster_run import queue_run, RunCompleteWatcher, run_filepath, save_simulation
+from cluster_run import queue_run, RunCompleteWatcher, run_filepath, save_simulation, load_drag, save_drag
 from color_calibration import ColorCalibration
 from simulation_selector import SimulationSelector
+from cfd.computedrag import compute_drag_for_simulation
 
 nmeasurements = 20
 
@@ -23,8 +24,10 @@ nmeasurements = 20
 class ControlWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.thread_pool = QThreadPool.globalInstance()
         self.offset = [0, 0]
         self.scale = [1.0, 1.0]
+        self.drag = load_drag()
 
         # set control window size
         self.resize(1920, 1080)
@@ -77,18 +80,33 @@ class ControlWindow(QMainWindow):
         print(f'finished {index}')
         self.viewfinder.finish_simulation(index)
         self.ui.view_selector.simulation_finished_action(index)
-        self.leaderboard.update(self.best_simulations())
 
+        self.drag.append([index, compute_drag_for_simulation(index)])
+        save_drag(self.drag)
+
+        generator = PDFGenerator('test_pil.pdf', image1, image2, image3,
+                                 image4, 'Test user with PIL', 69)
+        self.thread_pool.start(generator)
+
+        self.leaderboard.update(self.best_simulations())
 
     def run_started(self, signal):
         index, slot = signal
         print(f'started {index} in {slot}')
-        self.viewfinder.start_simulation(index, slot-1)
-        
+        self.viewfinder.start_simulation(index, slot - 1)
 
     def best_simulations(self):
-        # returns all simulations for now
-        return {}
+        nsims = 10
+        drag = np.array(self.drag)
+        drag_sorted_indices = np.argsort(drag[:, 1])
+        drag_sorted_indices.reverse()
+        best_indices = drag[drag_sorted_indices[0:nsims], :]
+
+        simulations = {}
+        for index in best_indices:
+            simulations[index] = load_simulation(index)
+
+        return simulations
 
     def show_capture_action(self):
         self.ui.view_selector.set_to_viewfinder()
