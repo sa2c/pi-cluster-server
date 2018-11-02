@@ -6,11 +6,10 @@
 # All IPs of all compute nodes.
 NNODES=14
 NODES_REMOVE='' # ips to remove (just in case)
-NO_OF_MEAS=3
-INTERVAL=1.0 # seconds.tenths
-COLUMN=2 # userspace cpu load column in the output files
+INTERVAL=0.1 # seconds.tenths
+COLUMN=8 # idle cpu percentage column in the output files
 
-RESDIR=cpu_times
+RESDIR=cpu_load_data_dir
 mkdir -p $RESDIR
 out_ip_name(){
   echo $RESDIR/out_$1
@@ -34,17 +33,15 @@ done
 # collecting data
 for ip in ${IPs[*]}
 do
-    ssh $ip "top -n $NO_OF_MEAS -d $INTERVAL -b | grep '%Cpu'" > $(out_ip_name $ip) &
+    ssh $ip "top -n 2 -d $INTERVAL -b | grep '%Cpu'| tail -n 1" > $(out_ip_name $ip) &
 done 
 
 wait
 
 # computing averages
-echo '#ip cpu_usage' > cpu_usage
+echo '#ip cpu_usage' 
 for ip in ${IPs[*]}
 do
-	echo $ip $(awk '{a+=$'$COLUMN'}END{print a/NR}'  $(out_ip_name $ip)) >> cpu_usage
+	echo $ip $(awk '{a+=100.0-$'$COLUMN'}END{print a/NR}'  $(out_ip_name $ip)) 
 done
-
-cat cpu_usage
 
