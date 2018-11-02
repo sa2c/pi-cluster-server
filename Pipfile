@@ -15,6 +15,7 @@ matplotlib = "*"
 fabric = "*"
 pdfrw = "*"
 reportlab = "*"
+pillow = "*"
 
 [dev-packages]
 
