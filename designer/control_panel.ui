@@ -10,6 +10,12 @@
     <height>953</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -42,13 +48,6 @@
         <widget class="QPushButton" name="calibrate_button">
          <property name="text">
           <string>Calibrate</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="toggle_view_button">
-         <property name="text">
-          <string>&amp;View...</string>
          </property>
         </widget>
        </item>
@@ -165,7 +164,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QListWidget" name="listWidget">
+    <widget class="SimulationSelector" name="view_selector">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -178,11 +177,6 @@
        <height>0</height>
       </size>
      </property>
-     <item>
-      <property name="text">
-       <string>Viewfinder</string>
-      </property>
-     </item>
     </widget>
    </item>
   </layout>
@@ -192,6 +186,11 @@
    <class>QVideoWidget</class>
    <extends>QLabel</extends>
    <header>qvideowidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SimulationSelector</class>
+   <extends>QListWidget</extends>
+   <header>simulationselector.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
