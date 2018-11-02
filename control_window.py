@@ -182,6 +182,7 @@ class ControlWindow(QMainWindow):
         }
         np.save(run_filepath(index, 'simulation.npy'), simulation)
 
+        self.viewfinder.queue_simulation()
         queue_run(self.contour, index)
 
         self.viewfinder.queue_simulation(index, self.current_name)
