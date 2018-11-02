@@ -54,7 +54,7 @@ def build_document(output_filename,
         mode='shrink'
     )
     drag_caption.wrapOn(page, 127.559, 20.272)
-    drag_caption.drawOn(page, 297, 256.5)
+    drag_caption.drawOn(page, 294, 256.5)
 
     drag_figure = KeepInFrame(
         127.559,
@@ -63,7 +63,7 @@ def build_document(output_filename,
         mode='shrink'
     )
     drag_figure.wrapOn(page, 127.559, 50.551)
-    drag_figure.drawOn(page, 297, 210)
+    drag_figure.drawOn(page, 294, 210)
 
     page.showPage()
     page.save()
