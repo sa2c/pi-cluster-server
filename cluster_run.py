@@ -11,7 +11,7 @@ cluster = Connection(cluster_address)
 
 
 def run_directory(index):
-    directory = 'outbox/run{index}'.format(index)
+    directory = 'outbox/run{index}'
 
     while not os.path.exists(directory):
         try:
@@ -24,7 +24,7 @@ def run_directory(index):
 
 def run_filepath(index, filename):
     directory = run_directory(index)
-    path = os.join.path(directory, filename)
+    path = os.path.join(directory, filename)
     return path
 
 
@@ -64,7 +64,7 @@ def write_outline(filename, outline):
 
 def queue_run(contour, index):
     # save contour to file and copy to the cluster inbox
-    filename = run_filepath("contour.dat")
+    filename = run_filepath(index,"contour.dat")
     write_outline(filename, contour)
 
     # copy the contour
@@ -82,7 +82,7 @@ class RunCompleteWatcher(QFileSystemWatcher):
         communicates them through a signal
     '''
 
-    started = Signal(int)
+    started = Signal(int, int)
     completed = Signal(int)
 
     def __init__(self, parent=None):
@@ -94,19 +94,18 @@ class RunCompleteWatcher(QFileSystemWatcher):
         self.directoryChanged.connect(self.run_complete)
 
     def run_complete(self, path):
-        print(path)
         runs = set(os.listdir(path))
 
         new_runs = runs - self.existing_runs
 
         for run in new_runs:
-            run, signal = run.split('_')
+            run, signal, slot = run.split('_')
             index = run.replace("run", '')
             index = int(index)
             print("{} signal for run {}!".format(signal, index))
             self.existing_runs.add(run)
             if signal == "start":
-                self.started.emit(index)
+                self.started.emit(index, slot)
             elif signal == "end":
                 self.completed.emit(index)
 
