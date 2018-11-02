@@ -17,8 +17,6 @@ import matplotlib.pyplot as plt
 import random
 
 
-
-
 # gets the CPU usage information for one node
 def get_cpu_usage_node(cluster_address, timeperiod, cpu_usage):
 
