@@ -41,13 +41,13 @@ def build_document(output_filename,
     erdf_logo.drawOn(page, 290, 7.184)
 
     name = KeepInFrame(
-        283,
+        275,
         41.3,
         [Paragraph(name, styles["Normal"])],
         mode='shrink'
     )
-    name.wrapOn(page, 283, 46)
-    name.drawOn(page, 12, 9)
+    name.wrapOn(page, 275, 46)
+    name.drawOn(page, 20, 9)
 
     drag_caption = KeepInFrame(
         127.559,
