@@ -18,19 +18,19 @@ class QVideoWidget(QLabel):
         x = self.width()
         y = self.height()
 
-        iy,ix,_ = image.shape
+        iy, ix, _ = image.shape
 
         # fit to frame keeping aspect ratio
         r = ix / iy
-        if x > r*y:
-            x = int(r*y)
+        if x > r * y:
+            x = int(r * y)
         else:
-            y = int(x/r)
-        
+            y = int(x / r)
+
         resized = cv2.resize(image, (x, y))
 
         # Encode
-        _, buf = cv2.imencode('.ppm',resized)
+        _, buf = cv2.imencode('.ppm', resized)
 
         # Convert to QPixmap
         pixmap = QPixmap()
@@ -41,7 +41,7 @@ class QVideoWidget(QLabel):
         self.dynamic_update = False
         self._set_image(image)
 
-    def resumeDynamicUpdate():
+    def resumeDynamicUpdate(self):
         self.dynamic_update = True
 
 
@@ -74,9 +74,3 @@ class VideoCaptureThread(QThread):
 
         # Emit video frame
         self.changeDepthPixmap.emit(depthimage)
-
-
-def frame_to_qimage(frame):
-    # Convert frame to QImage
-    rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    return rgbImage

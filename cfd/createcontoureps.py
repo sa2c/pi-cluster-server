@@ -42,7 +42,7 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
     listtemp = " ".join(line.split())
     listtemp = listtemp.split(" ")
     numcells = int(listtemp[1])
-    print("numcells=", numcells)
+
     # Elements connectivity
     elems = np.zeros((numcells,3), dtype=int)
     for ii in range(numcells):

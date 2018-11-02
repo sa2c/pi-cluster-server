@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1357</width>
+    <width>1215</width>
     <height>963</height>
    </rect>
   </property>
@@ -23,33 +23,36 @@
       </sizepolicy>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="1">
+      <item row="2" column="1">
        <widget class="QVideoWidget" name="video_rgb">
         <property name="text">
          <string>Video RGB</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
+      <item row="4" column="1">
        <widget class="QVideoWidget" name="captured_rgb">
         <property name="text">
          <string>Video RGB Captured</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
+      <item row="4" column="0">
        <widget class="QVideoWidget" name="captured_depth">
         <property name="text">
          <string>Video Depth Captured</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="2" column="0">
        <widget class="QVideoWidget" name="video_depth">
         <property name="text">
          <string>Video Depth</string>
         </property>
        </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QWidget" name="widget" native="true"/>
       </item>
      </layout>
     </widget>
@@ -71,6 +74,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="toggle_view_button">
+        <property name="text">
+         <string>&amp;View...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="color_calibrate_button">
         <property name="text">
          <string>Colour</string>
@@ -80,28 +90,28 @@
       <item>
        <widget class="QPushButton" name="details_button">
         <property name="text">
-         <string>Details...</string>
+         <string>&amp;Details...</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="capture_button">
         <property name="text">
-         <string>Capture</string>
+         <string>&amp;Capture</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="show_button">
         <property name="text">
-         <string>Show</string>
+         <string>&amp;Show Capture</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="process_button">
         <property name="text">
-         <string>Run...</string>
+         <string>&amp;Go...</string>
         </property>
        </widget>
       </item>

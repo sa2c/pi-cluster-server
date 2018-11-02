@@ -12,9 +12,6 @@ import os
 
 from queue_run import local_path, queue_run
 
-
-
-
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
@@ -24,13 +21,13 @@ if __name__ == '__main__':
     simulations = {}
 
     window = ControlWindow()
-    window.viewfinder.leaderboard.update(simulations.values())
+    window.viewfinder.ui.leaderboard.update(simulations.values())
 
     th.changeFramePixmap.connect(window.ui.video_rgb.setImage)
     th.changeDepthPixmap.connect(window.ui.video_depth.setImage)
 
-    th.changeFramePixmap.connect(window.viewfinder.main_video.setImage)
-    th.changeDepthPixmap.connect(window.viewfinder.depth_video.setImage)
+    th.changeFramePixmap.connect(window.viewfinder.ui.main_video.setImage)
+    th.changeDepthPixmap.connect(window.viewfinder.ui.depth_video.setImage)
 
     th.setParent(window)
     th.start()
