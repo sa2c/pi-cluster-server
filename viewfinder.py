@@ -69,7 +69,7 @@ class ViewfinderDialog(QDialog):
 
             vtk_file = run_filepath(self.currently_shown_simulation['index'],
                                     f'elmeroutput{self.image_index:04}.vtk')
-            print('reading vtk file {vtk_file}')
+            print(f'reading vtk file {vtk_file}')
 
             if self.image_index > 0:
                 vtk_to_plot(self.ui.left_view, vtk_file, 16, False, True, False,
