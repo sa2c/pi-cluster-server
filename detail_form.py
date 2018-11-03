@@ -28,4 +28,7 @@ class DetailForm(QDialog):
         self.email.textChanged.connect(self.change_details)
 
     def change_details(self):
-        self.callback(self.name.text(), self.email.text())
+        name = self.name, text()
+        if name is None or len(name) == 0:
+            name = 'Simulation'
+        self.callback(name, self.email.text())
