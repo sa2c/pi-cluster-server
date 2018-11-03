@@ -5,9 +5,11 @@ import cv2, sys, time, os
 import numpy as np
 from kinect_to_points.kinect_lib import *
 from detail_form import DetailForm
-from video_capture import VideoCaptureThread
+from video_capture import VideoCaptureThread, QVideoWidget
 from control_window import ControlWindow
 from leaderboard import get_test_simulations
+from pyside_dynamic import loadUiWidget
+from activity_monitor import ActivityPlotter
 import os
 
 from queue_run import local_path, queue_run
@@ -19,6 +21,24 @@ while not os.path.exists(directory):
     except OSError as e:
         print(f'directory creation failed: {directory}')
 
+
+def create_secondary_panel(parent, video_cap_thread):
+    window = QDialog(parent)
+    panel = loadUiWidget(
+        'designer/secondary_panel.ui',
+        customWidgets=[QVideoWidget, ActivityPlotter])
+    window.setLayout(QVBoxLayout())
+    window.layout().addWidget(panel)
+    window.setStyleSheet('background-color: #efebd8;')
+
+    th.changeFramePixmap.connect(panel.video_rgb.setImage)
+    th.changeDepthPixmap.connect(panel.video_depth.setImage)
+
+    window.show()
+
+    return window
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     #app.setStyle(QStyleFactory.create("Fusion"))
@@ -29,6 +49,8 @@ if __name__ == '__main__':
 
     window = ControlWindow()
     window.viewfinder.ui.leaderboard.update(simulations.values())
+
+    create_secondary_panel(window, th)
 
     th.changeFramePixmap.connect(window.ui.video_rgb.setImage)
     th.changeDepthPixmap.connect(window.ui.video_depth.setImage)
