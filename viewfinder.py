@@ -95,6 +95,7 @@ class ViewfinderDialog(QDialog):
         text.setText(f'{name}: {progress}%')
 
     def queue_simulation(self, index_run, name):
+        print(f'queued sim: {index_run}')
         self.run_queue.append((index_run, name))
         self.update_queue()
 
@@ -124,6 +125,7 @@ class ViewfinderDialog(QDialog):
         self.indices_in_slots[slot] = index_run
 
     def finish_simulation(self, index_run):
+        print(f'finish sim: {index_run}')
         slot_number = self.indices_in_slots.index(index_run)
         pbar = self.progress_slots[slot_number]
         text = self.progress_slots_text[slot_number]
@@ -132,6 +134,7 @@ class ViewfinderDialog(QDialog):
         text.setText(f'Slot {slot_number + 1}: Idle')
 
     def start_progress_checking(self):
+        print(f'start progress checking')
         # check for progress every 10 seconds
         progress_timer = QTimer(self)
         progress_timer.timeout.connect(self.update_progress)
