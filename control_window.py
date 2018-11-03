@@ -82,7 +82,7 @@ class ControlWindow(QMainWindow):
         self.viewfinder.finish_simulation(index)
         self.ui.view_selector.simulation_finished_action(index)
 
-        self.drag.append([index, compute_drag_for_simulation(index)])
+        np.append(self.drag.append,[index, compute_drag_for_simulation(index)])
         save_drag(self.drag)
 
         generator = PDFGenerator('test_pil.pdf', image1, image2, image3,
