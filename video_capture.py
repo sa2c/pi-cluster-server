@@ -7,6 +7,7 @@ from kinect_to_points.kinect_lib import *
 class QVideoWidget(QLabel):
     def __init__(self, parent=None):
         self.dynamic_update = True
+        self.mask = None
         super().__init__(parent)
 
     @Slot(np.ndarray)
@@ -15,6 +16,9 @@ class QVideoWidget(QLabel):
             self._set_image(image)
 
     def _set_image(self, image):
+        if self.mask is not None:
+            image = image - self.mask
+
         x = self.width()
         y = self.height()
 
@@ -36,6 +40,9 @@ class QVideoWidget(QLabel):
         pixmap = QPixmap()
         pixmap.loadFromData(buf.tostring())
         self.setPixmap(pixmap)
+
+    def _set_mask(self, mask):
+        self.mask = mask
 
     def setStaticImage(self, image):
         self.dynamic_update = False

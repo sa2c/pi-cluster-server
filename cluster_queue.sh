@@ -43,6 +43,7 @@ do
 			cp inbox/$file cfd/${file}-outline-coords.dat
 			cd cfd && python runcfd.py $file 4 $hostfile >> ../outbox/$file/output
 
+			sleep 5
 			# Move cfd image output to outbox
 			cd $WORKDIR
 			mv cfd/${file}/mesh/*.png outbox/${file}/

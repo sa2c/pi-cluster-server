@@ -18,6 +18,9 @@ from color_calibration import ColorCalibration
 from simulation_selector import SimulationSelector
 from cfd.computedrag import compute_drag_for_simulation
 from images_to_pdf.pdfgen import PDFGenerator
+from cluster_run import *
+from matplotlib_widget import PlotCanvas
+from postplotting import vtk_to_plot
 
 nmeasurements = 20
 
@@ -25,8 +28,8 @@ nmeasurements = 20
 class ControlWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.offset = [0,0]
-        self.scale = [1.0,1.0]
+        self.offset = [0, 0]
+        self.scale = [1.0, 1.0]
         self.drag = load_drag()
         self.current_name = 'Simulation'
 
@@ -85,9 +88,28 @@ class ControlWindow(QMainWindow):
         np.append(self.drag, [index, compute_drag_for_simulation(index)])
         save_drag(self.drag)
 
-        generator = PDFGenerator('test_pil.pdf', image1, image2, image3,
-                                 image4, 'Test user with PIL', 69)
-        generator.run()
+        simulation = load_simulation(index)
+
+        rgb = simulation['rgb']
+        depth = simulation['depth']
+        background = simulation['background']
+
+        rgb, depth = self.__get_static_images_with_input(
+            rgb, depth, background, contour_on_rgb=True)
+
+        #a = PlotCanvas()
+        #vtk_filename = run_filepath(index, 'elmeroutput0010.vtk')
+        #vtk_to_plot(a, vtk_filename, 16, True, False, True, None)
+        #a.figure
+        #data = np.fromstring(a.canvas.tostring_rgb(), dtype=np.uint8, sep='')
+        #data = data.reshape(fig.canvas.get_width_height()[::-1] + (3, ))
+
+        #a = PlotCanvas()
+        #vtk_to_plot(a, vtk_filename, 16, True,False,True,None)
+
+        #generator = PDFGenerator('test_pil.pdf', rgb, depth, data, data,
+        #                         'Test user with PIL', 69)
+        #generator.run()
 
         self.leaderboard.update(self.best_simulations())
 
@@ -146,11 +168,16 @@ class ControlWindow(QMainWindow):
 
         self.ui.captured_depth.setImage(depthimage)
 
-    def __get_static_images(self, contour_on_rgb=True):
-        rgb_frame = np.copy(self.capture_rgb_frame)
+    def __get_static_images_with_input(self,
+                                       rgb_frame,
+                                       capture_depth,
+                                       background,
+                                       contour_on_rgb=True):
+        rgb_frame = np.copy(rgb_frame)
+
         # set rgb image visible
-        clean_depth = remove_background(self.capture_depth, self.background)
-        depthimage = depth_to_depthimage(self.capture_depth)
+        clean_depth = remove_background(capture_depth, background)
+        depthimage = depth_to_depthimage(capture_depth)
 
         # compute contour
         contour = normalised_depth_to_contour(clean_depth)
@@ -170,8 +197,17 @@ class ControlWindow(QMainWindow):
 
         return rgb_frame, depthimage
 
+    def __get_static_images(self, contour_on_rgb=True):
+        rgb_frame, depthiamge = self.__get_static_images_with_input(
+            self.capture_rgb_frame,
+            self.capture_depth,
+            self.background,
+            contour_on_rgb=True)
+        return rgb_frame, depthiamge
+
     def calibrate(self):
         self.background = measure_depth(nmeasurements)
+        XXXX.set_mask(self.background)        
 
     def calibrate_color_action(self):
         old = get_color_scale()
@@ -204,6 +240,7 @@ class ControlWindow(QMainWindow):
             'email': self.current_email,
             'rgb': rgb_frame,
             'depth': self.capture_depth,
+            'background': self.background,
             'contour': self.contour
         }
 

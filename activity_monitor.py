@@ -10,6 +10,7 @@ import time
 already_set_up = False
 cluster_address = "pi@10.0.0.253"
 
+frontend = Connection(cluster_address)
 
 def setup(frontend):
     ''' Copies cpuloadinfo.sh to the cluster'''
@@ -21,8 +22,6 @@ def setup(frontend):
 
 def fetch_from_ssh():
     global already_set_up
-    frontend = Connection(
-        host=cluster_address, connect_kwargs={"password": "sa2cpi"})
     if not already_set_up:
         setup(frontend)
     output = frontend.run('''bash cpuloadinfo.sh''', hide=True).stdout
