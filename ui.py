@@ -50,8 +50,6 @@ if __name__ == '__main__':
     window = ControlWindow()
     window.viewfinder.ui.leaderboard.update(simulations.values())
 
-    create_secondary_panel(window, th)
-
     th.changeFramePixmap.connect(window.ui.video_rgb.setImage)
     th.changeDepthPixmap.connect(window.ui.video_depth.setImage)
 
