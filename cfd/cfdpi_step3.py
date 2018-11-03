@@ -49,11 +49,11 @@ def step3_generate_polyline_from_outline(project_name, domain_area):
     lenx = maxx - minx
     leny = maxy - miny
 
-    pt1x = minx - 2.0*lenx
-    pt1y = miny - 0.5*leny
+    pt1x = minx - 1.5*lenx
+    pt1y = miny - 1.0*leny
 
-    pt2x = maxx + 4.0*lenx
-    pt2y = maxy + 0.5*leny
+    pt2x = maxx + 3.0*lenx
+    pt2y = maxy + 1.0*leny
 
     domain_area = (pt2x-pt1x)*(pt2y-pt1y)
 
