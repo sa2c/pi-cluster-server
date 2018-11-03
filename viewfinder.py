@@ -104,10 +104,14 @@ class ViewfinderDialog(QDialog):
 
     def start_simulation(self, index_run, slot):
         # remove from queue
-        names = [q[1] for q in self.run_queue]
         run_indices = [q[0] for q in self.run_queue]
         i = run_indices.index(index_run)
-        name = names[i]
+        name = self.run_queue[i][1]
+
+        if len(name) == 0:
+            name = 'Simulation'
+
+        print(f'start sim: {index_run}')
 
         del self.run_queue[i]
         self.update_queue()
