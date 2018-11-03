@@ -29,6 +29,7 @@ class ControlWindow(QMainWindow):
         self.offset = [0, 0]
         self.scale = [1.0, 1.0]
         self.drag = load_drag()
+        self.current_name = 'Simulation'
 
         # set control window size
         self.resize(1920, 1080)

@@ -8,6 +8,7 @@ class DetailForm(QDialog):
         super().__init__(parent)
         self.setLayout(QVBoxLayout())
         self.name = QLineEdit()
+        self.name.setText('Simulation')
         self.email = QLineEdit()
         self.layout().addWidget(QLabel('name'))
         self.layout().addWidget(self.name)
