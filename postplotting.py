@@ -1,6 +1,7 @@
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
+from kinect_to_points.kinect_lib import *
 import numpy as np
 from matplotlib_widget import PlotCanvas
 import matplotlib
@@ -192,6 +193,9 @@ def plot(canvas,
 
 def vtk_to_plot(canvas, vtk_filename, nprocs, dotri,dovector,docontour,image,\
         velocity_magn=None):
+
+    if image is not None:
+        image = invert_color_order(image)
 
     coords, elems, velocity = vtkfile_to_numpy(vtk_filename, nprocs)
     return plot(canvas, coords, elems, velocity, dotri, dovector, docontour,

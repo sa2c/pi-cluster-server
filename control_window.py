@@ -17,6 +17,7 @@ from cluster_run import queue_run, RunCompleteWatcher, run_filepath, save_simula
 from color_calibration import ColorCalibration
 from simulation_selector import SimulationSelector
 from cfd.computedrag import compute_drag_for_simulation
+from images_to_pdf.pdfgen import PDFGenerator
 
 nmeasurements = 20
 
@@ -24,10 +25,10 @@ nmeasurements = 20
 class ControlWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.thread_pool = QThreadPool.globalInstance()
-        self.offset = [0, 0]
-        self.scale = [1.0, 1.0]
+        self.offset = [0,0]
+        self.scale = [1.0,1.0]
         self.drag = load_drag()
+        self.current_name = 'Simulation'
 
         # set control window size
         self.resize(1920, 1080)
@@ -81,12 +82,12 @@ class ControlWindow(QMainWindow):
         self.viewfinder.finish_simulation(index)
         self.ui.view_selector.simulation_finished_action(index)
 
-        self.drag.append([index, compute_drag_for_simulation(index)])
+        np.append(self.drag, [index, compute_drag_for_simulation(index)])
         save_drag(self.drag)
 
         generator = PDFGenerator('test_pil.pdf', image1, image2, image3,
                                  image4, 'Test user with PIL', 69)
-        self.thread_pool.start(generator)
+        generator.run()
 
         self.leaderboard.update(self.best_simulations())
 
@@ -112,7 +113,8 @@ class ControlWindow(QMainWindow):
         self.ui.view_selector.set_to_viewfinder()
         if self.viewfinder.ui.main_video.dynamic_update:
             # Show capture
-            rgb_frame, depthimage = self.__get_static_images()
+            rgb_frame, depthimage = self.__get_static_images(
+                contour_on_rgb=False)
 
             # set images
             self.viewfinder.ui.main_video.setStaticImage(rgb_frame)
@@ -144,7 +146,7 @@ class ControlWindow(QMainWindow):
 
         self.ui.captured_depth.setImage(depthimage)
 
-    def __get_static_images(self):
+    def __get_static_images(self, contour_on_rgb=True):
         rgb_frame = np.copy(self.capture_rgb_frame)
         # set rgb image visible
         clean_depth = remove_background(self.capture_depth, self.background)
@@ -158,8 +160,10 @@ class ControlWindow(QMainWindow):
 
         # add contour to images
         cv2.drawContours(depthimage, [self.outline], -1, (0, 0, 255), 2)
-        cv2.drawContours(rgb_frame, [self.transformed_outline], -1,
-                         (0, 0, 255), 2)
+
+        if contour_on_rgb:
+            cv2.drawContours(rgb_frame, [self.transformed_outline], -1,
+                             (0, 0, 255), 2)
 
         # Remember the contour for submission of the run
         self.contour = self.transformed_outline
@@ -220,6 +224,7 @@ class ControlWindow(QMainWindow):
         self.current_name = name
         self.current_email = email
         self.viewfinder.ui.name.setText(f'Name: {name}')
+        self.viewfinder.ui.email.setText(f'e-mail (optional): {email}')
 
     def keyPressEvent(self, event):
 

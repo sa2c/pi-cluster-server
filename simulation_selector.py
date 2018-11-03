@@ -21,7 +21,7 @@ class SimulationSelector(QListWidget):
         self.currentRowChanged.connect(self.current_row_changed)
 
     def simulation_finished_action(self, index):
-        name = load_simulation_name()
+        name = load_simulation_name(index)
         self.simulation_indices.insert(0, [index, name])
         self.redraw_items()
 

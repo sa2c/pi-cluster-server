@@ -83,14 +83,23 @@ class PDFGenerator(QRunnable):
                  output_filename,
                  image_array_top_left, image_array_top_right,
                  image_array_bottom_left, image_array_bottom_right,
-                 visitor_name, visitor_score):
+                 visitor_name, visitor_score,
+                 mirror=True):
         self.output_filename = output_filename
-        self.image_arrays = [
+        image_arrays = [
             image_array_top_left,
             image_array_top_right,
             image_array_bottom_left,
             image_array_bottom_right
         ]
+        if mirror:
+            self.image_arrays = []
+            for image_array in image_arrays:
+                self.image_arrays.append(
+                    image_array[:, ::-1, :]
+                )
+        else:
+            self.image_arrays = image_arrays
         self.visitor_name = visitor_name
         self.visitor_score = visitor_score
 

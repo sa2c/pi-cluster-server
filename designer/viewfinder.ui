@@ -393,6 +393,13 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_5">
                <item>
+                <widget class="QLabel" name="slot1_progress">
+                 <property name="text">
+                  <string>Slot 1: Idle</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QProgressBar" name="slot1">
                  <property name="maximumSize">
                   <size>
@@ -404,7 +411,14 @@
                   <number>0</number>
                  </property>
                  <property name="format">
-                  <string>Idle</string>
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="slot2_progress">
+                 <property name="text">
+                  <string>Slot 2: Idle</string>
                  </property>
                 </widget>
                </item>
@@ -414,7 +428,14 @@
                   <number>0</number>
                  </property>
                  <property name="format">
-                  <string>Idle</string>
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="slot3_progress">
+                 <property name="text">
+                  <string>Slot 3: Idle</string>
                  </property>
                 </widget>
                </item>
@@ -424,7 +445,7 @@
                   <number>0</number>
                  </property>
                  <property name="format">
-                  <string>Idle</string>
+                  <string/>
                  </property>
                 </widget>
                </item>
@@ -476,7 +497,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label">
+             <widget class="QLabel" name="email">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                 <horstretch>0</horstretch>

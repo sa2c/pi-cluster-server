@@ -9,7 +9,7 @@ from pyside_dynamic import loadUiWidget
 from activity_monitor import ActivityPlotter
 from matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
-from cluster_run import get_run_completion_percentage, run_filepath
+from cluster_run import get_run_completion_percentage, run_filepath, load_simulation_name
 
 SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
@@ -35,6 +35,10 @@ class ViewfinderDialog(QDialog):
         timer.start(5)
 
         self.progress_slots = [self.ui.slot1, self.ui.slot2, self.ui.slot3]
+        self.progress_slots_text = [
+            self.ui.slot1_progress, self.ui.slot2_progress,
+            self.ui.slot3_progress
+        ]
         self.indices_in_slots = [None, None, None]
 
     def switch_stack(self, index):
@@ -69,13 +73,13 @@ class ViewfinderDialog(QDialog):
 
             vtk_file = run_filepath(self.currently_shown_simulation['index'],
                                     f'elmeroutput{self.image_index:04}.vtk')
-            print('reading vtk file {vtk_file}')
+            print(f'reading vtk file {vtk_file}')
 
             if self.image_index > 0:
-                vtk_to_plot(self.ui.left_view, vtk_file, 16, False, True, False,
-                            image)
-                vtk_to_plot(self.ui.right_view, vtk_file, 16, True, False, True,
-                            None)
+                vtk_to_plot(self.ui.left_view, vtk_file, 16, False, True,
+                            False, image)
+                vtk_to_plot(self.ui.right_view, vtk_file, 16, True, False,
+                            True, None)
 
             self.image_index = (self.image_index + 1) % (ntimesteps + 1)
 
@@ -85,9 +89,13 @@ class ViewfinderDialog(QDialog):
 
     def set_progress(self, index_run, progress):
         slot_number = self.indices_in_slots.index(index_run)
+        name = load_simulation_name(index_run)
         self.progress_slots[slot_number].setValue(progress)
+        text = self.progress_slots_text[slot_number]
+        text.setText(f'{name}: {progress}%')
 
     def queue_simulation(self, index_run, name):
+        print(f'queued sim: {index_run}, name: {name}')
         self.run_queue.append((index_run, name))
         self.update_queue()
 
@@ -97,28 +105,36 @@ class ViewfinderDialog(QDialog):
 
     def start_simulation(self, index_run, slot):
         # remove from queue
-        names = [q[1] for q in self.run_queue]
         run_indices = [q[0] for q in self.run_queue]
         i = run_indices.index(index_run)
-        name = names[i]
+        name = self.run_queue[i][1]
+
+        if len(name) == 0:
+            name = 'Simulation'
+
+        print(f'start sim: {index_run}')
 
         del self.run_queue[i]
         self.update_queue()
 
         # move from queue to progress + reset progress
         pbar = self.progress_slots[slot]
+        text = self.progress_slots_text[slot]
         pbar.setValue(0)
-        pbar.setFormat(f'{name} : %p%')
+        text.setText(f'{name} : 0%')
         self.indices_in_slots[slot] = index_run
 
     def finish_simulation(self, index_run):
+        print(f'finish sim: {index_run}')
         slot_number = self.indices_in_slots.index(index_run)
         pbar = self.progress_slots[slot_number]
+        text = self.progress_slots_text[slot_number]
         pbar.setValue(0)
         self.indices_in_slots[slot_number] = None
-        pbar.setFormat('Idle')
+        text.setText(f'Slot {slot_number + 1}: Idle')
 
     def start_progress_checking(self):
+        print(f'start progress checking')
         # check for progress every 10 seconds
         progress_timer = QTimer(self)
         progress_timer.timeout.connect(self.update_progress)

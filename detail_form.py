@@ -8,6 +8,7 @@ class DetailForm(QDialog):
         super().__init__(parent)
         self.setLayout(QVBoxLayout())
         self.name = QLineEdit()
+        self.name.setText('Simulation')
         self.email = QLineEdit()
         self.layout().addWidget(QLabel('name'))
         self.layout().addWidget(self.name)
@@ -24,6 +25,10 @@ class DetailForm(QDialog):
         self.callback = parent.name_changed_action
 
         self.name.textChanged.connect(self.change_details)
+        self.email.textChanged.connect(self.change_details)
 
     def change_details(self):
-        self.callback(self.name.text(), self.email.text())
+        name = self.name, text()
+        if name is None or len(name) == 0:
+            name = 'Simulation'
+        self.callback(name, self.email.text())
