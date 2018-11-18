@@ -163,6 +163,9 @@ def sims_filtered_keys(ids, keys):
 
     return filtered
 
+def string_to_rounded_int(str):
+    return int(round(float(str)))
+
 def read_usage():
 
     num_retries = 5
@@ -190,7 +193,7 @@ def read_usage():
     line_parts = [line.split() for line in output_lines if line[:7]=='10.0.0.']
 
     cpu_usage = {
-            line[0] : float(line[1]) for line in line_parts
+            line[0] : string_to_rounded_int(line[1]) for line in line_parts
             }
 
     temp = {
