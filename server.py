@@ -194,7 +194,7 @@ def read_usage():
             }
 
     temp = {
-            line[0] : float(line[2]) for line in line_parts
+            line[0] : int(float(line[2])*100/settings.pi_max_temp) for line in line_parts
             }
 
 
@@ -219,7 +219,7 @@ def get_activity():
     response = {
         'time': time.time(),
         'cpu_usage': cpu_usage,
-        'temp': temp,
+        'temp_percent': temp,
         'pending': pending,
         'running': running
     }

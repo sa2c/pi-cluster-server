@@ -22,6 +22,9 @@ devel = fetch_environ('devel', 'True')
 if devel:
     print('** WARNING: Running in development mode **')
 
+# Maximum temperature according to RPi foundation
+pi_max_temp = 85
+
 ######################################################################
 # Cluster queue settings                                             #
 ######################################################################
