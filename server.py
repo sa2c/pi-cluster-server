@@ -163,7 +163,7 @@ def sims_filtered_keys(ids, keys):
 
     return filtered
 
-def read_cpu_usage():
+def read_usage():
 
     num_retries = 5
 
@@ -187,14 +187,18 @@ def read_cpu_usage():
                 continue
 
         
-
-    line_parts = [line.split(' ') for line in output_lines if line[:7]=='10.0.0.']
+    line_parts = [line.split() for line in output_lines if line[:7]=='10.0.0.']
 
     cpu_usage = {
             line[0] : float(line[1]) for line in line_parts
             }
 
-    return cpu_usage
+    temp = {
+            line[0] : float(line[2]) for line in line_parts
+            }
+
+
+    return cpu_usage, temp
 
 @app.route('/cluster/activity', methods=['GET'])
 def get_activity():
@@ -210,9 +214,12 @@ def get_activity():
 
     running  = [ model.add_hostname_info(s) for s in running ]
 
+    cpu_usage,temp = read_usage()
+
     response = {
         'time': time.time(),
-        'cpu_usage': read_cpu_usage(),
+        'cpu_usage': cpu_usage,
+        'temp': temp,
         'pending': pending,
         'running': running
     }
