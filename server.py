@@ -6,6 +6,7 @@ import calendar
 import os
 import json
 import matplotlib.pyplot as plt
+import subprocess
 
 import settings
 import model
@@ -162,20 +163,44 @@ def sims_filtered_keys(ids, keys):
 
     return filtered
 
+def read_cpu_usage():
+
+    num_retries = 5
+
+    # Because the file transfer might change files as they're being read, this could fail
+    # Retry until success or num_retries
+
+    for retries in range(num_retries):
+        try:
+            output_lines = subprocess.check_output('cat ~/cluster-load/info/* 2>/dev/null', shell=True).decode('utf8').split('\n')
+
+            num_tries = retries + 1
+
+            if num_tries > 1:
+                print('warning: cpu usage reading attempt success at try {x}'.format(x=num_tries))
+            break
+
+        except subprocess.CalledProcessError as e:
+            if(retries == retries - 1):
+                raise(e)
+            else:
+                continue
+
+        
+
+    line_parts = [line.split(' ') for line in output_lines if line[:7]=='10.0.0.']
+
+    cpu_usage = {
+            line[0] : float(line[1]) for line in line_parts
+            }
+
+    return cpu_usage
 
 @app.route('/cluster/activity', methods=['GET'])
 def get_activity():
 
     # Added safety layer to ensure that cpuinfo.txt isn't written to whilst being read
     # Note that this could still fail if activity called again before the request completes
-    with open("cpuinfo.txt", "r") as f:
-        output = f.readlines()
-
-    lines = [ l[:-1].split(' ') for l in output ]
-
-    cpu_usage = {
-           info[0] : float(info[1]) for info in lines
-    }
 
 
     filter_keys = ['id', 'name', 'avatar', 'cores', 'images-available']
@@ -187,7 +212,7 @@ def get_activity():
 
     response = {
         'time': time.time(),
-        'cpu_usage': cpu_usage,
+        'cpu_usage': read_cpu_usage(),
         'pending': pending,
         'running': running
     }
