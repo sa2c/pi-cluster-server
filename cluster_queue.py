@@ -29,15 +29,20 @@ def reserve_nodes():
     return free_slots.pop()
 
 
-def write_hostfile(nodes, id):
+def write_hostfile(slots, id):
 
     hostfilename = '{run_dir}/hostfile'.format(run_dir=model.run_directory(id))
 
+    slot = list(slots)[0]
+
+    ips = IPs[slot]
+
     with open(hostfilename, "w") as f:
-        for node in nodes:
-            ip = IPs[node]
+
+        for ip in ips:
             line = "{} slots={}\n".format(ip, cores_per_node)
             f.write(line)
+
     return hostfilename
 
 
