@@ -12,7 +12,8 @@ def run_cfd_simulation(sim_id, hostfile, nprocs):
     #######################################
 
     run_dir = model.run_directory(sim_id)
-    file = open('{run_dir}/ELMERSOLVER_STARTINFO'.format(run_dir=run_dir), "w")
+    elmer_startinfo_file = '{run_dir}/ELMERSOLVER_STARTINFO'.format(run_dir=run_dir)
+    file = open(elmer_startinfo_file, "w")
 
     file.write(settings.elmer_sif_file)
     file.write("\n1")
@@ -28,6 +29,7 @@ def run_cfd_simulation(sim_id, hostfile, nprocs):
         # First copy the mesh files over
         cmd = 'cd {run_dir} && mpirun --hostfile hostfile -np '.format(run_dir=run_dir) + str(
             nprocs) + " ElmerSolver_mpi"
+        print("running: " + cmd)
         os.system(cmd)
         time.sleep(2)
 
