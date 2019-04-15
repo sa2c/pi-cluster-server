@@ -207,7 +207,7 @@ class ControlWindow(QMainWindow):
 
     def calibrate(self):
         self.background = measure_depth(nmeasurements)
-        XXXX.set_mask(self.background)        
+        #XXXX.set_mask(self.background)
 
     def calibrate_color_action(self):
         old = get_color_scale()
