@@ -1,3 +1,4 @@
+import os
 
 # Mock Kinect
 mock_kinect = True
