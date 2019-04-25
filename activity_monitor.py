@@ -32,6 +32,7 @@ def setup(frontend):
     print('Setting up cpuloadinfo.sh')
     tmpfile = replace_line_endings('on_cluster/cpuloadinfo.sh')
     frontend.put(tmpfile)
+    os.remove(tmpfile)
     already_set_up = True
 
 
