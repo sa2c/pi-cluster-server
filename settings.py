@@ -1,7 +1,4 @@
 
-# Cluster settings
-
-
 # Mock Kinect
 mock_kinect = True
 
@@ -19,9 +16,11 @@ corner_cutting_steps = 50
 color_scale = [1, 1, 0.8]
 flip_display_axis = True
 
-# Local drag calculation
-nprocs = 1
-
 # Cluster settings
 cluster_address = "jarno@localhost"
 cluster_path = "Documents/picluster"
+
+# Local settings
+local_path = os.environ['PWD']
+nprocs = 1
+

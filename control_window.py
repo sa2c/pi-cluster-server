@@ -11,7 +11,6 @@ from kinect_to_points.kinect_lib import *
 from video_capture import QVideoWidget
 from detail_form import DetailForm
 from leaderboard import LeaderboardWidget
-from queue_run import queue_run
 from viewfinder import ViewfinderDialog
 from color_calibration import ColorCalibration
 from simulation_selector import SimulationSelector
@@ -21,7 +20,7 @@ from cluster_manager import *
 from matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
 
-nmeasurements = 20
+from settings import nmeasurements
 
 
 class ControlWindow(QMainWindow):

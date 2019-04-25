@@ -11,8 +11,9 @@ from leaderboard import get_test_simulations
 from pyside_dynamic import loadUiWidget
 from activity_monitor import ActivityPlotter
 import os
+from cluster_manager import queue_run
 
-from queue_run import local_path, queue_run
+from settings import local_path
 
 directory = 'outbox/signal'
 while not os.path.exists(directory):
