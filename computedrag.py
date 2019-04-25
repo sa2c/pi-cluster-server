@@ -8,7 +8,7 @@ import glob
 
 from cluster_manager import run_filepath
 
-nprocs = 4
+from settings import nprocs
 
 
 def compute_drag_for_simulation(index):
