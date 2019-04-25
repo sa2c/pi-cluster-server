@@ -6,9 +6,9 @@ import numpy as np
 import random, sys
 from fabric import Connection
 import time
+from settings import cluster_address
 
 already_set_up = False
-cluster_address = "pi@10.0.0.253"
 
 frontend = Connection(cluster_address)
 
