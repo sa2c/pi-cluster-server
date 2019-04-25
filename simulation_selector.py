@@ -2,7 +2,7 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-from cluster_run import run_filepath, all_available_indices_and_names, load_simulation, load_simulation_name
+from cluster_manager import run_filepath, all_available_indices_and_names, load_simulation, load_simulation_name
 import numpy as np
 
 

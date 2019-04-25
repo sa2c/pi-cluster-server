@@ -4,10 +4,9 @@ from fabric import Connection
 import os
 import pickle
 
-cluster_address = "pi@10.0.0.253"
-cluster_path = "Documents/picluster"
+from settings import cluster_address, cluster_path, nmeasurements
+
 local_path = os.environ['PWD']
-nmeasurements = 20
 cluster = Connection(cluster_address)
 
 
@@ -99,7 +98,7 @@ def queue_run(contour, index):
     remote_name = '{}/inbox/run{}'.format(cluster_path, index)
     cluster.put(filename, remote=remote_name)
 
-    # copy a signal file accross
+    # copy a signal file across
     remote_name = '{}/signal/run{}'.format(cluster_path, index)
     cluster.put(filename, remote=remote_name)
 

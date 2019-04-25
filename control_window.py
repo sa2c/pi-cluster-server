@@ -13,12 +13,11 @@ from detail_form import DetailForm
 from leaderboard import LeaderboardWidget
 from queue_run import queue_run
 from viewfinder import ViewfinderDialog
-from cluster_run import queue_run, RunCompleteWatcher, run_filepath, save_simulation, load_drag, save_drag
 from color_calibration import ColorCalibration
 from simulation_selector import SimulationSelector
 from computedrag import compute_drag_for_simulation
 from images_to_pdf.pdfgen import PDFGenerator
-from cluster_run import *
+from cluster_manager import *
 from matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
 

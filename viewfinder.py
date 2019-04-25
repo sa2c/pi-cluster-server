@@ -9,7 +9,7 @@ from pyside_dynamic import loadUiWidget
 from activity_monitor import ActivityPlotter
 from matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
-from cluster_run import get_run_completion_percentage, run_filepath, load_simulation_name
+from cluster_manager import get_run_completion_percentage, run_filepath, load_simulation_name
 
 SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
