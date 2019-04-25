@@ -11,3 +11,21 @@ To do:
 * Output the result on the screen
 * Output the result on a postcard
 * Leaderboard
+
+## Installing freenect for python3 on Ubuntu
+
+Provide instructions here
+
+## Running the UI
+
+First, create a signal folder
+'''
+mkdir signal
+'''
+
+To run the ui on a Kinect control node, use
+'''
+python3 ui.py
+'''
+
+
