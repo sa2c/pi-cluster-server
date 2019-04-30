@@ -15,7 +15,7 @@ from viewfinder import ViewfinderDialog
 from color_calibration import ColorCalibration
 from simulation_selector import SimulationSelector
 from computedrag import compute_drag_for_simulation
-from images_to_pdf.pdfgen import PDFGenerator
+from images_to_pdf.pdfgen import PDFPrinter
 from cluster_manager import *
 from matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
@@ -105,7 +105,7 @@ class ControlWindow(QMainWindow):
         #a = PlotCanvas()
         #vtk_to_plot(a, vtk_filename, 16, True,False,True,None)
 
-        #generator = PDFGenerator('test_pil.pdf', rgb, depth, data, data,
+        #generator = PDFPrinter('test_pil.pdf', rgb, depth, data, data,
         #                         'Test user with PIL', 69)
         #generator.run()
 

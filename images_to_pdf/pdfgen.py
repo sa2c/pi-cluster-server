@@ -78,7 +78,7 @@ def build_document(output_filename,
     page.save()
 
 
-class PDFGenerator(QRunnable):
+class PDFPrinter(QRunnable):
     def __init__(self,
                  output_filename,
                  image_array_top_left, image_array_top_right,
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     image3 = plt.imread('test3.jpg')
     image4 = plt.imread('test4.jpg')
 
-    generator = PDFGenerator('test_pil.pdf',
+    generator = PDFPrinter('test_pil.pdf',
                              image1, image2, image3, image4,
                              'Test user with PIL', 69)
 #    import pdb; pdb.set_trace()
