@@ -1,7 +1,11 @@
 import pytest
+import settings
+
+# Always use the mock in tests
+settings.mock_kinect = True
+
 import kinect_to_points.kinect_lib as kinect
 import numpy as np
-import settings
 
 
 class TestKinectLib(object):
@@ -116,12 +120,12 @@ class TestKinectLib(object):
 
         assert np.array_equal(contour, result)
         
-    def test_contour_to_outline(self):
+    def test_transform_contour(self):
         ''' Process the a contour into a smoothed outline '''
         contour = np.array([[[0, 0]], [[0, 50]], [[50, 50]], [[50, 0]]])
         scale = [0.5, 0.25]
         offset = [1, 2]
-        outline, transformed_outline = kinect.contour_to_outline(contour, scale, offset)
+        outline, transformed_outline = kinect.transform_contour(contour, scale, offset)
 
         assert outline.ndim == 3
         assert outline.shape[0] == settings.num_points
@@ -132,3 +136,20 @@ class TestKinectLib(object):
         assert transformed_outline.shape[0] == settings.num_points
         assert transformed_outline.shape[1] == 1
         assert transformed_outline.shape[2] == 2
+
+    def test_images_and_outline(self):
+        '''  '''
+        # Get the background
+        background_depth = kinect.get_mock_background_depth()
+        background_depth = kinect.threshold(background_depth)
+        scale = [1.0, 1.0]
+        offset = [0, 0]
+
+        # Wind the mock forward, this should contain an object
+        kinect.mock_kinect_index = 20
+
+        rgb_frame, depthimage, outline = kinect.images_and_outline(background_depth, scale, offset)
+
+        assert rgb_frame.shape == (480, 640, 3)
+        assert depthimage.shape == (480, 640, 3)
+        assert outline.shape == (settings.num_points, 1, 2)
