@@ -19,22 +19,17 @@ from computedrag import compute_drag_for_simulation
 from images_to_pdf.pdfgen import PDFPrinter
 from cluster_manager import *
 from postplotting import vtk_to_plot
-
-from settings import nmeasurements
+import controller
 
 
 class ControlWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.offset = [0, 0]
-        self.scale = [1.0, 1.0]
-        self.drag = load_drag()
-        self.current_name = 'Simulation'
+
+        self.controller = controller.Controller()
 
         # set control window size
         self.resize(1920, 1080)
-
-        self.contour = np.array([[]])
 
         self.ui = loadUiWidget(
             'designer/control_panel.ui',
@@ -42,18 +37,14 @@ class ControlWindow(QMainWindow):
         self.setCentralWidget(self.ui)
 
         # instance variables
-        self.outline = None
-        self.transformed_outline = None
         self.ui.capture_button.released.connect(self.capture_action)
         self.ui.process_button.released.connect(self.run_cfd_action)
         self.ui.details_button.released.connect(self.fill_in_details_action)
-        self.ui.calibrate_button.released.connect(self.calibrate)
+        self.ui.calibrate_button.released.connect(self.controller.calibrate)
         self.ui.show_button.released.connect(self.show_capture_action)
         self.ui.color_calibrate_button.released.connect(
             self.calibrate_color_action)
-
-        self.calibrate()
-
+        
         # create viewfinder
         self.viewfinder = ViewfinderDialog()
         self.viewfinder.show()
@@ -81,51 +72,14 @@ class ControlWindow(QMainWindow):
         self.viewfinder.finish_simulation(index)
         self.ui.view_selector.simulation_finished_action(index)
 
-        np.append(self.drag, [index, compute_drag_for_simulation(index)])
-        save_drag(self.drag)
+        self.controller.run_completed(index)
 
-        simulation = load_simulation(index)
-
-        rgb = simulation['rgb']
-        depth = simulation['depth']
-        background = simulation['background']
-
-        rgb, depth = self.__get_static_images_with_input(
-            rgb, depth, background, contour_on_rgb=True)
-
-        #a = PlotCanvas()
-        #vtk_filename = run_filepath(index, 'elmeroutput0010.vtk')
-        #vtk_to_plot(a, vtk_filename, 16, True, False, True, None)
-        #a.figure
-        #data = np.fromstring(a.canvas.tostring_rgb(), dtype=np.uint8, sep='')
-        #data = data.reshape(fig.canvas.get_width_height()[::-1] + (3, ))
-
-        #a = PlotCanvas()
-        #vtk_to_plot(a, vtk_filename, 16, True,False,True,None)
-
-        #generator = PDFPrinter('test_pil.pdf', rgb, depth, data, data,
-        #                         'Test user with PIL', 69)
-        #generator.run()
-
-        self.leaderboard.update(self.best_simulations())
+        self.leaderboard.update(self.controller.best_simulations())
 
     def run_started(self, signal):
         index, slot = signal
         print(f'started {index} in {slot}')
         self.viewfinder.start_simulation(index, slot - 1)
-
-    def best_simulations(self):
-        nsims = 10
-        drag = np.array(self.drag)
-        drag_sorted_indices = np.argsort(drag[:, 1])
-        drag_sorted_indices.reverse()
-        best_indices = drag[drag_sorted_indices[0:nsims], :]
-
-        simulations = {}
-        for index in best_indices:
-            simulations[index] = load_simulation(index)
-
-        return simulations
 
     def show_capture_action(self):
         self.ui.view_selector.set_to_viewfinder()
@@ -151,23 +105,13 @@ class ControlWindow(QMainWindow):
             self.ui.show_button.setText('&Show Capture')
 
     def capture_action(self):
-        
-        rgb_frame, depthimage, outline = kinect.images_and_outline(
-            self.background,
-            self.scale,
-            self.offset,
-            contour_on_rgb=True)
-        
-        # Set contour for simulation
-        self.contour = outline
+
+        rgb_frame, depthimage = self.controller.capture()
 
         # set images
         self.ui.captured_rgb.setImage(rgb_frame)
         self.ui.captured_depth.setImage(depthimage)
-
-    def calibrate(self):
-        self.background = kinect.measure_depth(nmeasurements)
-
+    
     def calibrate_color_action(self):
         old = kinect.get_color_scale()
 
@@ -177,8 +121,8 @@ class ControlWindow(QMainWindow):
             kinect.set_color_scale(old)
 
     def fill_in_details_action(self):
-        prev_name = self.current_name
-        prev_email = self.current_email
+        prev_name = self.controller.current_name
+        prev_email = self.controller.current_email
 
         dialog = DetailForm(self)
         accepted = dialog.exec()
@@ -218,8 +162,8 @@ class ControlWindow(QMainWindow):
 
     def name_changed_action(self, name, email):
         print(name,email)
-        self.current_name = name
-        self.current_email = email
+        self.controller.current_name = name
+        self.controller.current_email = email
         self.viewfinder.ui.name.setText(f'Name: {name}')
         self.viewfinder.ui.email.setText(f'e-mail (optional): {email}')
 
