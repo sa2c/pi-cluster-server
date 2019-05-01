@@ -1,4 +1,4 @@
-from matplotlib_widget import PlotCanvas
+from display.matplotlib_widget import PlotCanvas
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *

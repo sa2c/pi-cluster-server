@@ -3,7 +3,7 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from kinectlib.kinectlib import *
 import numpy as np
-from matplotlib_widget import PlotCanvas
+from display.matplotlib_widget import PlotCanvas
 import matplotlib
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas

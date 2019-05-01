@@ -3,11 +3,11 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 import cv2, sys, time, os
 import numpy as np
-from leaderboard import LeaderboardWidget
-from video_capture import QVideoWidget
-from pyside_dynamic import loadUiWidget
-from activity_monitor import ActivityPlotter
-from matplotlib_widget import PlotCanvas
+from display.leaderboard import LeaderboardWidget
+from display.video_capture import QVideoWidget
+from display.pyside_dynamic import loadUiWidget
+from display.activity_monitor import ActivityPlotter
+from display.matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
 from cluster_manager import get_run_completion_percentage, run_filepath, load_simulation_name
 
@@ -18,7 +18,7 @@ class ViewfinderDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = loadUiWidget(
-            os.path.join(SCRIPT_DIRECTORY, 'designer/viewfinder.ui'),
+            os.path.join(SCRIPT_DIRECTORY, '../designer/viewfinder.ui'),
             customWidgets=[
                 QVideoWidget, LeaderboardWidget, ActivityPlotter, PlotCanvas
             ])

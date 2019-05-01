@@ -4,12 +4,12 @@ from PySide2.QtWidgets import *
 import cv2, sys, time, os
 import numpy as np
 from kinectlib.kinectlib import *
-from detail_form import DetailForm
-from video_capture import VideoCaptureThread, QVideoWidget
+from display.detail_form import DetailForm
+from display.video_capture import VideoCaptureThread, QVideoWidget
 from display.control_window import ControlWindow
-from leaderboard import get_test_simulations
-from pyside_dynamic import loadUiWidget
-from activity_monitor import ActivityPlotter
+from display.leaderboard import get_test_simulations
+from display.pyside_dynamic import loadUiWidget
+from display.activity_monitor import ActivityPlotter
 import os
 from cluster_manager import queue_run
 
@@ -26,7 +26,7 @@ while not os.path.exists(directory):
 def create_secondary_panel(parent, video_cap_thread):
     window = QDialog(parent)
     panel = loadUiWidget(
-        'designer/secondary_panel.ui',
+        '../designer/secondary_panel.ui',
         customWidgets=[QVideoWidget, ActivityPlotter])
     window.setLayout(QVBoxLayout())
     window.layout().addWidget(panel)

@@ -4,20 +4,20 @@ from PySide2.QtWidgets import *
 
 import datetime
 import calendar
-from pyside_dynamic import loadUiWidget
 import cv2, sys, time, os
 import numpy as np
 import kinectlib.kinectlib as kinect
-from video_capture import QVideoWidget
-from detail_form import DetailForm
-from leaderboard import LeaderboardWidget
-from viewfinder import ViewfinderDialog
-from color_calibration import ColorCalibration
-from simulation_selector import SimulationSelector
+from display.pyside_dynamic import loadUiWidget
+from display.video_capture import QVideoWidget
+from display.detail_form import DetailForm
+from display.leaderboard import LeaderboardWidget
+from display.viewfinder import ViewfinderDialog
+from display.color_calibration import ColorCalibration
+from display.simulation_selector import SimulationSelector
+from display.matplotlib_widget import PlotCanvas
 from computedrag import compute_drag_for_simulation
 from images_to_pdf.pdfgen import PDFPrinter
 from cluster_manager import *
-from matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
 
 from settings import nmeasurements

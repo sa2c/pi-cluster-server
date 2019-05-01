@@ -4,8 +4,8 @@ from PySide2.QtWidgets import *
 from PySide2.QtUiTools import QUiLoader
 import cv2, sys, time, os
 import numpy as np
-from video_capture import QVideoWidget
-from pyside_dynamic import loadUi
+from display.video_capture import QVideoWidget
+from display.pyside_dynamic import loadUi
 from kinectlib.kinectlib import depth_to_depthimage
 
 image_width = 300

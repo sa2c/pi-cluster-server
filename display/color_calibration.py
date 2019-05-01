@@ -3,7 +3,7 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 import cv2, sys, time, os
 import numpy as np
-from pyside_dynamic import loadUi
+from display.pyside_dynamic import loadUi
 
 SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
@@ -15,7 +15,7 @@ class ColorCalibration(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         loadUi(
-            os.path.join(SCRIPT_DIRECTORY, 'designer/color_calibrate.ui'),
+            os.path.join(SCRIPT_DIRECTORY, '../designer/color_calibrate.ui'),
             self)
 
         self.red.valueChanged.connect(self._color_changed)
