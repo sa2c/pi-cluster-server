@@ -6,7 +6,7 @@ import cv2, sys, time, os
 import numpy as np
 from video_capture import QVideoWidget
 from pyside_dynamic import loadUi
-from kinect_to_points.kinect_lib import depth_to_depthimage
+from kinectlib.kinectlib import depth_to_depthimage
 
 image_width = 300
 image_height = 300

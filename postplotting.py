@@ -1,7 +1,7 @@
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-from kinect_to_points.kinect_lib import *
+from kinectlib.kinectlib import *
 import numpy as np
 from matplotlib_widget import PlotCanvas
 import matplotlib

@@ -4,7 +4,7 @@ import settings
 # Always use the mock in tests
 settings.mock_kinect = True
 
-import kinect_to_points.kinect_lib as kinect
+import kinectlib.kinectlib as kinect
 import numpy as np
 
 
@@ -138,7 +138,8 @@ class TestKinectLib(object):
         assert transformed_outline.shape[2] == 2
 
     def test_images_and_outline(self):
-        '''  '''
+        ''' Use the kinect to get the depth and color images and to
+            produce the outline. '''
         # Get the background
         background_depth = kinect.get_mock_background_depth()
         background_depth = kinect.threshold(background_depth)

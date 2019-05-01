@@ -3,10 +3,10 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 import cv2, sys, time, os
 import numpy as np
-from kinect_to_points.kinect_lib import *
+from kinectlib.kinectlib import *
 from detail_form import DetailForm
 from video_capture import VideoCaptureThread, QVideoWidget
-from control_window import ControlWindow
+from display.control_window import ControlWindow
 from leaderboard import get_test_simulations
 from pyside_dynamic import loadUiWidget
 from activity_monitor import ActivityPlotter

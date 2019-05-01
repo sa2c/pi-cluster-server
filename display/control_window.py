@@ -7,7 +7,7 @@ import calendar
 from pyside_dynamic import loadUiWidget
 import cv2, sys, time, os
 import numpy as np
-import kinect_to_points.kinect_lib as kinect
+import kinectlib.kinectlib as kinect
 from video_capture import QVideoWidget
 from detail_form import DetailForm
 from leaderboard import LeaderboardWidget
