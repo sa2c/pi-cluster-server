@@ -16,6 +16,7 @@ fabric = "*"
 pdfrw = "*"
 reportlab = "*"
 pillow = "*"
+pytest = "*"
 
 [dev-packages]
 
