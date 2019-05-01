@@ -52,8 +52,6 @@ class ControlWindow(QMainWindow):
         self.ui.color_calibrate_button.released.connect(
             self.calibrate_color_action)
 
-        self.background = kinect.measure_depth(nmeasurements)
-
         self.calibrate()
 
         # create viewfinder
@@ -153,55 +151,19 @@ class ControlWindow(QMainWindow):
             self.ui.show_button.setText('&Show Capture')
 
     def capture_action(self):
-        self.capture_depth = kinect.measure_depth()
-        self.capture_rgb_frame = kinect.get_video()
-
-        self.process_image()
-
-    def process_image(self):
-        rgb_frame, depthimage = self.__get_static_images()
+        
+        rgb_frame, depthimage, outline = kinect.images_and_outline(
+            self.background,
+            self.scale,
+            self.offset,
+            contour_on_rgb=True)
+        
+        # Set contour for simulation
+        self.contour = outline
 
         # set images
         self.ui.captured_rgb.setImage(rgb_frame)
-
         self.ui.captured_depth.setImage(depthimage)
-
-    def __get_static_images_with_input(self,
-                                       rgb_frame,
-                                       capture_depth,
-                                       background,
-                                       contour_on_rgb=True):
-        rgb_frame = np.copy(rgb_frame)
-
-        # set rgb image visible
-        clean_depth = kinect.remove_background(capture_depth, background)
-        depthimage = kinect.depth_to_depthimage(capture_depth)
-
-        # compute contour
-        contour = kinect.normalised_depth_to_contour(clean_depth)
-
-        self.outline, self.transformed_outline = kinect.contour_to_outline(
-            contour, self.scale, self.offset)
-
-        # add contour to images
-        cv2.drawContours(depthimage, [self.outline], -1, (0, 0, 255), 2)
-
-        if contour_on_rgb:
-            cv2.drawContours(rgb_frame, [self.transformed_outline], -1,
-                             (0, 0, 255), 2)
-
-        # Remember the contour for submission of the run
-        self.contour = self.transformed_outline
-
-        return rgb_frame, depthimage
-
-    def __get_static_images(self, contour_on_rgb=True):
-        rgb_frame, depthimage = self.__get_static_images_with_input(
-            self.capture_rgb_frame,
-            self.capture_depth,
-            self.background,
-            contour_on_rgb=True)
-        return rgb_frame, depthimage
 
     def calibrate(self):
         self.background = kinect.measure_depth(nmeasurements)
