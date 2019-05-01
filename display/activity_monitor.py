@@ -4,50 +4,10 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 import numpy as np
 import sys
-from fabric import Connection
 import time
-from settings import cluster_address
 import io, os, tempfile
 
-already_set_up = False
-
-frontend = Connection(cluster_address)
-
-
-def replace_line_endings(filename):
-    ''' Creates a temporary file with posix line endings '''
-    tempfolder = tempfile.mkdtemp()
-    temp_filename = os.path.abspath(os.path.join(
-        tempfolder,
-        os.path.basename(filename)))
-    with io.open(filename, "r") as f:
-        contents = f.read()
-    with io.open(temp_filename, 'w', newline='\n') as f:
-        f.write(contents)
-    return temp_filename
-
-
-def setup(frontend):
-    ''' Copies cpuloadinfo.sh to the cluster'''
-    global already_set_up
-    print('Setting up cpuloadinfo.sh')
-    tmpfile = replace_line_endings('on_cluster/cpuloadinfo.sh')
-    frontend.put(tmpfile)
-    os.remove(tmpfile)
-    already_set_up = True
-
-
-def fetch_from_ssh():
-    global already_set_up
-    if not already_set_up:
-        setup(frontend)
-    output = frontend.run('''bash cpuloadinfo.sh''', hide=True).stdout
-    cpu_usage = output.split('\n')[1:-1]
-    cpu_usage = [
-        float(cpu_usage_meas.split(' ')[1]) for cpu_usage_meas in cpu_usage
-    ]
-    cpu_usage = np.array(cpu_usage)
-    return cpu_usage
+from cluster_manager import fetch_activity
 
 
 class ActivityPlotter(PlotCanvas):
@@ -87,7 +47,7 @@ class ActivityFetchThread(QThread):
 
     def run(self):
         while True:
-            data = fetch_from_ssh()
+            data = fetch_activity()
             self.activity_updated.emit(data)
             time.sleep(0.1)
 

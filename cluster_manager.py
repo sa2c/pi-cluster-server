@@ -3,6 +3,7 @@ import numpy as np
 from fabric import Connection
 import os
 import pickle
+from fabric import Connection
 
 from settings import cluster_address, cluster_path, nmeasurements
 
@@ -185,3 +186,47 @@ def load_simulation(index):
 
 if __name__ == '__main__':
     all_available_indices_and_names()
+
+
+
+# From activity monitor
+
+already_set_up = False
+
+frontend = Connection(cluster_address)
+
+
+def replace_line_endings(filename):
+    ''' Creates a temporary file with posix line endings '''
+    tempfolder = tempfile.mkdtemp()
+    temp_filename = os.path.abspath(os.path.join(
+        tempfolder,
+        os.path.basename(filename)))
+    with io.open(filename, "r") as f:
+        contents = f.read()
+    with io.open(temp_filename, 'w', newline='\n') as f:
+        f.write(contents)
+    return temp_filename
+
+
+def setup(frontend):
+    ''' Copies cpuloadinfo.sh to the cluster'''
+    global already_set_up
+    print('Setting up cpuloadinfo.sh')
+    tmpfile = replace_line_endings('on_cluster/cpuloadinfo.sh')
+    frontend.put(tmpfile)
+    os.remove(tmpfile)
+    already_set_up = True
+
+
+def fetch_activity():
+    global already_set_up
+    if not already_set_up:
+        setup(frontend)
+    output = frontend.run('''bash cpuloadinfo.sh''', hide=True).stdout
+    cpu_usage = output.split('\n')[1:-1]
+    cpu_usage = [
+        float(cpu_usage_meas.split(' ')[1]) for cpu_usage_meas in cpu_usage
+    ]
+    cpu_usage = np.array(cpu_usage)
+    return cpu_usage
