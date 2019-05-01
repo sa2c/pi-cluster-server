@@ -3,7 +3,7 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 import numpy as np
-import random, sys
+import sys
 from fabric import Connection
 import time
 from settings import cluster_address
@@ -12,6 +12,7 @@ import io, os, tempfile
 already_set_up = False
 
 frontend = Connection(cluster_address)
+
 
 def replace_line_endings(filename):
     ''' Creates a temporary file with posix line endings '''

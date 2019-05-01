@@ -2,10 +2,6 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-import datetime
-import calendar
-import cv2, sys, time, os
-import numpy as np
 import kinectlib.kinectlib as kinect
 from display.pyside_dynamic import loadUiWidget
 from display.video_capture import QVideoWidget
@@ -14,19 +10,15 @@ from display.leaderboard import LeaderboardWidget
 from display.viewfinder import ViewfinderDialog
 from display.color_calibration import ColorCalibration
 from display.simulation_selector import SimulationSelector
-from display.matplotlib_widget import PlotCanvas
-from computedrag import compute_drag_for_simulation
-from images_to_pdf.pdfgen import PDFPrinter
-from cluster_manager import *
-from postplotting import vtk_to_plot
-import controller
+from controller import Controller
+import cluster_manager
 
 
 class ControlWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.controller = controller.Controller()
+        self.controller = Controller()
 
         # set control window size
         self.resize(1920, 1080)
@@ -61,7 +53,7 @@ class ControlWindow(QMainWindow):
         self.calibration_window.color_changed.connect(kinect.set_color_scale)
 
         # create file system watcher
-        self.run_watcher = RunCompleteWatcher(self)
+        self.run_watcher = cluster_manager.RunCompleteWatcher(self)
         self.run_watcher.started.connect(self.run_started)
         self.run_watcher.completed.connect(self.run_completed)
 
@@ -72,7 +64,7 @@ class ControlWindow(QMainWindow):
         self.viewfinder.finish_simulation(index)
         self.ui.view_selector.simulation_finished_action(index)
 
-        self.controller.run_completed(index)
+        self.controller.simulation_postprocess(index)
 
         self.leaderboard.update(self.controller.best_simulations())
 
@@ -85,8 +77,7 @@ class ControlWindow(QMainWindow):
         self.ui.view_selector.set_to_viewfinder()
         if self.viewfinder.ui.main_video.dynamic_update:
             # Show capture
-            rgb_frame, depthimage = self.__get_static_images(
-                contour_on_rgb=False)
+            rgb_frame, depthimage = self.controller.get_capture_images()
 
             # set images
             self.viewfinder.ui.main_video.setStaticImage(rgb_frame)
@@ -121,8 +112,7 @@ class ControlWindow(QMainWindow):
             kinect.set_color_scale(old)
 
     def fill_in_details_action(self):
-        prev_name = self.controller.current_name
-        prev_email = self.controller.current_email
+        prev_name, prev_email = self.controller.get_user_details()
 
         dialog = DetailForm(self)
         accepted = dialog.exec()
@@ -132,38 +122,17 @@ class ControlWindow(QMainWindow):
             print('name change cancelled')
 
     def run_cfd_action(self):
-
-        index = self.get_epoch()
-
-        # save simulation details for later
-        rgb_frame, depthimage = self.__get_static_images()
-        simulation = {
-            'index': index,
-            'name': self.current_name,
-            'email': self.current_email,
-            'rgb': rgb_frame,
-            'depth': self.capture_depth,
-            'background': self.background,
-            'contour': self.contour
-        }
-
-        save_simulation(simulation)
-
-        self.viewfinder.queue_simulation(index, self.current_name)
-        queue_run(self.contour, simulation['index'])
-
-    def get_epoch(self):
-        now = datetime.datetime.utcnow()
-        timestamp = calendar.timegm(now.utctimetuple())
-        return timestamp
-
+        index = self.controller.start_simulation()
+        self.viewfinder.queue_simulation(
+            index,
+            self.controller.current_name
+        )
+    
     def reset_action(self):
         self.name_changed_action('', '')
 
     def name_changed_action(self, name, email):
-        print(name,email)
-        self.controller.current_name = name
-        self.controller.current_email = email
+        self.controller.name_changed(name, email)
         self.viewfinder.ui.name.setText(f'Name: {name}')
         self.viewfinder.ui.email.setText(f'e-mail (optional): {email}')
 

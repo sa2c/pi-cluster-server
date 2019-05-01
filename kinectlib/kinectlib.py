@@ -178,7 +178,7 @@ def transform_contour(contour, scale, offset):
     return outline.astype(int), transformed_outline.astype(int)
 
 
-def images_and_outline(background, scale, offset, contour_on_rgb=True):
+def images_and_outline(background, scale, offset):
     ''' Capture depth and color input and find the contour.
         Transform the contour to match the color image.
         Return copy on color input, rgb image representing the depth and
@@ -198,8 +198,8 @@ def images_and_outline(background, scale, offset, contour_on_rgb=True):
     # add contour to images
     cv2.drawContours(depthimage, [outline], -1, (0, 0, 255), 2)
 
-    if contour_on_rgb:
-        cv2.drawContours(rgb_frame, [transformed_outline], -1,
+    rgb_frame_with_outline = np.copy(rgb_frame)
+    cv2.drawContours(rgb_frame_with_outline, [transformed_outline], -1,
                 (0, 0, 255), 2)
 
-    return rgb_frame, depthimage, outline
+    return rgb_frame, rgb_frame_with_outline, depthimage, outline
