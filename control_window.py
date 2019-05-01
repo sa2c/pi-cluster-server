@@ -167,7 +167,6 @@ class ControlWindow(QMainWindow):
 
     def calibrate(self):
         self.background = kinect.measure_depth(nmeasurements)
-        #XXXX.set_mask(self.background)
 
     def calibrate_color_action(self):
         old = kinect.get_color_scale()
