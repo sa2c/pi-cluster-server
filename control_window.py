@@ -7,7 +7,7 @@ import calendar
 from pyside_dynamic import loadUiWidget
 import cv2, sys, time, os
 import numpy as np
-from kinect_to_points.kinect_lib import *
+import kinect_to_points.kinect_lib as kinect
 from video_capture import QVideoWidget
 from detail_form import DetailForm
 from leaderboard import LeaderboardWidget
@@ -52,7 +52,7 @@ class ControlWindow(QMainWindow):
         self.ui.color_calibrate_button.released.connect(
             self.calibrate_color_action)
 
-        self.background = measure_depth(nmeasurements)
+        self.background = kinect.measure_depth(nmeasurements)
 
         self.calibrate()
 
@@ -69,7 +69,7 @@ class ControlWindow(QMainWindow):
 
         # create color calibration window
         self.calibration_window = ColorCalibration()
-        self.calibration_window.color_changed.connect(set_color_scale)
+        self.calibration_window.color_changed.connect(kinect.set_color_scale)
 
         # create file system watcher
         self.run_watcher = RunCompleteWatcher(self)
@@ -153,8 +153,8 @@ class ControlWindow(QMainWindow):
             self.ui.show_button.setText('&Show Capture')
 
     def capture_action(self):
-        self.capture_depth = measure_depth()
-        self.capture_rgb_frame = get_video()
+        self.capture_depth = kinect.measure_depth()
+        self.capture_rgb_frame = kinect.get_video()
 
         self.process_image()
 
@@ -174,13 +174,13 @@ class ControlWindow(QMainWindow):
         rgb_frame = np.copy(rgb_frame)
 
         # set rgb image visible
-        clean_depth = remove_background(capture_depth, background)
-        depthimage = depth_to_depthimage(capture_depth)
+        clean_depth = kinect.remove_background(capture_depth, background)
+        depthimage = kinect.depth_to_depthimage(capture_depth)
 
         # compute contour
-        contour = normalised_depth_to_contour(clean_depth)
+        contour = kinect.normalised_depth_to_contour(clean_depth)
 
-        self.outline, self.transformed_outline = contour_to_outline(
+        self.outline, self.transformed_outline = kinect.contour_to_outline(
             contour, self.scale, self.offset)
 
         # add contour to images
@@ -196,24 +196,24 @@ class ControlWindow(QMainWindow):
         return rgb_frame, depthimage
 
     def __get_static_images(self, contour_on_rgb=True):
-        rgb_frame, depthiamge = self.__get_static_images_with_input(
+        rgb_frame, depthimage = self.__get_static_images_with_input(
             self.capture_rgb_frame,
             self.capture_depth,
             self.background,
             contour_on_rgb=True)
-        return rgb_frame, depthiamge
+        return rgb_frame, depthimage
 
     def calibrate(self):
-        self.background = measure_depth(nmeasurements)
+        self.background = kinect.measure_depth(nmeasurements)
         #XXXX.set_mask(self.background)
 
     def calibrate_color_action(self):
-        old = get_color_scale()
+        old = kinect.get_color_scale()
 
         accepted = self.calibration_window.exec()
 
         if not accepted:
-            set_color_scale(old)
+            kinect.set_color_scale(old)
 
     def fill_in_details_action(self):
         prev_name = self.current_name
