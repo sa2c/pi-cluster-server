@@ -1,11 +1,13 @@
 from PySide2.QtCore import *
 import numpy as np
 from fabric import Connection
-import os
+import os, io
 import pickle
 from fabric import Connection
+import tempfile
+import errno
 
-from settings import cluster_address, cluster_path, nmeasurements
+from settings import cluster_address, cluster_path
 
 local_path = os.environ['PWD']
 cluster = Connection(cluster_address)
@@ -104,58 +106,6 @@ def queue_run(contour, index):
     cluster.put(filename, remote=remote_name)
 
 
-class RunCompleteWatcher(QFileSystemWatcher):
-    ''' Periodically polls the cluster to check for finished jobs
-        Gets the resulting images as numpy arrays and 
-        communicates them through a signal
-    '''
-
-    started = Signal(object)
-    completed = Signal(int)
-
-    def __init__(self, parent=None):
-        self.existing_runs = set(os.listdir("{}/signal/".format(local_path)))
-
-        path = "{}/signal/".format(local_path)
-        super().__init__([path], parent)
-
-        self.directoryChanged.connect(self.run_complete)
-
-    def run_complete(self, path):
-        runs = set(os.listdir(path))
-
-        new_runs = runs - self.existing_runs
-
-        for run in new_runs:
-            self.existing_runs.add(run)
-            run, signal, slot = run.split('_')
-            slot = int(slot)
-            index = run.replace("run", '')
-            index = int(index)
-
-            print("{} signal for run {} in slot {}!".format(
-                signal, index, slot))
-
-            if signal == "start":
-                self.started.emit((index, slot))
-            elif signal == "end":
-                self.completed.emit(index)
-
-
-def test_submit():
-    contour = np.loadtxt("scf1540984574-outline-coords.dat")
-    queue_run(contour, 2)
-    while True:
-        print(get_run_completion_percentage(2))
-        time.sleep(1)
-
-
-def test_app():
-    app = QApplication(sys.argv)
-    label = QLabel("<font color=red size=40>Hello World!</font>")
-    label.show()
-    rcw = RunCompleteWatcher()
-    sys.exit(app.exec_())
 
 
 def save_simulation(simulation):
@@ -184,49 +134,98 @@ def load_simulation(index):
         return pickle.load(file)
 
 
-if __name__ == '__main__':
-    all_available_indices_and_names()
-
-
-
-# From activity monitor
-
-already_set_up = False
-
-frontend = Connection(cluster_address)
-
-
-def replace_line_endings(filename):
-    ''' Creates a temporary file with posix line endings '''
-    tempfolder = tempfile.mkdtemp()
-    temp_filename = os.path.abspath(os.path.join(
-        tempfolder,
-        os.path.basename(filename)))
-    with io.open(filename, "r") as f:
-        contents = f.read()
-    with io.open(temp_filename, 'w', newline='\n') as f:
-        f.write(contents)
-    return temp_filename
-
-
-def setup(frontend):
-    ''' Copies cpuloadinfo.sh to the cluster'''
-    global already_set_up
-    print('Setting up cpuloadinfo.sh')
-    tmpfile = replace_line_endings('on_cluster/cpuloadinfo.sh')
-    frontend.put(tmpfile)
-    os.remove(tmpfile)
-    already_set_up = True
-
-
 def fetch_activity():
-    global already_set_up
-    if not already_set_up:
-        setup(frontend)
-    output = frontend.run('''bash cpuloadinfo.sh''', hide=True).stdout
+    with cluster.cd(cluster_path):
+        output = cluster.run('''bash cpuloadinfo.sh''', hide=True).stdout
     cpu_usage = output.split('\n')[1:-1]
     cpu_usage = [
         float(cpu_usage_meas.split(' ')[1]) for cpu_usage_meas in cpu_usage
     ]
     cpu_usage = np.array(cpu_usage)
     return cpu_usage
+
+
+if __name__ == '__main__':
+    all_available_indices_and_names()
+
+
+# Function for working with incoming signals
+def get_signals():
+    path = cluster_path+"/signal_out/"
+    try:
+        dirlist = cluster.sftp().listdir(path)
+        return set(dirlist)
+    except FileNotFoundError:
+        cluster.sftp().mkdir(path)
+        return set([])
+
+existing_signals = get_signals()
+def create_incoming_signal( index, signal_type, slot):
+    ''' create an incoming signal, only useful for testing '''
+    filename = 'signal_out/run{}_{}_{}'.format(index, signal_type, slot)
+    path = cluster_path+'/'+filename
+    cluster.sftp().open(path, 'a').close()
+
+def remove_incoming_signal(signal):
+    ''' remove a signal, only useful for testing '''
+    global existing_signals
+    path = cluster_path+'/signal_out/'+signal
+    if os.path.exists(path):
+        os.remove(path)
+    existing_signals = existing_signals - set(signal)
+    
+def get_new_signals():
+    global existing_signals
+    signals = get_signals()
+    return signals - existing_signals
+
+def add_new_signal(signal):
+    global existing_signals
+    existing_signals.add(signal)
+
+def get_signal_info(signal):
+    run, signal_type, slot = signal.split('_')
+    slot = int(slot)
+    index = run.replace("run", '')
+    index = int(index)
+    return index, signal_type, slot
+
+
+class RunCompleteWatcher(QFileSystemWatcher):
+    ''' Periodically polls the cluster to check for finished jobs
+        Gets the resulting images as numpy arrays and 
+        communicates them through a signal
+    '''
+
+    started = Signal(object)
+    completed = Signal(int)
+
+    def __init__(self, parent=None):
+        path = "{}/signal/".format(local_path)
+        super().__init__([path], parent)
+
+        self.directoryChanged.connect(self.new_signals)
+
+    def new_signals(self, path):
+        for signal in get_new_signals():
+            add_new_signal(signal)
+            index, signal_type, slot = get_signal_info(signal)
+
+            print("{} signal for run {} in slot {}!".format(
+                signal, index, slot))
+
+            if signal == "start":
+                self.started.emit((index, slot))
+            elif signal == "end":
+                self.completed.emit(index)
+
+
+
+def test_app():
+    app = QApplication(sys.argv)
+    label = QLabel("<font color=red size=40>Hello World!</font>")
+    label.show()
+    rcw = RunCompleteWatcher()
+    sys.exit(app.exec_())
+
+
