@@ -138,7 +138,7 @@ class TestClusterManager(object):
         cluster_manager.cluster.put('test/mock_cpuloadinfo.sh', remote=remote_name)
         cluster_manager.fetch_activity()
 
-    def test_get_signals(self):
+    def test_signals(self):
         new_signals = cluster_manager.get_new_signals()
 
         assert len(new_signals) == 0
