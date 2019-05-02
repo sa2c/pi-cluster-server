@@ -3,8 +3,7 @@ import os, shutil
 from tempfile import mkdtemp
 import numpy as np
 
-tmpdir = '/tmp/test/' # mkdtemp()
-os.makedirs(tmpdir)
+tmpdir = mkdtemp()+'/'
 
 import settings
 settings.cluster_address = 'localhost'
@@ -134,7 +133,7 @@ class TestClusterManager(object):
         assert os.path.exists('contour.dat')
 
     def test_fetch_activity(self):
-        remote_name = settings.cluster_path+'cpuloadinfo.sh'
+        remote_name = settings.cluster_path+'/cpuloadinfo.sh'
         cluster_manager.cluster.put('test/mock_cpuloadinfo.sh', remote=remote_name)
         cluster_manager.fetch_activity()
 
