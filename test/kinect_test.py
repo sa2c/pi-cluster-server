@@ -146,11 +146,12 @@ class TestKinectLib(object):
         scale = [1.0, 1.0]
         offset = [0, 0]
 
-        # Wind the mock forward, this should contain an object
+        # Wind the mock forward. It should contain an object by frame 20
         kinect.mock_kinect_index = 20
 
-        rgb_frame, depthimage, outline = kinect.images_and_outline(background_depth, scale, offset)
+        rgb_frame, rgb_frame_with_outline, depthimage, outline = kinect.images_and_outline(background_depth, scale, offset)
 
         assert rgb_frame.shape == (480, 640, 3)
+        assert rgb_frame_with_outline.shape == (480, 640, 3)
         assert depthimage.shape == (480, 640, 3)
         assert outline.shape == (settings.num_points, 1, 2)
