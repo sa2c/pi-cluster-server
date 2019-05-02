@@ -7,7 +7,6 @@ from kinectlib.kinectlib import *
 from display.detail_form import DetailForm
 from display.video_capture import VideoCaptureThread, QVideoWidget
 from display.control_window import ControlWindow
-from display.leaderboard import get_test_simulations
 from display.pyside_dynamic import loadUiWidget
 from display.activity_monitor import ActivityPlotter
 import os
