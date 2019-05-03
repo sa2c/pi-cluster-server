@@ -6,7 +6,7 @@ import settings
 settings.nnodes = 4
 settings.nslots = 4
 settings.IPs = [ "127.0.0.1" for i in range(settings.nnodes) ]
-settings.cfdcommand = "ls"
+settings.cfdcommand = "ls" #Instead of actually running cfd
 
 
 import cluster_queue
