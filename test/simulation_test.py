@@ -147,8 +147,8 @@ class TestClusterManager(object):
 
         assert len(new_signals) == 1
 
-        signal = next(iter(new_signals))
-        index, signal_type, slot = cluster_manager.get_signal_info( next(iter(new_signals)) )
+        signal = new_signals.pop()
+        index, signal_type, slot = cluster_manager.get_signal_info( signal )
 
         cluster_manager.remove_incoming_signal(signal)
 
