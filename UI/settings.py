@@ -20,7 +20,7 @@ flip_display_axis = True
 
 # Cluster settings
 cluster_address = "localhost"
-cluster_path = os.environ['PWD']+'/on_cluster/'
+cluster_path = os.environ['PWD']+'/../on_cluster/'
 
 # Local settings
 local_path = os.environ['PWD']
