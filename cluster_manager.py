@@ -92,11 +92,20 @@ def write_outline(filename, outline):
     np.savetxt(filename, flipped_outline, fmt='%i %i')
 
 
+def setup_cluster_inbox():
+    try:
+        cluster.sftp().stat(cluster_path+'/inbox')
+    except IOError:
+        cluster.sftp().mkdir(cluster_path+'/inbox')
+        cluster.sftp().mkdir(cluster_path+'/signal')
+
 def queue_run(contour, index):
     # save contour to file and copy to the cluster inbox
     filename = run_filepath(index, "contour.dat")
     write_outline(filename, contour)
 
+    setup_cluster_inbox()    
+    
     # copy the contour
     remote_name = '{}/inbox/run{}'.format(cluster_path, index)
     cluster.put(filename, remote=remote_name)
