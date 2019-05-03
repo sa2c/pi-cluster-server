@@ -8,7 +8,6 @@ from settings import *
 # The set of free nodes
 free_nodes = set(range(len(IPs)))
 
-
 def reserve_nodes( n_nodes ):
     my_nodes = set([])
     for ip in range(n_nodes):
@@ -41,7 +40,6 @@ def run_cfd( id ):
         ncores=nodes_per_job*nslots,
         hostfile=hostfilename
     )
-    command = ["sleep","10"]
     process = subprocess.Popen(command)
     os.chdir(local_path)
     return process
@@ -95,10 +93,3 @@ def run_queue():
 if __name__ == '__main__':
     run_queue()
 
-
-print(free_nodes)
-my_nodes = reserve_nodes(2)
-print(my_nodes)
-print(write_hostfile( my_nodes, "test"))
-print(free_nodes)
-print(run_cfd( "test" ))
