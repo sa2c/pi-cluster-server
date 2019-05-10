@@ -113,7 +113,7 @@ def queue_run(contour, index):
 
     # copy a signal file across
     remote_name = '{}/signal/run{}'.format(cluster_path, index)
-    cluster.put(filename, remote=remote_name)
+    cluster.sftp().file(remote_name, 'a').close()
 
 
 
@@ -166,15 +166,20 @@ def get_signals():
         dirlist = cluster.sftp().listdir(path)
         return set(dirlist)
     except FileNotFoundError:
+        print('not found')
         cluster.sftp().mkdir(path)
         return set([])
 
+
 existing_signals = get_signals()
+
+
 def create_incoming_signal( index, signal_type, slot):
     ''' create an incoming signal, only useful for testing '''
     filename = 'signal_out/run{}_{}_{}'.format(index, signal_type, slot)
     path = cluster_path+'/'+filename
     cluster.sftp().open(path, 'a').close()
+
 
 def remove_incoming_signal(signal):
     ''' remove a signal, only useful for testing '''
@@ -184,14 +189,17 @@ def remove_incoming_signal(signal):
         os.remove(path)
     existing_signals = existing_signals - set(signal)
     
+
 def get_new_signals():
     global existing_signals
     signals = get_signals()
     return signals - existing_signals
 
+
 def add_new_signal(signal):
     global existing_signals
     existing_signals.add(signal)
+
 
 def get_signal_info(signal):
     run, signal_type, slot = signal.split('_')
@@ -238,18 +246,18 @@ class RunCompleteWatcher(QThread):
 
     def run(self):
         while True:
-        for signal in get_new_signals():
-            add_new_signal(signal)
-            index, signal_type, slot = get_signal_info(signal)
+            for signal in get_new_signals():
+                add_new_signal(signal)
+                index, signal_type, slot = get_signal_info(signal)
 
-            print("{} signal for run {} in slot {}!".format(
+                print("{} signal for run {} in slot {}!".format(
                     signal_type, index, slot))
 
                 if signal_type == "start":
-                self.started.emit((index, slot))
+                    self.started.emit((index, slot))
                 elif signal_type == "end":
                     download_results(index)
-                self.completed.emit(index)
+                    self.completed.emit(index)
 
             time.sleep(2)
 
