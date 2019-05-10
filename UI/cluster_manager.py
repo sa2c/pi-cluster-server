@@ -201,6 +201,30 @@ def get_signal_info(signal):
     return index, signal_type, slot
 
 
+def download_results(index):
+    folder = 'outbox/run{}'.format(index)
+    remotepath = cluster_path+'/'+folder
+    for filename in cluster.sftp().listdir(remotepath):
+        cluster.sftp().get(
+            remotepath+'/'+filename,
+            os.path.join(folder,filename)
+        )
+
+
+def queue_running():
+    setup_cluster_inbox()
+    remote_name = '{}/signal/ping'.format(cluster_path)
+    cluster.sftp().file(remote_name, 'a').close()
+
+    remote_name = '{}/signal_out/pong'.format(cluster_path)
+    for i in range(5):
+        try:
+            cluster.sftp().remove(remote_name)
+            return True
+        except IOError:
+            time.sleep(1)
+
+    return False
 
 
 class RunCompleteWatcher(QThread):
