@@ -56,6 +56,7 @@ class ControlWindow(QMainWindow):
         self.run_watcher = cluster_manager.RunCompleteWatcher(self)
         self.run_watcher.started.connect(self.run_started)
         self.run_watcher.completed.connect(self.run_completed)
+        self.run_watcher.start()
 
         self.reset_action()
 
