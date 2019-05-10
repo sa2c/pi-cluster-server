@@ -13,6 +13,7 @@ class SimulationSelector(QListWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setCurrentRow(0)
 
         self.simulation_indices = all_available_indices_and_names()
         self.redraw_items()
@@ -24,6 +25,7 @@ class SimulationSelector(QListWidget):
         name = load_simulation_name(index)
         self.simulation_indices.insert(0, [index, name])
         self.redraw_items()
+        self.current_row_changed(1)
 
     def redraw_items(self):
         self.clear()
