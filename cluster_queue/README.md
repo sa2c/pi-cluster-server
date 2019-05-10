@@ -1,6 +1,8 @@
 
 
 '''
+g++ -o elmerpostprocessserial elmerpostprocessserial.cpp
+g++ -o elmerpostprocessparallel elmerpostprocessparallel.cpp
 cd triangle-lib
 make
 '''
