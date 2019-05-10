@@ -27,6 +27,7 @@ class TestClusterManager(object):
         os.makedirs(settings.cluster_path+'/inbox')
         os.makedirs(settings.cluster_path+'/signal')
         os.makedirs(settings.cluster_path+'/signal_out')
+        os.makedirs(settings.cluster_path+'/outbox')
         os.makedirs(self.remote_directory)
 
         if os.path.exists('signal'):
@@ -156,7 +157,21 @@ class TestClusterManager(object):
         assert signal_type == 'start'
         assert slot == 3
 
-        
+    def test_download_results(self):
+        outbox = settings.cluster_path+'/outbox/run'+self.test_index
+        if os.path.exists(outbox):
+            shutil.rmtree(outbox)
+        os.makedirs(outbox)
+        os.makedirs(self.test_directory)
+
+        open(outbox+'/testfile','a').close()
+
+        cluster_manager.download_results(self.test_index)
+
+        assert os.path.exists(self.test_directory+'/testfile')
+
+    def test_queue_running(self):
+        print(cluster_manager.queue_running())
 
 
 
