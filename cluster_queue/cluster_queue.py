@@ -2,11 +2,13 @@ import os, sys
 import subprocess
 import time
 import shutil
+import glob
 
 from settings import *
 
 # The set of free nodes
 free_nodes = set(range(len(IPs)))
+nslots = int(len(free_nodes) / nodes_per_job)
 
 def reserve_nodes( n_nodes ):
     my_nodes = set([])
@@ -50,7 +52,7 @@ def create_file(filename):
 
 
 def check_signals():
-    slot = 1
+    slot = 1 + nslots - int(nodes_available()/nodes_per_job)
     signals = os.listdir('signal')
     if( len(signals) > 0):
         signal = signals[0]
@@ -83,6 +85,10 @@ def run_queue():
             process, signal, slot = run
             if process.poll() is not None:
                 print("finished", signal)
+                filelist =  glob.glob('cfd/'+signal+'/mesh/*.vtk')
+                for f in filelist:
+                    shutil.copy(f, 'outbox/'+signal+'/')
+
                 create_file("signal_out/{}_end_{}".format(signal,slot))
                 runs.remove(run)
 
