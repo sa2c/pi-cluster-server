@@ -42,7 +42,7 @@ def run_cfd( id ):
         ncores=nodes_per_job*nslots,
         hostfile=hostfilename
     )
-    process = subprocess.Popen(command)
+    process = subprocess.Popen(command, shell=True)
     os.chdir(local_path)
     return process
 
@@ -50,6 +50,14 @@ def run_cfd( id ):
 def create_file(filename):
     open(filename, 'a').close()
 
+
+def check_ping():
+    signals = os.listdir('signal')
+    for signal in signals:
+        if signal == "ping":
+            create_file("signal_out/pong")
+            os.remove("signal/ping")
+  
 
 def check_signals():
     slot = 1 + nslots - int(nodes_available()/nodes_per_job)
@@ -77,6 +85,7 @@ def run_queue():
     runs = []
     while True:
         os.chdir(local_path)
+        check_ping()
         if nodes_available() >= nodes_per_job :
             runs += check_signals()
         time.sleep(1)
