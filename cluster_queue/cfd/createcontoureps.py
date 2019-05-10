@@ -162,8 +162,8 @@ def step6_generate_images_vtk(project_name, nprocs, num_timesteps):
         print(vtkfilename)
         if(os.path.isfile(vtkfilename) == True):
             generate_velocityvectorplots_from_vtk(vtkfilename, (fnum == 0), nprocs)
-        #else:
-            #print("{} file does not exist".format(vtkfilename))
+        else:
+            print("{} file does not exist".format(vtkfilename))
 
     return
 ##################################################
