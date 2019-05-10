@@ -78,7 +78,7 @@ class Controller(object):
         return index
 
     def simulation_postprocess(self, index):
-        np.append(self.drag, [index, cluster_manager.compute_drag_for_simulation(index)])
+        np.append(self.drag, [index, compute_drag_for_simulation(index)])
         cluster_manager.save_drag(self.drag)
 
     def print_simulation(self, index):
