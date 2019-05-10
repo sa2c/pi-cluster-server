@@ -1,5 +1,6 @@
 
 import os
+import time
 
 
 def step4_run_cfd_simulation(project_name, hostfile, nprocs):
