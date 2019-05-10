@@ -2,6 +2,7 @@ from PySide2.QtCore import *
 import numpy as np
 from fabric import Connection
 import os, io
+import time
 import pickle
 from fabric import Connection
 import tempfile
@@ -200,7 +201,9 @@ def get_signal_info(signal):
     return index, signal_type, slot
 
 
-class RunCompleteWatcher(QFileSystemWatcher):
+
+
+class RunCompleteWatcher(QThread):
     ''' Periodically polls the cluster to check for finished jobs
         Gets the resulting images as numpy arrays and 
         communicates them through a signal
@@ -209,24 +212,22 @@ class RunCompleteWatcher(QFileSystemWatcher):
     started = Signal(object)
     completed = Signal(int)
 
-    def __init__(self, parent=None):
-        path = "{}/signal/".format(local_path)
-        super().__init__([path], parent)
-
-        self.directoryChanged.connect(self.new_signals)
-
-    def new_signals(self, path):
+    def run(self):
+        while True:
         for signal in get_new_signals():
             add_new_signal(signal)
             index, signal_type, slot = get_signal_info(signal)
 
             print("{} signal for run {} in slot {}!".format(
-                signal, index, slot))
+                    signal_type, index, slot))
 
-            if signal == "start":
+                if signal_type == "start":
                 self.started.emit((index, slot))
-            elif signal == "end":
+                elif signal_type == "end":
+                    download_results(index)
                 self.completed.emit(index)
+
+            time.sleep(2)
 
 
 
