@@ -7,22 +7,25 @@ import pytest
 tmpdir = mkdtemp()+'/'
 
 import settings
-settings.cluster_address = 'localhost'
-settings.cluster_path = tmpdir
 
 import cluster_manager
-
 
 class TestClusterManager(object):
 
     test_index = '0'
     test_directory = 'outbox/run' + test_index
-    remote_directory = '{}/outbox/run{}'.format(
-        settings.cluster_path,
-        test_index
-    )
 
     def setup(self):
+        cluster_manager.cluster_address = 'localhost'
+        cluster_manager.cluster_path = tmpdir
+        settings.cluster_address = 'localhost'
+        settings.cluster_path = tmpdir
+        self.remote_directory = '{}/outbox/run{}'.format(
+            settings.cluster_path,
+            self.test_index
+        )
+
+
         if os.path.exists(settings.cluster_path):
             shutil.rmtree(settings.cluster_path)
         os.makedirs(settings.cluster_path+'/inbox')
@@ -31,12 +34,15 @@ class TestClusterManager(object):
         os.makedirs(settings.cluster_path+'/outbox')
         os.makedirs(self.remote_directory)
 
+
         if os.path.exists('signal'):
             shutil.rmtree('signal')
         os.makedirs('signal')
 
         if os.path.exists(self.test_directory):
             shutil.rmtree(self.test_directory)
+
+        assert tmpdir == cluster_manager.cluster_path
 
     def teardown(self):
         if os.path.exists('signal'):
@@ -121,9 +127,7 @@ class TestClusterManager(object):
 
         cluster_manager.queue_run(outline, self.test_index)
 
-        percentage = cluster_manager.get_run_completion_percentage(self.test_index)
-
-        assert percentage == 0
+        assert os.path.exists(settings.cluster_path+'inbox')
         assert os.path.exists(settings.cluster_path+'inbox/run0')
         assert os.path.exists(settings.cluster_path+'signal/run0')
         
@@ -181,39 +185,3 @@ class TestClusterManager(object):
 
 
 
-
-def get_test_simulations():
-    print('loading simulations...')
-    data = np.load('sim.npy')
-    depths = np.load('sim.npy')
-    depthimages = [depth_to_depthimage(depth) for depth in depths]
-
-    simulations = {
-        '23454325': {
-            'name': 'Bob Jones',
-            'score': 10.5,
-            'rgb_frame': data[0],
-            'depth_frame': depthimages[0]
-        },
-        '3445345': {
-            'name': 'Terry Berry',
-            'score': 9.5,
-            'rgb_frame': data[1],
-            'depth_frame': depthimages[1]
-        },
-        '234523452': {
-            'name': 'Bob Jones',
-            'score': 10.5,
-            'rgb_frame': data[0],
-            'depth_frame': depthimages[0]
-        },
-        '23452345': {
-            'name': 'Terry Berry',
-            'score': 9.5,
-            'rgb_frame': data[1],
-            'depth_frame': depthimages[1]
-        }
-    }
-
-    print('simulations loaded')
-    return simulations
