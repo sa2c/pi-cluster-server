@@ -2,6 +2,7 @@ import kinectlib.kinectlib as kinect
 import os, shutil
 from tempfile import mkdtemp
 import numpy as np
+import pytest
 
 tmpdir = mkdtemp()+'/'
 
@@ -170,8 +171,9 @@ class TestClusterManager(object):
 
         assert os.path.exists(self.test_directory+'/testfile')
 
+    @pytest.mark.skip()
     def test_queue_running(self):
-        print(cluster_manager.queue_running())
+        assert cluster_manager.queue_running()
 
 
 
