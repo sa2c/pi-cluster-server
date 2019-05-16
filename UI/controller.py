@@ -48,7 +48,6 @@ class Controller(object):
         return self.capture_frame, self.capture_depth
 
     def name_changed(self, name, email):
-        print(name, email)
         self.current_name = name
         self.current_email = email
 
@@ -78,7 +77,7 @@ class Controller(object):
         return index
 
     def simulation_postprocess(self, index):
-        np.append(self.drag, [index, compute_drag_for_simulation(index)])
+        self.drag = np.append(self.drag, [index, compute_drag_for_simulation(index)])
         cluster_manager.save_drag(self.drag)
 
     def print_simulation(self, index):
