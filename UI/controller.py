@@ -77,34 +77,42 @@ class Controller(object):
         return index
 
     def simulation_postprocess(self, index):
-        self.drag = np.append(self.drag, [index, compute_drag_for_simulation(index)])
+        drag = compute_drag_for_simulation(index)
+        
+        self.drag = np.append(self.drag, np.array([[index, drag]]), axis = 0)
         cluster_manager.save_drag(self.drag)
 
-    def print_simulation(self, index):
+        simulation = cluster_manager.load_simulation(index)
+        simulation['drag'] = drag
+        cluster_manager.save_simulation(simulation)
+
+    def print_simulation(self, index, send_to_printer = True):
         simulation = cluster_manager.load_simulation(index)
         rgb = simulation['rgb']
         depth = simulation['depth']
         rgb = simulation['rgb_with_contour']
 
         a = PlotCanvas()
-        vtk_filename = cluster_manager.un_filepath(index, 'elmeroutput0010.vtk')
+        vtk_filename = cluster_manager.run_filepath(index, 'elmeroutput0010.vtk')
         vtk_to_plot(a, vtk_filename, 16, True, False, True, None)
-        data = np.fromstring(a.canvas.tostring_rgb(), dtype=np.uint8, sep='')
-        data = data.reshape(a.canvas.get_width_height()[::-1] + (3, ))
+        data = np.fromstring(a.tostring_rgb(), dtype=np.uint8, sep='')
+        data = data.reshape(a.get_width_height()[::-1] + (3, ))
 
         a = PlotCanvas()
         vtk_to_plot(a, vtk_filename, 16, True,False,True,None)
 
-        generator = PDFPrinter('test_pil.pdf', rgb, depth, data, data,
-                                 'Test user with PIL', 69)
-        generator.run()
+        filename = str(index)+'.pdf'
+
+        generator = PDFPrinter(filename, rgb, depth, data, data,
+                                simulation['name'], simulation['drag'])
+        generator.run(send_to_printer = send_to_printer)
 
     def best_simulations(self):
         nsims = 10
         drag = np.array(self.drag)
         drag_sorted_indices = np.argsort(drag[:, 1])
-        drag_sorted_indices.reverse()
-        best_indices = drag[drag_sorted_indices[0:nsims], :]
+        drag_sorted_indices = np.flip(drag_sorted_indices)
+        best_indices = drag[drag_sorted_indices[0:nsims], 0]
 
         simulations = {}
         for index in best_indices:

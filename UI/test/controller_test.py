@@ -1,5 +1,7 @@
 import os
 import shutil
+import glob
+import numpy as np
 from controller import Controller
 import settings
 import cluster_manager
@@ -12,8 +14,6 @@ tmpdir = mkdtemp()+'/'
 class TestController(object):
 
     def setup(self):
-        self.controller = Controller()
-
         settings.cluster_path = mkdtemp()+'/'
         settings.cluster_address = 'localhost'
         cluster_manager.cluster_path = settings.cluster_path
@@ -35,8 +35,11 @@ class TestController(object):
         if os.path.exists(self.complete_runpath):
             shutil.rmtree(self.complete_runpath)
         os.makedirs(self.complete_runpath)
-        shutil.copy('test/data/elmeroutput0010.vtk', self.complete_runpath)
-        shutil.copy('test/data/test.poly', self.complete_runpath)
+
+        for filename in glob.glob('test/data/*'):
+            shutil.copy(filename, self.complete_runpath)
+        
+        self.controller = Controller()
 
     def teardown(self):
         if os.path.exists(settings.cluster_path):
@@ -90,11 +93,39 @@ class TestController(object):
 
         shutil.rmtree('outbox/run'+str(index))
 
-    def test_postprocess(self):
-        self.controller.simulation_postprocess(self.complete_index)
-        assert os.path.exists('drag_cache.npy')
-        assert self.controller.drag[-1] == '180.0'
-
     def test_compute_drag(self):
         drag = compute_drag_for_simulation(self.complete_index)
         assert drag == 180.0
+
+    def test_postprocess(self):
+        self.controller.simulation_postprocess(self.complete_index)
+        assert os.path.exists('drag_cache.npy')
+        assert self.controller.drag[-1,1] == '180.0'
+
+    def test_print_simulation(self):
+        s=cluster_manager.load_simulation(self.complete_index)
+        new_index = self.complete_index+'0'
+        for filename in glob.glob(self.complete_runpath+'/*'):
+            shutil.copy(filename, self.complete_runpath+'0')
+        s['drag'] = 10
+        s['index'] = new_index
+        cluster_manager.save_simulation(s)
+        s=cluster_manager.load_simulation(new_index)
+        print(s['drag'])
+        self.controller.print_simulation(
+            new_index,
+            send_to_printer = False
+        )
+        assert os.path.exists(new_index+'.pdf')
+        #os.remove('test_pil.pdf')
+
+    def test_best_simulations(self):
+        self.controller.drag = np.array([[self.complete_index, -5]])
+        simulations = self.controller.best_simulations()
+        assert len(simulations) > 0
+        assert simulations['1234']['name'] == 'Tester'
+
+    def test_get_epoch(self):
+        time = self.controller.get_epoch()
+        assert time > 0
+

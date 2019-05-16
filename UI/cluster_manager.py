@@ -22,7 +22,7 @@ def load_drag():
     try:
         drag = np.load(drag_file())
     except FileNotFoundError:
-        drag = []
+        drag = np.empty((0,2))
 
     return drag
 
