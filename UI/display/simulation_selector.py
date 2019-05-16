@@ -13,6 +13,7 @@ class SimulationSelector(QListWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.current_row = 0
         self.setCurrentRow(0)
 
         self.simulation_indices = all_available_indices_and_names()
@@ -20,6 +21,12 @@ class SimulationSelector(QListWidget):
 
         # connect signal
         self.currentRowChanged.connect(self.current_row_changed)
+
+    def selected_index(self):
+        if self.current_row > 0:
+            return self.simulation_indices[self.current_row - 1][0]
+        else :
+            return None
 
     def simulation_finished_action(self, index):
         name = load_simulation_name(index)
@@ -41,6 +48,7 @@ class SimulationSelector(QListWidget):
             self.addItem(item)
 
     def current_row_changed(self, current_row):
+        self.current_row = current_row
         if current_row == 0:
             self.viewfinder_view_selected.emit()
         elif len(self.simulation_indices) > current_row - 1:
