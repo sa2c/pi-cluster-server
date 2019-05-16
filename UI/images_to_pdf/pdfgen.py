@@ -103,7 +103,7 @@ class PDFPrinter(QRunnable):
         self.visitor_name = visitor_name
         self.visitor_score = visitor_score
 
-    def run(self):
+    def run(self, send_to_printer = True):
         images = []
         for image_array in self.image_arrays:
             image_io = BytesIO()
@@ -117,7 +117,9 @@ class PDFPrinter(QRunnable):
             self.visitor_name,
             self.visitor_score
         )
-        call(['lpr', '-o', 'landscape', self.output_filename])
+
+        if send_to_printer:
+            call(['lpr', '-o', 'landscape', self.output_filename])
 
 
 if __name__ == "__main__":
@@ -137,4 +139,4 @@ if __name__ == "__main__":
                              image1, image2, image3, image4,
                              'Test user with PIL', 69)
 #    import pdb; pdb.set_trace()
-    generator.run()
+    generator.run(send_to_printer = False)
