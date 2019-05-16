@@ -95,6 +95,7 @@ def run_queue():
             if process.poll() is not None:
                 print("finished", signal)
                 filelist =  glob.glob('cfd/'+signal+'/mesh/*.vtk')
+                filelist +=  glob.glob('cfd/'+signal+'/*.poly')
                 for f in filelist:
                     shutil.copy(f, 'outbox/'+signal+'/')
 
