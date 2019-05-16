@@ -9,7 +9,7 @@ from computedrag import compute_drag_for_simulation
 
 tmpdir = mkdtemp()+'/'
 
-class TestSimulation(object):
+class TestController(object):
 
     def setup(self):
         self.controller = Controller()
@@ -44,8 +44,6 @@ class TestSimulation(object):
 
         shutil.rmtree(self.complete_runpath)
 
-
-class TestController(TestSimulation):
 
     def test_init(self):
         assert self.controller.offset == [0, 0]
@@ -91,15 +89,12 @@ class TestController(TestSimulation):
         assert loaded_simulation['name'] == 'Tester'
 
         shutil.rmtree('outbox/run'+str(index))
-        shutil.rmtree(settings.cluster_path+'inbox/run'+str(index))
-        shutil.rmtree(settings.cluster_path+'signal/run'+str(index))
 
     def test_postprocess(self):
-        assert True
+        self.controller.simulation_postprocess(self.complete_index)
+        assert os.path.exists('drag_cache.npy')
+        assert self.controller.drag[-1] == '180.0'
 
-
-class TestController(TestSimulation):
-    
     def test_compute_drag(self):
         drag = compute_drag_for_simulation(self.complete_index)
         assert drag == 180.0
