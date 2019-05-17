@@ -1,1 +1,16 @@
 *.pyc
+outbox
+inbox
+signal_in
+signal_out
+*.poly
+*.dat
+elmerpostprocessparallel
+elmerpostprocessserial
+triangle
+hostfile_*
+*.png
+*.vtk
+*.npy
+**/cfd/run155*
+cluster_queue/cpu_load_data_dir
