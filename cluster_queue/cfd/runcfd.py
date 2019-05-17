@@ -36,6 +36,7 @@ from createcontoureps import *
 project_name = "Square"
 nprocs = 1
 hostfile = "hostfile1"
+diskaddress = "127.0.0.1:"+os.getcwd()+"/"
 
 if len(sys.argv) > 1:
     project_name = sys.argv[1]
@@ -45,6 +46,9 @@ if len(sys.argv) > 2:
 
 if len(sys.argv) > 3:
     hostfile = sys.argv[3]
+
+if len(sys.argv) > 4:
+    diskaddress = sys.argv[4]
 
 
 # Check if a directory with the given project name exists,
@@ -99,7 +103,7 @@ print("###################################################################\n")
 #
 ##########################################################
 
-step4_run_cfd_simulation(project_name, hostfile, nprocs)
+step4_run_cfd_simulation(project_name, hostfile, nprocs, diskaddress)
 
 
 

@@ -40,7 +40,8 @@ def run_cfd( id ):
     command = cfdcommand.format(
         id=id,
         ncores=nodes_per_job*nslots,
-        hostfile=hostfilename
+        hostfile=hostfilename,
+        diskaddress=diskaddress
     )
     process = subprocess.Popen(command, shell=True)
     os.chdir(local_path)

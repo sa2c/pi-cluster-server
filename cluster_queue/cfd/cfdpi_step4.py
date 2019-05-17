@@ -2,8 +2,7 @@
 import os
 import time
 
-
-def step4_run_cfd_simulation(project_name, hostfile, nprocs):
+def step4_run_cfd_simulation(project_name, hostfile, nprocs, diskaddress):
     print("step4_run_cfd_simulation")
 
     project_dir="./" + project_name + "/"
@@ -35,12 +34,12 @@ def step4_run_cfd_simulation(project_name, hostfile, nprocs):
       os.system(cmd)
     else:
       # First copy the mesh files over (using node 12, which will not run tasks)
-      cmd="scp -r ../"+project_name+" pi@10.0.0.12:Documents/picluster/cfd/"
+      cmd="scp -r ../"+project_name+" "+diskaddress+'/cfd'
       os.system(cmd)
       cmd="mpirun --hostfile ../"+hostfile+" -np "+ str(nprocs) + " ElmerSolver_mpi"
       os.system(cmd)
       time.sleep(2)
-      cmd="scp -r pi@10.0.0.12:Documents/picluster/cfd/"+project_name+"/* ./"
+      cmd="scp -r "+diskaddress+"/cfd/"+project_name+"/* ./"
       os.system(cmd)
 
 
