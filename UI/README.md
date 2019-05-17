@@ -18,12 +18,7 @@ Provide instructions here
 
 ## Running the UI
 
-First, create a signal folder
-'''
-mkdir signal
-'''
-
-To run the ui on a Kinect control node, use
+To run the ui on with a Kinect device attached type
 '''
 python3 ui.py
 '''
