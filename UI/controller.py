@@ -7,6 +7,7 @@ from computedrag import compute_drag_for_simulation
 from images_to_pdf.pdfgen import PDFPrinter
 from display.matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
+import matplotlib.pyplot as plt
 
 from settings import nmeasurements
 
@@ -19,6 +20,7 @@ class Controller(object):
         self.scale = [1.0, 1.0]
         self.drag = cluster_manager.load_drag()
         self.current_name = 'Simulation'
+        self.current_email = ''
         self.outline = None
         self.transformed_outline = None
         self.contour = np.array([[]])
@@ -26,7 +28,7 @@ class Controller(object):
         self.calibrate()
 
     def calibrate(self):
-        self.background = kinect.measure_depth(nmeasurements)
+        self.background = kinect.measure_depth(nmeasurements)        
 
     def capture(self):
         rgb, rgb_with_outline, depth, outline = kinect.images_and_outline(
@@ -44,10 +46,15 @@ class Controller(object):
 
         return self.capture_frame, self.capture_depth
 
+    def capture_and_show(self):
+        self.capture()
+        plt.imshow(self.capture_depth)
+        plt.show()
+
     def get_capture_images(self):
         return self.capture_frame, self.capture_depth
 
-    def name_changed(self, name, email):
+    def set_user_details(self, name, email):
         self.current_name = name
         self.current_email = email
 
@@ -76,6 +83,24 @@ class Controller(object):
 
         return index
 
+    def best_simulations(self):
+        nsims = 10
+        drag = np.array(self.drag)
+        drag_sorted_indices = np.argsort(drag[:, 1])
+        drag_sorted_indices = np.flip(drag_sorted_indices)
+        best_indices = drag[drag_sorted_indices[0:nsims], 0]
+
+        simulations = {}
+        for index in best_indices:
+            simulations[index] = cluster_manager.load_simulation(index)
+
+        return simulations
+
+    def get_epoch(self):
+        now = datetime.datetime.utcnow()
+        timestamp = calendar.timegm(now.utctimetuple())
+        return timestamp
+
     def simulation_postprocess(self, index):
         drag = compute_drag_for_simulation(index)
         
@@ -85,6 +110,41 @@ class Controller(object):
         simulation = cluster_manager.load_simulation(index)
         simulation['drag'] = drag
         cluster_manager.save_simulation(simulation)
+
+    def list_simulations(self):
+        return cluster_manager.all_available_indices_and_names()
+
+    def get_activity(self):
+        return cluster_manager.fetch_activity()
+
+    def get_simulation(self, index):
+        return cluster_manager.load_simulation(index)
+    
+    def get_simulation_name(self, index):
+        return cluster_manager.load_simulation_name(index)
+
+    def get_completion_percentage(self, index):
+        return cluster_manager.get_run_completion_percentage(index)
+
+    def print_running_jobs(self):
+        signals = cluster_manager.get_signals()
+        starts = []
+        ends = []
+        for signal in signals:
+            index, signal_type, _ = cluster_manager.get_signal_info(signal)
+            if signal_type == 'start':
+                starts += [index]
+            if signal_type == 'end':
+                ends += [index]
+        for index in starts:
+            if index not in ends:
+                print(
+                    index,
+                    self.get_simulation_name(index),
+                    self.get_completion_percentage(index)
+                )
+
+
 
     def print_simulation(self, index, send_to_printer = True):
         simulation = cluster_manager.load_simulation(index)
@@ -106,21 +166,3 @@ class Controller(object):
         generator = PDFPrinter(filename, rgb, depth, data, data,
                                 simulation['name'], simulation['drag'])
         generator.run(send_to_printer = send_to_printer)
-
-    def best_simulations(self):
-        nsims = 10
-        drag = np.array(self.drag)
-        drag_sorted_indices = np.argsort(drag[:, 1])
-        drag_sorted_indices = np.flip(drag_sorted_indices)
-        best_indices = drag[drag_sorted_indices[0:nsims], 0]
-
-        simulations = {}
-        for index in best_indices:
-            simulations[index] = cluster_manager.load_simulation(index)
-
-        return simulations
-
-    def get_epoch(self):
-        now = datetime.datetime.utcnow()
-        timestamp = calendar.timegm(now.utctimetuple())
-        return timestamp
