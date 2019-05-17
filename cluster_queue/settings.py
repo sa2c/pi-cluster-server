@@ -14,7 +14,7 @@ cfdcommand = "python runcfd.py {id} {ncores} {hostfile} {diskaddress} >> ../outb
 #cfdcommand = "sleep 10 >> ../outbox/{id}/output"
 
 os.makedirs('signal_out', exist_ok=True)
-os.makedirs('signal', exist_ok=True)
+os.makedirs('signal_in', exist_ok=True)
 os.makedirs('inbox', exist_ok=True)
 os.makedirs('outbox', exist_ok=True)
 

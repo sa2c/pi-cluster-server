@@ -33,7 +33,7 @@ def step4_run_cfd_simulation(project_name, hostfile, nprocs, diskaddress):
       cmd="ElmerSolver"
       os.system(cmd)
     else:
-      # First copy the mesh files over (using node 12, which will not run tasks)
+      # First copy the mesh files over
       cmd="scp -r ../"+project_name+" "+diskaddress+'/cfd'
       os.system(cmd)
       cmd="mpirun --hostfile ../"+hostfile+" -np "+ str(nprocs) + " ElmerSolver_mpi"

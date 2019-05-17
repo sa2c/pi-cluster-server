@@ -48,15 +48,15 @@ class TestQueue(object):
         assert process.wait() == 0
 
     def test_check_signals(self):
-        if os.path.exists('signal'):
-            shutil.rmtree('signal')
-        os.makedirs('signal')
+        if os.path.exists('signal_in'):
+            shutil.rmtree('signal_in')
+        os.makedirs('signal_in')
         os.makedirs('inbox', exist_ok=True)
 
         assert cluster_queue.check_signals() == []
 
         cluster_queue.create_file("inbox/testsignal")
-        cluster_queue.create_file("signal/testsignal")
+        cluster_queue.create_file("signal_in/testsignal")
 
         run, = cluster_queue.check_signals()
         process, signal, slot = run

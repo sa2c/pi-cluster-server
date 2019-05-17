@@ -53,7 +53,7 @@ def create_file(filename):
 
 
 def check_ping():
-    signals = os.listdir('signal')
+    signals = os.listdir('signal_in')
     for signal in signals:
         if signal == "ping":
             create_file("signal_out/pong")
@@ -62,12 +62,12 @@ def check_ping():
 
 def check_signals():
     slot = 1 + nslots - int(nodes_available()/nodes_per_job)
-    signals = os.listdir('signal')
+    signals = os.listdir('signal_in')
     if( len(signals) > 0):
         signal = signals[0]
         print("Starting", signal)
         try:
-            os.remove('signal/'+signal)
+            os.remove('signal_in/'+signal)
         except:
             return []
 

@@ -22,12 +22,9 @@ class TestController(object):
         if os.path.exists(settings.cluster_path):
             shutil.rmtree(settings.cluster_path)
         os.makedirs(settings.cluster_path+'/inbox')
-        os.makedirs(settings.cluster_path+'/signal')
+        os.makedirs(settings.cluster_path+'/signal_in')
         os.makedirs(settings.cluster_path+'/signal_out')
         os.makedirs(settings.cluster_path+'/outbox')
-
-        if not os.path.exists('signal'):
-            os.makedirs('signal')
 
         self.complete_index = '1234'
 
@@ -85,7 +82,7 @@ class TestController(object):
 
         assert os.path.exists(settings.cluster_path+'inbox')
         assert os.path.exists(settings.cluster_path+'inbox/run'+str(index))
-        assert os.path.exists(settings.cluster_path+'signal/run'+str(index))
+        assert os.path.exists(settings.cluster_path+'signal_in/run'+str(index))
 
         loaded_simulation = cluster_manager.load_simulation(index)
 
