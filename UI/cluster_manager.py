@@ -98,7 +98,7 @@ def setup_cluster_inbox():
         cluster.sftp().stat(cluster_path+'/inbox')
     except IOError:
         cluster.sftp().mkdir(cluster_path+'/inbox')
-        cluster.sftp().mkdir(cluster_path+'/signal')
+        cluster.sftp().mkdir(cluster_path+'/signal_in')
 
 def queue_run(contour, index):
     # save contour to file and copy to the cluster inbox
@@ -112,7 +112,7 @@ def queue_run(contour, index):
     cluster.put(filename, remote=remote_name)
 
     # copy a signal file across
-    remote_name = '{}/signal/run{}'.format(cluster_path, index)
+    remote_name = '{}/signal_in/run{}'.format(cluster_path, index)
     cluster.sftp().file(remote_name, 'a').close()
 
 
@@ -221,7 +221,7 @@ def download_results(index):
 
 def queue_running():
     setup_cluster_inbox()
-    remote_name = '{}/signal/ping'.format(cluster_path)
+    remote_name = '{}/signal_in/ping'.format(cluster_path)
     cluster.sftp().file(remote_name, 'a').close()
 
     remote_name = '{}/signal_out/pong'.format(cluster_path)

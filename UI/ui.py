@@ -14,13 +14,6 @@ from cluster_manager import queue_run
 
 from settings import local_path
 
-directory = 'outbox/signal'
-while not os.path.exists(directory):
-    try:
-        os.makedirs(directory)
-    except OSError as e:
-        print(f'directory creation failed: {directory}')
-
 
 def create_secondary_panel(parent, video_cap_thread):
     window = QDialog(parent)
