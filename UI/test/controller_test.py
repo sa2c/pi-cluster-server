@@ -79,7 +79,7 @@ class TestController(object):
         # Get the background
         self.controller.calibrate()
         frame, depth_rgb = self.controller.capture()
-        self.controller.name_changed('Tester', 'anemail@dotcom.com')
+        self.controller.set_user_details('Tester', 'anemail@dotcom.com')
 
         index = self.controller.start_simulation()
 

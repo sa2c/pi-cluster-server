@@ -138,7 +138,7 @@ class ControlWindow(QMainWindow):
         self.name_changed_action('', '')
 
     def name_changed_action(self, name, email):
-        self.controller.name_changed(name, email)
+        self.controller.set_user_details(name, email)
         self.viewfinder.ui.name.setText(f'Name: {name}')
         self.viewfinder.ui.email.setText(f'e-mail (optional): {email}')
 
