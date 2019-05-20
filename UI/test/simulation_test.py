@@ -3,11 +3,7 @@ import os, shutil
 from tempfile import mkdtemp
 import numpy as np
 import pytest
-
-tmpdir = mkdtemp()+'/'
-
 import settings
-
 import cluster_manager
 
 class TestClusterManager(object):
@@ -17,27 +13,23 @@ class TestClusterManager(object):
 
     def setup(self):
         cluster_manager.cluster_address = 'localhost'
-        cluster_manager.cluster_path = tmpdir
+        cluster_manager.cluster_path = mkdtemp()
         settings.cluster_address = 'localhost'
-        settings.cluster_path = tmpdir
-        self.remote_directory = '{}/outbox/run{}'.format(
+        settings.cluster_path = cluster_manager.cluster_path
+        self.remote_directory = '{}/simulations/run{}'.format(
             settings.cluster_path,
             self.test_index
         )
-
 
         if os.path.exists(settings.cluster_path):
             shutil.rmtree(settings.cluster_path)
         os.makedirs(settings.cluster_path+'/inbox')
         os.makedirs(settings.cluster_path+'/signal_in')
         os.makedirs(settings.cluster_path+'/signal_out')
-        os.makedirs(settings.cluster_path+'/outbox')
-        os.makedirs(self.remote_directory)
+        os.makedirs(settings.cluster_path+'/simulations')
 
         if os.path.exists(self.test_directory):
             shutil.rmtree(self.test_directory)
-
-        assert tmpdir == cluster_manager.cluster_path
 
     def teardown(self):
         if os.path.exists(settings.cluster_path):
@@ -93,7 +85,7 @@ class TestClusterManager(object):
 
     def test_get_run_completion_percentage(self):
         ''' Checks the output file for completion percentage '''
-                
+        os.makedirs(self.remote_directory)
         percentage = cluster_manager.get_run_completion_percentage(self.test_index)
 
         assert percentage == 0
@@ -118,9 +110,9 @@ class TestClusterManager(object):
 
         cluster_manager.queue_run(outline, self.test_index)
 
-        assert os.path.exists(settings.cluster_path+'inbox')
-        assert os.path.exists(settings.cluster_path+'inbox/run0')
-        assert os.path.exists(settings.cluster_path+'signal_in/run0')
+        assert os.path.exists(settings.cluster_path+'/inbox')
+        assert os.path.exists(settings.cluster_path+'/inbox/run0')
+        assert os.path.exists(settings.cluster_path+'/signal_in/run0')
         
     def test_write_outline(self):
         cluster_manager.write_outline(
@@ -154,7 +146,7 @@ class TestClusterManager(object):
         assert slot == 3
 
     def test_download_results(self):
-        outbox = settings.cluster_path+'/outbox/run'+self.test_index
+        outbox = settings.cluster_path+'/simulations/run'+self.test_index
         if os.path.exists(outbox):
             shutil.rmtree(outbox)
         os.makedirs(outbox)

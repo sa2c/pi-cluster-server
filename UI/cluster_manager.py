@@ -70,7 +70,7 @@ def get_run_completion_percentage(index):
     ''' Read the completion percentage of the run
     '''
     try:
-        directory = '{}/outbox/run{}'.format(cluster_path, index)
+        directory = '{}/simulations/run{}'.format(cluster_path, index)
         grep = "grep 'MAIN:  Time:' output"
         get_last = " | tail -n 1"
         get_time = " | awk '{print $3}'"
@@ -112,7 +112,7 @@ def queue_run(contour, index):
     cluster.put(filename, remote=remote_name)
 
     # copy simulation details over to the cluster
-    remote_folder = '{}/outbox/run{}'.format(cluster_path, index)
+    remote_folder = '{}/simulations/run{}'.format(cluster_path, index)
     cluster.sftp().mkdir(remote_folder)
     local_folder  = 'simulations/run{}'.format(index)
     for filename in os.listdir(local_folder):
@@ -216,7 +216,7 @@ def get_signal_info(signal):
 
 def download_results(index):
     localfolder = run_directory(index)
-    remotefolder = 'outbox/run{}'.format(index)
+    remotefolder = 'simulations/run{}'.format(index)
     remotepath = cluster_path+'/'+remotefolder
     for filename in cluster.sftp().listdir(remotepath):
         cluster.sftp().get(
