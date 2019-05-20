@@ -202,11 +202,3 @@ def vtk_to_plot(canvas, vtk_filename, nprocs, dotri,dovector,docontour,image,\
                 image, velocity_magn)
 
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    canvas = PlotCanvas()
-    vtk_file = 'outbox/testrun1/elmeroutput0001.vtk'
-    image_file = 'outbox/testrun1/kinect/scf1-fullcolorimage.png'
-    vtk_to_plot(canvas, vtk_file, 1, False, True, False, image)
-    canvas.show()
-    sys.exit(app.exec_())

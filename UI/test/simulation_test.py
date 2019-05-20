@@ -13,7 +13,7 @@ import cluster_manager
 class TestClusterManager(object):
 
     test_index = '0'
-    test_directory = 'outbox/run' + test_index
+    test_directory = 'simulations/run' + test_index
 
     def setup(self):
         cluster_manager.cluster_address = 'localhost'
@@ -29,15 +29,10 @@ class TestClusterManager(object):
         if os.path.exists(settings.cluster_path):
             shutil.rmtree(settings.cluster_path)
         os.makedirs(settings.cluster_path+'/inbox')
-        os.makedirs(settings.cluster_path+'/signal')
+        os.makedirs(settings.cluster_path+'/signal_in')
         os.makedirs(settings.cluster_path+'/signal_out')
         os.makedirs(settings.cluster_path+'/outbox')
         os.makedirs(self.remote_directory)
-
-
-        if os.path.exists('signal'):
-            shutil.rmtree('signal')
-        os.makedirs('signal')
 
         if os.path.exists(self.test_directory):
             shutil.rmtree(self.test_directory)
@@ -45,10 +40,6 @@ class TestClusterManager(object):
         assert tmpdir == cluster_manager.cluster_path
 
     def teardown(self):
-        if os.path.exists('signal'):
-            shutil.rmtree('signal')
-        os.makedirs('signal')
-
         if os.path.exists(settings.cluster_path):
             shutil.rmtree(settings.cluster_path)
 
@@ -129,7 +120,7 @@ class TestClusterManager(object):
 
         assert os.path.exists(settings.cluster_path+'inbox')
         assert os.path.exists(settings.cluster_path+'inbox/run0')
-        assert os.path.exists(settings.cluster_path+'signal/run0')
+        assert os.path.exists(settings.cluster_path+'signal_in/run0')
         
     def test_write_outline(self):
         cluster_manager.write_outline(
