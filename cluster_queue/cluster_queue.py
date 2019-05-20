@@ -35,7 +35,7 @@ def nodes_available():
 def run_cfd( id ):
     my_nodes = reserve_nodes( nodes_per_job )
     try:
-        os.makedirs('outbox/'+id)
+        os.makedirs('simulations/'+id)
     except FileExistsError:
         pass
     os.chdir('cfd')
@@ -101,7 +101,7 @@ def run_queue():
                 filelist =  glob.glob('cfd/'+signal+'/mesh/*.vtk')
                 filelist +=  glob.glob('cfd/'+signal+'/*.poly')
                 for f in filelist:
-                    shutil.copy(f, 'outbox/'+signal+'/')
+                    shutil.copy(f, 'simulations/'+signal+'/')
 
                 create_file("signal_out/{}_end_{}".format(signal,slot))
                 runs.remove(run)

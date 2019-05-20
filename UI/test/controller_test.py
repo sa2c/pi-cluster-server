@@ -9,8 +9,6 @@ from tempfile import mkdtemp
 
 from computedrag import compute_drag_for_simulation 
 
-tmpdir = mkdtemp()+'/'
-
 class TestController(object):
 
     def setup(self):
@@ -24,7 +22,7 @@ class TestController(object):
         os.makedirs(settings.cluster_path+'/inbox')
         os.makedirs(settings.cluster_path+'/signal_in')
         os.makedirs(settings.cluster_path+'/signal_out')
-        os.makedirs(settings.cluster_path+'outbox')
+        os.makedirs(settings.cluster_path+'simulations')
 
         self.complete_index = '1234'
 
