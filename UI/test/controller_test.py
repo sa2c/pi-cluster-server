@@ -24,11 +24,11 @@ class TestController(object):
         os.makedirs(settings.cluster_path+'/inbox')
         os.makedirs(settings.cluster_path+'/signal_in')
         os.makedirs(settings.cluster_path+'/signal_out')
-        os.makedirs(settings.cluster_path+'/outbox')
+        os.makedirs(settings.cluster_path+'outbox')
 
         self.complete_index = '1234'
 
-        self.complete_runpath = 'outbox/run' + self.complete_index
+        self.complete_runpath = 'simulations/run' + self.complete_index
         if os.path.exists(self.complete_runpath):
             shutil.rmtree(self.complete_runpath)
         os.makedirs(self.complete_runpath)
@@ -88,7 +88,7 @@ class TestController(object):
 
         assert loaded_simulation['name'] == 'Tester'
 
-        shutil.rmtree('outbox/run'+str(index))
+        shutil.rmtree('simulations/run'+str(index))
 
     def test_compute_drag(self):
         drag = compute_drag_for_simulation(self.complete_index)
@@ -102,6 +102,7 @@ class TestController(object):
     def test_print_simulation(self):
         s=cluster_manager.load_simulation(self.complete_index)
         new_index = self.complete_index+'0'
+        os.makedirs(self.complete_runpath+'0', exist_ok=True)
         for filename in glob.glob(self.complete_runpath+'/*'):
             shutil.copy(filename, self.complete_runpath+'0')
         s['drag'] = 10

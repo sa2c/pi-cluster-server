@@ -32,7 +32,7 @@ def save_drag(drag):
 
 
 def all_available_indices_and_names():
-    dir = 'outbox'
+    dir = 'simulations'
     simulations = []
 
     for file in os.listdir(dir):
@@ -49,7 +49,7 @@ def all_available_indices_and_names():
 
 
 def run_directory(index):
-    directory = 'outbox/run{index}'.format(index=index)
+    directory = 'simulations/run{index}'.format(index=index)
 
     while not os.path.exists(directory):
         try:
@@ -210,12 +210,13 @@ def get_signal_info(signal):
 
 
 def download_results(index):
-    folder = 'outbox/run{}'.format(index)
-    remotepath = cluster_path+'/'+folder
+    localfolder = run_directory(index)
+    remotefolder = 'outbox/run{}'.format(index)
+    remotepath = cluster_path+'/'+remotefolder
     for filename in cluster.sftp().listdir(remotepath):
         cluster.sftp().get(
             remotepath+'/'+filename,
-            os.path.join(folder,filename)
+            os.path.join(localfolder,filename)
         )
 
 
