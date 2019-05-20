@@ -111,6 +111,15 @@ def queue_run(contour, index):
     remote_name = '{}/inbox/run{}'.format(cluster_path, index)
     cluster.put(filename, remote=remote_name)
 
+    # copy simulation details over to the cluster
+    remote_folder = '{}/outbox/run{}'.format(cluster_path, index)
+    cluster.sftp().mkdir(remote_folder)
+    local_folder  = 'simulations/run{}'.format(index)
+    for filename in os.listdir(local_folder):
+        remote_file  = '{}/{}'.format(remote_folder, filename)
+        local_file  = '{}/{}'.format(local_folder, filename)
+        cluster.put(local_file, remote=remote_file)
+
     # copy a signal file across
     remote_name = '{}/signal_in/run{}'.format(cluster_path, index)
     cluster.sftp().file(remote_name, 'a').close()
@@ -153,10 +162,6 @@ def fetch_activity():
     ]
     cpu_usage = np.array(cpu_usage)
     return cpu_usage
-
-
-if __name__ == '__main__':
-    all_available_indices_and_names()
 
 
 # Function for working with incoming signals
@@ -245,7 +250,16 @@ class RunCompleteWatcher(QThread):
     started = Signal(object)
     completed = Signal(int)
 
+    def get_completed(self):
+        for signal in get_signals():
+            index, signal_type, slot = get_signal_info(signal)
+            if signal_type == 'end':
+                if not os.path.isfile(f'simulations/run{index}/elmeroutput0010.vtk'):
+                    download_results(index)
+                    self.completed.emit(index)
+
     def run(self):
+        self.get_completed()
         while True:
             for signal in get_new_signals():
                 add_new_signal(signal)

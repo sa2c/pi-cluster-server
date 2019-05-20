@@ -125,13 +125,16 @@ class ViewfinderDialog(QDialog):
         self.indices_in_slots[slot] = index_run
 
     def finish_simulation(self, index_run):
-        print(f'finish sim: {index_run}')
-        slot_number = self.indices_in_slots.index(index_run)
-        pbar = self.progress_slots[slot_number]
-        text = self.progress_slots_text[slot_number]
-        pbar.setValue(0)
-        self.indices_in_slots[slot_number] = None
-        text.setText(f'Slot {slot_number + 1}: Idle')
+        try:
+            slot_number = self.indices_in_slots.index(index_run)
+            print(f'finish sim: {index_run}')
+            pbar = self.progress_slots[slot_number]
+            text = self.progress_slots_text[slot_number]
+            pbar.setValue(0)
+            self.indices_in_slots[slot_number] = None
+            text.setText(f'Slot {slot_number + 1}: Idle')
+        except:
+            print(f"Simulation {index_run} completed not in queue")
 
     def start_progress_checking(self):
         print(f'start progress checking')

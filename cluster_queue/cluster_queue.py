@@ -34,7 +34,10 @@ def nodes_available():
 
 def run_cfd( id ):
     my_nodes = reserve_nodes( nodes_per_job )
-    os.makedirs('outbox/'+id, exist_ok=True)
+    try:
+        os.makedirs('outbox/'+id)
+    except FileExistsError:
+        pass
     os.chdir('cfd')
     hostfilename = write_hostfile( my_nodes, id )
     command = cfdcommand.format(
