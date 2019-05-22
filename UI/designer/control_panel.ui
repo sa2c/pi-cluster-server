@@ -62,7 +62,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Video Depth Captured</string>
+            <string></string>
            </property>
           </widget>
          </item>
@@ -75,7 +75,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Video RGB Captured</string>
+            <string></string>
            </property>
           </widget>
          </item>
@@ -88,7 +88,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Video RGB</string>
+            <string></string>
            </property>
           </widget>
          </item>
@@ -101,7 +101,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Video Depth</string>
+            <string>No video feed</string>
            </property>
           </widget>
          </item>
