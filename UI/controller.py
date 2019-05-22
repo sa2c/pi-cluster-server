@@ -25,7 +25,11 @@ class Controller(object):
         self.transformed_outline = None
         self.contour = np.array([[]])
 
-        self.calibrate()
+        if self.kinect_connected():
+            self.calibrate()
+
+    def kinect_connected(self):
+        return kinect.freenect_loaded
 
     def calibrate(self):
         self.background = kinect.measure_depth(nmeasurements)        

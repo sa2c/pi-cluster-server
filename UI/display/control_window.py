@@ -37,6 +37,14 @@ class ControlWindow(QMainWindow):
         self.ui.show_button.released.connect(self.show_capture_action)
         self.ui.color_calibrate_button.released.connect(
             self.calibrate_color_action)
+
+        if not self.controller.kinect_connected():
+            self.ui.calibrate_button.setEnabled(False)
+            self.ui.color_calibrate_button.setEnabled(False)
+            self.ui.details_button.setEnabled(False)
+            self.ui.capture_button.setEnabled(False)
+            self.ui.show_button.setEnabled(False)
+            self.ui.process_button.setEnabled(False)
         
         # create viewfinder
         self.viewfinder = ViewfinderDialog()

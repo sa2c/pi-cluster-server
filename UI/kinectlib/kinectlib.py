@@ -12,10 +12,19 @@ from settings import num_points, corner_cutting_steps
 from settings import color_scale, flip_display_axis
 from settings import mock_kinect
 
+
+freenect_loaded = False
+
 if not mock_kinect:
-    # Use the actual kinect. Requires freenect to be installed
-    from freenect import sync_get_depth, sync_get_video
-    from freenect import DEPTH_MM
+    # Use the actual kinect
+    try:
+        from freenect import sync_get_depth, sync_get_video
+        from freenect import DEPTH_MM
+        # Try getting data to check if the device is connected
+        if sync_get_depth(format=DEPTH_MM):
+            freenect_loaded = True
+    except:
+        pass
 
 if mock_kinect:
     # Use recorded Kinect data to mock the device. Load the data
@@ -26,6 +35,8 @@ if mock_kinect:
 
     mock_depth = np.load("test_data/kinect_data.npy")
     mock_color = np.load("test_data/color_kinect_data.npy")
+    
+    freenect_loaded = True
 
 
 def get_depth():
