@@ -213,4 +213,4 @@ def images_and_outline(background, scale, offset):
     cv2.drawContours(rgb_frame_with_outline, [transformed_outline], -1,
                 (0, 0, 255), 2)
 
-    return rgb_frame, rgb_frame_with_outline, depthimage, outline
+    return rgb_frame, rgb_frame_with_outline, depthimage, transformed_outline
