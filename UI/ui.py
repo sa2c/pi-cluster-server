@@ -10,7 +10,6 @@ from display.control_window import ControlWindow
 from display.pyside_dynamic import loadUiWidget
 from display.activity_monitor import ActivityPlotter
 import os
-from cluster_manager import queue_run
 
 from settings import local_path
 
@@ -38,10 +37,7 @@ if __name__ == '__main__':
     # initialise another thread for video capture
     th = VideoCaptureThread()
 
-    simulations = {}
-
     window = ControlWindow()
-    window.viewfinder.ui.leaderboard.update(simulations.values())
 
     th.changeFramePixmap.connect(window.ui.video_rgb.setImage)
     th.changeDepthPixmap.connect(window.ui.video_depth.setImage)
