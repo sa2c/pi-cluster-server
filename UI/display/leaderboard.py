@@ -5,10 +5,11 @@ from PySide2.QtUiTools import QUiLoader
 import cv2, sys, time, os
 import numpy as np
 from display.video_capture import QVideoWidget
-from display.pyside_dynamic import loadUi
+from display.pyside_dynamic import loadUiWidget
+from display.video_capture import QVideoWidget
 
-image_width = 300
-image_height = 300
+image_width  = 100
+image_height = 100
 
 
 class LeaderboardWidget(QListWidget):
@@ -22,19 +23,18 @@ class LeaderboardWidget(QListWidget):
             "background-color: #FCF7F8;", "background-color: #90C2E7;"
         ]
 
-    def update(self, simulations):
 
+    def update(self, simulations):
         self.clear()
 
         for i, sim in enumerate(simulations):
-            rgb_image = sim['rgb_frame']
-            depth_image = sim['depth_frame']
+            rgb_image = sim['rgb']
+            depth_image = sim['depth']
 
-            widget = QWidget()
-            loadUi(
+            widget = loadUiWidget(
                 'designer/leaderboard_list_item.ui',
-                widget,
-                customWidgets={'QVideoWidget': QVideoWidget})
+                customWidgets=[QVideoWidget]
+            )
 
             # set background color
             widget.setStyleSheet(self.stylesheets[i % 2])

@@ -13,7 +13,6 @@ from display.simulation_selector import SimulationSelector
 from controller import Controller
 import cluster_manager
 
-
 class ControlWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -50,6 +49,7 @@ class ControlWindow(QMainWindow):
         self.viewfinder = ViewfinderDialog()
         self.viewfinder.show()
         self.viewfinder.start_progress_checking()
+        self.viewfinder.ui.leaderboard.update(self.controller.best_simulations())
 
         # connect view selector
         self.ui.view_selector.simulation_view_changed.connect(
@@ -106,7 +106,6 @@ class ControlWindow(QMainWindow):
             self.ui.show_button.setText('&Show Capture')
 
     def capture_action(self):
-
         rgb_frame, depthimage = self.controller.capture()
 
         # set images
