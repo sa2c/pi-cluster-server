@@ -7,17 +7,26 @@ import glob
 from settings import *
 
 # The set of free nodes
-free_nodes = set(range(len(IPs)))
-nslots = int(len(free_nodes) / nodes_per_job)
+nodes = set(range(len(IPs)))
+nslots = int(len(nodes) / nodes_per_job)
 
-def reserve_nodes( n_nodes ):
+# Divide nodes to slots
+ips_in_slot = []
+for slot in range(nslots):
     my_nodes = set([])
-    for ip in range(n_nodes):
-	    node = free_nodes.pop()
+    for ip in range(nodes_per_job):
+	    node = nodes.pop()
 	    my_nodes.add(node)
-    return my_nodes
+    ips_in_slot.append(my_nodes)
 
+free_slots = set(range(nslots))
 
+print(ips_in_slot)
+print(free_slots)
+
+def reserve_nodes():
+	return free_slots.pop()
+    
 def write_hostfile( nodes, id ):
     hostfilename="hostfile_"+id
     with open(hostfilename, "w") as f:
@@ -28,12 +37,13 @@ def write_hostfile( nodes, id ):
     return hostfilename
 
 
-def nodes_available():
-    return( len(free_nodes) )
+def slots_available():
+    return( len(free_slots) )
 
 
 def run_cfd( id ):
-    my_nodes = reserve_nodes( nodes_per_job )
+    my_slot = reserve_nodes()
+    my_nodes = ips_in_slot[my_slot]
     try:
         os.makedirs('simulations/'+id)
     except FileExistsError:
@@ -48,7 +58,7 @@ def run_cfd( id ):
     )
     process = subprocess.Popen(command, shell=True)
     os.chdir(local_path)
-    return process
+    return [process, my_slot]
 
 
 def create_file(filename):
@@ -64,7 +74,6 @@ def check_ping():
   
 
 def check_signals():
-    slot = 1 + nslots - int(nodes_available()/nodes_per_job)
     signals = os.listdir('signal_in')
     if( len(signals) > 0):
         signal = signals[0]
@@ -74,13 +83,13 @@ def check_signals():
         except:
             return []
 
-        create_file("signal_out/{}_start_{}".format(signal,slot))
         shutil.copyfile(
             'inbox/'+signal,
             'cfd/'+signal+'-outline-coords.dat'
         )
-        run = run_cfd(signal)
-        return [(run,signal,slot)]
+        run, slot = run_cfd(signal)
+        create_file("signal_out/{}_start_{}".format(signal,slot+1))
+        return [(run, signal, slot)]
     else:
         return []
 
@@ -88,9 +97,11 @@ def check_signals():
 def run_queue():
     runs = []
     while True:
+        print(free_slots)
+
         os.chdir(local_path)
         check_ping()
-        if nodes_available() >= nodes_per_job :
+        if slots_available() >= nodes_per_job :
             runs += check_signals()
         time.sleep(1)
         
@@ -103,8 +114,9 @@ def run_queue():
                 for f in filelist:
                     shutil.copy(f, 'simulations/'+signal+'/')
 
-                create_file("signal_out/{}_end_{}".format(signal,slot))
+                create_file("signal_out/{}_end_{}".format(signal,slot+1))
                 runs.remove(run)
+                free_slots.add(slot)
 
 
 
