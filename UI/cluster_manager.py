@@ -14,7 +14,6 @@ local_path = os.environ['PWD']
 cluster = Connection(cluster_address)
 
 
-
 def all_available_indices_and_names():
     dir = 'simulations'
     simulations = []
@@ -23,12 +22,12 @@ def all_available_indices_and_names():
         if 'run' in file:
             try:
                 index = int(file.replace('run', ''))
-                name = load_simulation_name(index)
-                simulations.append([index, name])
+                if os.path.exists(run_filepath(index, 'elmeroutput0010.vtk')):
+                    name = load_simulation_name(index)
+                    simulations.append([index, name])
             except Exception as e:
                 print(f'failed to load file: {file}')
                 print(str(e))
-
     return simulations
 
 
