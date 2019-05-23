@@ -35,6 +35,9 @@ class TestClusterManager(object):
         if os.path.exists(settings.cluster_path):
             shutil.rmtree(settings.cluster_path)
 
+        if os.path.exists(self.test_directory):
+            shutil.rmtree(self.test_directory)
+
     def test_save_and_load_simulation(self):
         directory = cluster_manager.run_directory(self.test_index)
         cluster_manager.save_simulation({
