@@ -12,21 +12,37 @@ import matplotlib.pyplot as plt
 from settings import nmeasurements
 
 
+
+
 class Controller(object):
     def __init__(self, parent=None):
 
         # instance variables
         self.offset = [0, 0]
         self.scale = [1.0, 1.0]
-        self.drag = cluster_manager.load_drag()
         self.current_name = 'Simulation'
         self.current_email = ''
         self.outline = None
         self.transformed_outline = None
         self.contour = np.array([[]])
 
+        try:
+            self.drag = self.load_drag()
+        except FileNotFoundError:
+            self.drag = np.empty((0,2))
+            self.recalculate_drag()
+
         if self.kinect_connected():
             self.calibrate()
+
+    def drag_file(self):
+        return 'drag_cache.npy'
+
+    def save_drag(self, drag):
+        np.save(self.drag_file(),drag)
+
+    def load_drag(self):
+        return np.load(self.drag_file())
 
     def kinect_connected(self):
         return kinect.freenect_loaded
@@ -90,13 +106,14 @@ class Controller(object):
     def best_simulations(self):
         nsims = 10
         drag = np.array(self.drag)
+        nsims = min(10, drag.shape[0])
         drag_sorted_indices = np.argsort(drag[:, 1])
-        drag_sorted_indices = np.flip(drag_sorted_indices)
         best_indices = drag[drag_sorted_indices[0:nsims], 0]
 
-        simulations = {}
+        simulations = []
         for index in best_indices:
-            simulations[index] = cluster_manager.load_simulation(index)
+            i = int(index)
+            simulations.append(cluster_manager.load_simulation(i))
 
         return simulations
 
@@ -105,15 +122,24 @@ class Controller(object):
         timestamp = calendar.timegm(now.utctimetuple())
         return timestamp
 
-    def simulation_postprocess(self, index):
+    def calculate_drag(self, index):
         drag = compute_drag_for_simulation(index)
         
-        self.drag = np.append(self.drag, np.array([[index, drag]]), axis = 0)
-        cluster_manager.save_drag(self.drag)
-
         simulation = cluster_manager.load_simulation(index)
-        simulation['drag'] = drag
+        simulation['score'] = drag
         cluster_manager.save_simulation(simulation)
+        return drag
+
+    def simulation_postprocess(self, index):
+        drag = self.calculate_drag(index)
+        self.drag = np.append(self.drag, np.array([[index, drag]]), axis = 0)
+        self.save_drag(self.drag)
+
+    def recalculate_drag(self):
+        for index, name in self.list_simulations():
+            drag = self.calculate_drag(index)
+            self.drag = np.append(self.drag, np.array([[index, drag]]), axis = 0)
+        self.save_drag(self.drag)
 
     def list_simulations(self):
         return cluster_manager.all_available_indices_and_names()
