@@ -81,6 +81,8 @@ class TestController(object):
         assert os.path.exists(settings.cluster_path+'inbox')
         assert os.path.exists(settings.cluster_path+'inbox/run'+str(index))
         assert os.path.exists(settings.cluster_path+'signal_in/run'+str(index))
+        assert os.path.exists(settings.cluster_path+'simulations/run'+str(index))
+        assert os.path.exists(settings.cluster_path+'simulations/run'+str(index)+'/simulation.npy')
 
         loaded_simulation = cluster_manager.load_simulation(index)
 
@@ -113,7 +115,8 @@ class TestController(object):
             send_to_printer = False
         )
         assert os.path.exists(new_index+'.pdf')
-        #os.remove('test_pil.pdf')
+
+        shutil.rmtree(self.complete_runpath+'0')
 
     def test_best_simulations(self):
         self.controller.drag = np.array([[self.complete_index, -5]])
