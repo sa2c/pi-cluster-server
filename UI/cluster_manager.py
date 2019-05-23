@@ -14,22 +14,6 @@ local_path = os.environ['PWD']
 cluster = Connection(cluster_address)
 
 
-def drag_file():
-    return 'drag_cache.npy'
-
-
-def load_drag():
-    try:
-        drag = np.load(drag_file())
-    except FileNotFoundError:
-        drag = np.empty((0,2))
-
-    return drag
-
-
-def save_drag(drag):
-    np.save(drag_file(),drag)
-
 
 def all_available_indices_and_names():
     dir = 'simulations'
