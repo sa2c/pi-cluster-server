@@ -24,7 +24,7 @@ class TestController(object):
         os.makedirs(settings.cluster_path+'/signal_out')
         os.makedirs(settings.cluster_path+'simulations')
 
-        self.complete_index = '1234'
+        self.complete_index = '12340'
 
         self.complete_runpath = 'simulations/run' + self.complete_index
         if os.path.exists(self.complete_runpath):
@@ -90,12 +90,12 @@ class TestController(object):
 
     def test_compute_drag(self):
         drag = compute_drag_for_simulation(self.complete_index)
-        assert drag == 180.0
+        assert float(drag) == 180.0
 
     def test_postprocess(self):
         self.controller.simulation_postprocess(self.complete_index)
-        assert os.path.exists('drag_cache.npy')
         assert self.controller.drag[-1,1] == '180.0'
+        
 
     def test_print_simulation(self):
         s=cluster_manager.load_simulation(self.complete_index)
@@ -119,7 +119,7 @@ class TestController(object):
         self.controller.drag = np.array([[self.complete_index, -5]])
         simulations = self.controller.best_simulations()
         assert len(simulations) > 0
-        assert simulations['1234']['name'] == 'Tester'
+        assert simulations[0]['name'] == 'Tester'
 
     def test_get_epoch(self):
         time = self.controller.get_epoch()
