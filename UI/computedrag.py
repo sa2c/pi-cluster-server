@@ -14,10 +14,10 @@ from settings import nprocs
 def compute_drag_for_simulation(index):
     final_vtk_file = run_filepath(index, f'elmeroutput0010.vtk')
 
-    fname_poly = glob.glob(run_filepath(index, '*.poly'))
+    fname_poly = run_filepath(index, f'run{index}.poly')
 
-    if len(fname_poly) > 0:
-        return compute_drag_from_vtk(fname_poly[0], final_vtk_file, nprocs)
+    if os.path.exists(fname_poly):
+        return compute_drag_from_vtk(fname_poly, final_vtk_file, nprocs)
     else:
         return 9999
 
