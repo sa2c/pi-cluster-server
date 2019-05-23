@@ -26,23 +26,11 @@ class Controller(object):
         self.transformed_outline = None
         self.contour = np.array([[]])
 
-        try:
-            self.drag = self.load_drag()
-        except FileNotFoundError:
-            self.drag = np.empty((0,2))
-            self.recalculate_drag()
+        self.drag = np.empty((0,2))
+        self.list_drag()
 
         if self.kinect_connected():
             self.calibrate()
-
-    def drag_file(self):
-        return 'drag_cache.npy'
-
-    def save_drag(self, drag):
-        np.save(self.drag_file(),drag)
-
-    def load_drag(self):
-        return np.load(self.drag_file())
 
     def kinect_connected(self):
         return kinect.freenect_loaded
@@ -127,19 +115,19 @@ class Controller(object):
         
         simulation = cluster_manager.load_simulation(index)
         simulation['score'] = drag
-        cluster_manager.save_simulation(simulation)
+        simulation['index'] = index        
+        cluster_manager.save_simulation(simulation)        
         return drag
 
     def simulation_postprocess(self, index):
         drag = self.calculate_drag(index)
         self.drag = np.append(self.drag, np.array([[index, drag]]), axis = 0)
-        self.save_drag(self.drag)
 
-    def recalculate_drag(self):
+    def list_drag(self):
         for index, name in self.list_simulations():
             drag = self.calculate_drag(index)
             self.drag = np.append(self.drag, np.array([[index, drag]]), axis = 0)
-        self.save_drag(self.drag)
+            simulation = cluster_manager.load_simulation(index)
 
     def list_simulations(self):
         return cluster_manager.all_available_indices_and_names()
