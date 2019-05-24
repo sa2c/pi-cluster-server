@@ -141,7 +141,6 @@ class ControlWindow(QMainWindow):
 
     def run_cfd_action(self):
         index = self.controller.start_simulation()
-        self.viewfinder.queue_simulation(index)
     
     def reset_action(self):
         self.name_changed_action('', '')
