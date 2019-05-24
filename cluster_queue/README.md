@@ -74,7 +74,7 @@ Create a build directory and initialise cmake
 ```
 mkdir build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=/usr/local/../elmerfem
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local/ ../elmerfem
 ```
 The setup is easiest using the ccmake UI,
 ```
@@ -82,6 +82,12 @@ ccmake .
 ```
 Make sure that Metis, LUA, MPI and Mumps are enabled.
 You might also want to disable ELMERGUI to speed up the compilations, which does take a while.
+
+Compile and install with
+```
+make
+sudo make install
+```
 
 
 ### Testing the Installation
