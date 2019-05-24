@@ -252,6 +252,7 @@ class RunCompleteWatcher(QThread):
                     signal_type, index, slot))
 
                 if signal_type == "start":
+                    download_results(index)
                     self.started.emit((index, slot))
                 elif signal_type == "end":
                     download_results(index)
