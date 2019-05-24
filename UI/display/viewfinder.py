@@ -106,16 +106,19 @@ class ViewfinderDialog(QDialog):
     def start_simulation(self, index_run, slot):
         # remove from queue
         run_indices = [q[0] for q in self.run_queue]
-        i = run_indices.index(index_run)
-        name = self.run_queue[i][1]
+        try:
+            i = run_indices.index(index_run)
+            del self.run_queue[i]
+            self.update_queue()
+        except:
+            pass
+        
+        name = load_simulation_name(index_run)
 
         if len(name) == 0:
             name = 'Simulation'
 
         print(f'start sim: {index_run}')
-
-        del self.run_queue[i]
-        self.update_queue()
 
         # move from queue to progress + reset progress
         pbar = self.progress_slots[slot]
