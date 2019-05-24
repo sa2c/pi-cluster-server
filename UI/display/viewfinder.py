@@ -94,8 +94,11 @@ class ViewfinderDialog(QDialog):
         text = self.progress_slots_text[slot_number]
         text.setText(f'{name}: {progress}%')
 
-    def queue_simulation(self, index_run, name):
+    def queue_simulation(self, index_run):
+        name = load_simulation_name(index_run)
         print(f'queued sim: {index_run}, name: {name}')
+        if len(name) == 0:
+            name = 'Simulation'
         self.run_queue.append((index_run, name))
         self.update_queue()
 

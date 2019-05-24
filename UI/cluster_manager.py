@@ -149,13 +149,18 @@ def fetch_activity():
 
 # Function for working with incoming signals
 def get_signals():
-    path = cluster_path+"/signal_out/"
+    queue_signal_path = cluster_path+"/signal_in/"
+    run_signal_path = cluster_path+"/signal_out/"
     try:
-        dirlist = cluster.sftp().listdir(path)
-        return set(dirlist)
+        signals = cluster.sftp().listdir(queue_signal_path)
+        signals = [s+'_queue_-1' for s in signals]
+        signals += cluster.sftp().listdir(run_signal_path)
+        print(signals)
+        return set(signals)
     except FileNotFoundError:
         print('not found')
-        cluster.sftp().mkdir(path)
+        cluster.sftp().mkdir(queue_signal_path)
+        cluster.sftp().mkdir(run_signal_path)
         return set([])
 
 
@@ -230,6 +235,7 @@ class RunCompleteWatcher(QThread):
         communicates them through a signal
     '''
 
+    queued = Signal(int)
     started = Signal(object)
     completed = Signal(int)
 
@@ -257,6 +263,9 @@ class RunCompleteWatcher(QThread):
                 elif signal_type == "end":
                     download_results(index)
                     self.completed.emit(index)
+                elif signal_type == "queue":
+                    download_results(index)
+                    self.queued.emit(index)
 
             time.sleep(2)
 
