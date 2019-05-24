@@ -63,6 +63,7 @@ class ControlWindow(QMainWindow):
 
         # create file system watcher
         self.run_watcher = cluster_manager.RunCompleteWatcher(self)
+        self.run_watcher.queued.connect(self.run_queued)
         self.run_watcher.started.connect(self.run_started)
         self.run_watcher.completed.connect(self.run_completed)
         self.run_watcher.start()
@@ -82,6 +83,10 @@ class ControlWindow(QMainWindow):
         index, slot = signal
         print(f'started {index} in {slot}')
         self.viewfinder.start_simulation(index, slot - 1)
+
+    def run_queued(self, index):
+        print(f'queued {index}')
+        self.viewfinder.queue_simulation(index)
 
     def show_capture_action(self):
         self.ui.view_selector.set_to_viewfinder()
@@ -136,10 +141,7 @@ class ControlWindow(QMainWindow):
 
     def run_cfd_action(self):
         index = self.controller.start_simulation()
-        self.viewfinder.queue_simulation(
-            index,
-            self.controller.current_name
-        )
+        self.viewfinder.queue_simulation(index)
     
     def reset_action(self):
         self.name_changed_action('', '')
