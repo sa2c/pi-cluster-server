@@ -81,7 +81,8 @@ The setup is easiest using the ccmake UI,
 ccmake .
 ```
 Make sure that Metis, LUA, MPI and Mumps are enabled.
-You might also want to disable ELMERGUI to speed up the compilations, which does take a while.
+You might also want to disable ELMERGUI to speed up the compilations,
+which does take a while.
 
 Compile and install with
 ```
