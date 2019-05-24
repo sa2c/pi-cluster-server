@@ -155,7 +155,6 @@ def get_signals():
         signals = cluster.sftp().listdir(queue_signal_path)
         signals = [s+'_queue_-1' for s in signals]
         signals += cluster.sftp().listdir(run_signal_path)
-        print(signals)
         return set(signals)
     except FileNotFoundError:
         print('not found')
