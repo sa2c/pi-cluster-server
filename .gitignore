@@ -1,5 +1,5 @@
 *.pyc
-outbox
+simulations
 inbox
 signal_in
 signal_out
