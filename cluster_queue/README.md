@@ -34,6 +34,8 @@ cd ..
 
 ### Installing Elmer
 
+**The direct solver as set up at the moment produces a segfault.**
+
 We use [Elmer](https://www.csc.fi/web/elmer) for the actual computation.
 This requires that Elmer is installed and the ```ElmerGrid```,
 ```ElmerSolver``` and ```ElmerSolver_mpi``` executables are found in PATH.
