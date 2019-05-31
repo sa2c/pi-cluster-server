@@ -34,8 +34,6 @@ cd ..
 
 ### Installing Elmer
 
-**The direct solver as set up at the moment produces a segfault.**
-
 We use [Elmer](https://www.csc.fi/web/elmer) for the actual computation.
 This requires that Elmer is installed and the ```ElmerGrid```,
 ```ElmerSolver``` and ```ElmerSolver_mpi``` executables are found in PATH.
@@ -72,8 +70,16 @@ mkdir Elmer
 cd Elmer
 git clone https://github.com/elmercsc/elmerfem
 ```
+The most recent version of Elmer has a bug that causes a 
+segfault on the Pi.
+**Checkout version 8.3 before compiling.**
+```
+git checkout release-8.3
+```
+
 Create a build directory and initialise cmake
 ```
+cd .. 
 mkdir build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local/ ../elmerfem
