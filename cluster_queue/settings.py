@@ -6,7 +6,7 @@ diskaddress = "127.0.0.1:"+local_path+"/"
 IPs = [ "127.0.0.1", "127.0.0.1", "127.0.0.1" ]
 nnodes = len(IPs)
 
-nslots = 4
+cores_per_node = 4
 
 nodes_per_job = 1
 

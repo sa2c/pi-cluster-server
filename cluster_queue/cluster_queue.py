@@ -29,7 +29,7 @@ def write_hostfile( nodes, id ):
     with open(hostfilename, "w") as f:
         for node in nodes:
             ip = IPs[node]
-            line = "{} slots={}\n".format(ip,nslots)
+            line = "{} slots={}\n".format(ip,cores_per_node)
             f.write(line)
     return hostfilename
 
@@ -49,7 +49,7 @@ def run_cfd( id ):
     hostfilename = write_hostfile( my_nodes, id )
     command = cfdcommand.format(
         id=id,
-        ncores=nodes_per_job*nslots,
+        ncores=nodes_per_job*cores_per_node,
         hostfile=hostfilename,
         diskaddress=diskaddress
     )
