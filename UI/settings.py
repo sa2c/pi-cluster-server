@@ -12,7 +12,7 @@ min_distance = 230  # out of 255
 # Settings related to the contour estimation
 num_points = 100
 nmeasurements = 5
-corner_cutting_steps = 50
+corner_cutting_steps = 10
 
 # Image display adjustments
 color_scale = [1, 1, 0.8]
