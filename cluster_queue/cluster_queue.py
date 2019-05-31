@@ -21,9 +21,6 @@ for slot in range(nslots):
 
 free_slots = set(range(nslots))
 
-print(ips_in_slot)
-print(free_slots)
-
 def reserve_nodes():
 	return free_slots.pop()
     
@@ -97,7 +94,7 @@ def check_signals():
 def run_queue():
     runs = []
     while True:
-        print(free_slots)
+        print("Open slots:", free_slots)
 
         os.chdir(local_path)
         check_ping()
