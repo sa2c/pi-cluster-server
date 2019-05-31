@@ -76,9 +76,9 @@ class ViewfinderDialog(QDialog):
             print(f'reading vtk file {vtk_file}')
 
             if self.image_index > 0:
-                vtk_to_plot(self.ui.left_view, vtk_file, 16, False, True,
+                vtk_to_plot(self.ui.left_view, vtk_file, 1, False, True,
                             False, image)
-                vtk_to_plot(self.ui.right_view, vtk_file, 16, True, False,
+                vtk_to_plot(self.ui.right_view, vtk_file, 1, True, False,
                             True, None)
 
             self.image_index = (self.image_index + 1) % (ntimesteps + 1)
