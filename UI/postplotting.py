@@ -82,7 +82,7 @@ def vtkfile_to_numpy(filename, nprocs):
     pressure = np.zeros((numpoints, 1), dtype=float)
     for ii in range(numpoints):
         line = vtkfile.readline()
-        #print("Line {}: {}".format(ii, line.strip()))
+        #print("Line {}/{}: {}".format(ii, numpoints, line.strip()))
         listtemp = " ".join(line.split())
         listtemp = listtemp.split(" ")
         pressure[ii, 0] = float(listtemp[0])
@@ -93,7 +93,7 @@ def vtkfile_to_numpy(filename, nprocs):
     velocity = np.zeros((numpoints, 3), dtype=float)
     for ii in range(numpoints):
         line = vtkfile.readline()
-        #print("Line {}: {}".format(ii, line.strip()))
+        #print("Line {}/{}: {}".format(ii, numpoints, line.strip()))
         listtemp = " ".join(line.split())
         listtemp = listtemp.split(" ")
         velocity[ii, 0] = float(listtemp[0])
