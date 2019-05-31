@@ -172,12 +172,12 @@ class Controller(object):
 
         a = PlotCanvas()
         vtk_filename = cluster_manager.run_filepath(index, 'elmeroutput0010.vtk')
-        vtk_to_plot(a, vtk_filename, 1, True, False, True, None)
+        vtk_to_plot(a, vtk_filename, 16, True, False, True, None)
         data = np.fromstring(a.tostring_rgb(), dtype=np.uint8, sep='')
         data = data.reshape(a.get_width_height()[::-1] + (3, ))
 
         a = PlotCanvas()
-        vtk_to_plot(a, vtk_filename, 1, True,False,True,None)
+        vtk_to_plot(a, vtk_filename, 16, True,False,True,None)
 
         filename = str(index)+'.pdf'
 
