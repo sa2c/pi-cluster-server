@@ -201,15 +201,27 @@ def get_signal_info(signal):
     return index, signal_type, slot
 
 
+def get_slot(index):
+    for signal in get_signals():
+        signal_index, signal_type, slot = get_signal_info(signal)
+        if signal_index == index:
+            return slot
+
 def download_results(index):
     localfolder = run_directory(index)
     remotefolder = 'simulations/run{}'.format(index)
     remotepath = cluster_path+'/'+remotefolder
-    for filename in cluster.sftp().listdir(remotepath):
-        cluster.sftp().get(
-            remotepath+'/'+filename,
-            os.path.join(localfolder,filename)
-        )
+    try:
+        dirlist = cluster.sftp().listdir(remotepath)
+    except:
+        print("Could not download",remotepath)
+        return
+    
+    for filename in dirlist:
+        localfile = os.path.join(localfolder,filename)
+        remotefile = remotepath+'/'+filename
+        if not os.path.isfile(localfile):
+            cluster.sftp().get( remotefile, localfile )
 
 
 def queue_running():
@@ -238,16 +250,22 @@ class RunCompleteWatcher(QThread):
     started = Signal(object)
     completed = Signal(int)
 
-    def get_completed(self):
-        for signal in get_signals():
-            index, signal_type, slot = get_signal_info(signal)
-            if signal_type == 'end':
-                if not os.path.isfile(f'simulations/run{index}/elmeroutput0010.vtk'):
-                    download_results(index)
-                    self.completed.emit(index)
+    def get_simulations(self):
+        remotefolder = cluster_path+'/simulations'
+        for filename in cluster.sftp().listdir(remotefolder):
+            index = int(filename.replace("run", ''))
+            download_results(index)
+            if os.path.isfile(f'simulations/run{index}/elmeroutput0010.vtk'):
+                self.completed.emit(index)
+            else:
+                self.queued.emit(index)
+                if os.path.isfile(f'simulations/run{index}/output'):
+                    slot = get_slot(index)
+                    if slot is not None:
+                        self.started.emit((index, slot))
 
     def run(self):
-        self.get_completed()
+        self.get_simulations()
         while True:
             for signal in get_new_signals():
                 add_new_signal(signal)

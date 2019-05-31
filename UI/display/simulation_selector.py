@@ -16,7 +16,7 @@ class SimulationSelector(QListWidget):
         self.current_row = 0
         self.setCurrentRow(0)
 
-        self.simulation_indices = all_available_indices_and_names()
+        self.simulation_indices = []
         self.redraw_items()
 
         # connect signal
