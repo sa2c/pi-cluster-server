@@ -44,7 +44,15 @@ $ sudo apt-get update
 $ sudo apt-get install elmerfem-csc
 ```
 
-On a Rapberry Pi, you have need to compile in manually. First download and
+On a Rapberry Pi, you have need to compile in manually.
+You will need some development tools and libraries that can be installed with apt.
+Install them with
+```
+sudo apt install libmumps-dev
+```
+
+
+Next, download and
 install the [metis](http://glaros.dtc.umn.edu/gkhome/metis/metis/overview) and [parmetis](http://glaros.dtc.umn.edu/gkhome/metis/parmetis/overview) libraries
 ```
 $wget http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/metis-5.1.0.tar.gz
@@ -63,7 +71,7 @@ $make
 $sudo make install
 ```
 
-Once you have these two libraries, create a
+Once you have the libraries, create a
 directory for Elmer and clone the repository
 ```
 mkdir Elmer
