@@ -265,11 +265,15 @@ class RunCompleteWatcher(QThread):
             if os.path.isfile(f'simulations/run{index}/elmeroutput0010.vtk'):
                 self.completed.emit(index)
             else:
-                self.queued.emit(index)
-                if os.path.isfile(f'simulations/run{index}/output'):
-                    slot = get_slot(index)
-                    if slot is not None:
-                        self.started.emit((index, slot))
+                # Check if the run is in queue or has been started
+                for signal in get_signals():
+                    if str(index) in signal:
+                        if "queue" in signal:
+                            self.queued.emit(index)
+                        if "start" in signal:
+                            slot = get_slot(index)
+                            if slot is not None:
+                                self.started.emit((index, slot))
 
     def run(self):
         self.get_simulations()
