@@ -94,26 +94,43 @@ def check_signals():
 def run_queue():
     runs = []
     while True:
-        print("Open slots:", free_slots)
+        try:
+            print("Open slots:", free_slots)
 
-        os.chdir(local_path)
-        check_ping()
-        if slots_available() > 0 :
-            runs += check_signals()
-        time.sleep(1)
+            os.chdir(local_path)
+            check_ping()
+            if slots_available() > 0 :
+                runs += check_signals()
+            time.sleep(1)
         
-        for run in runs:
-            process, signal, slot = run
-            if process.poll() is not None:
-                print("finished", signal)
-                filelist =  glob.glob('cfd/'+signal+'/mesh/*.vtk')
-                filelist +=  glob.glob('cfd/'+signal+'/*.poly')
-                for f in filelist:
-                    shutil.copy(f, 'simulations/'+signal+'/')
+            for run in runs:
+                process, signal, slot = run
+                if process.poll() is not None:
+                    print("finished", signal)
+                    filelist =  glob.glob('cfd/'+signal+'/mesh/*.vtk')
+                    filelist +=  glob.glob('cfd/'+signal+'/*.poly')
+                    for f in filelist:
+                        shutil.copy(f, 'simulations/'+signal+'/')
 
-                create_file("signal_out/{}_end_{}".format(signal,slot+1))
-                runs.remove(run)
-                free_slots.add(slot)
+                    create_file("signal_out/{}_end_{}".format(signal,slot+1))
+                    runs.remove(run)
+                    free_slots.add(slot)
+
+        except KeyboardInterrupt:
+            print("Stopping queue")
+            print("Killing all simulations")
+            for node in nodes:
+                print(node)
+                command = "ssh {} killall ElmerSolver_mpi".format(node)
+                process = subprocess.run(command, shell=True)
+
+            print("Removing start signals")
+            signals = os.listdir('signal_out')
+            for signal in signals:
+                if "start" in signal:
+                    os.remove('signal_out/'+signal)
+
+            break
 
 
 
