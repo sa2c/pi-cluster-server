@@ -5,8 +5,8 @@ from tempfile import mkdtemp
 mock_kinect = False
 
 # Kinect depth data settigs
-dmin = 0
-dmax = 1000
+dmin = 1000
+dmax = 3000
 min_distance = 230  # out of 255
 
 # Settings related to the contour estimation
