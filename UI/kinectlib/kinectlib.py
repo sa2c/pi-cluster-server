@@ -7,7 +7,7 @@ matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 from kinectlib.calibration import affine_calibration as affc
 
-from settings import dmin, dmax, min_distance
+from settings import dmin, dmax, min_distance, nmeasurements
 from settings import num_points, corner_cutting_steps
 from settings import color_scale, flip_display_axis
 from settings import mock_kinect
@@ -24,6 +24,7 @@ if not mock_kinect:
         if sync_get_depth(format=DEPTH_MM):
             freenect_loaded = True
     except:
+        print("Freenect not found")
         pass
 
 if mock_kinect:
@@ -195,7 +196,7 @@ def images_and_outline(background, scale, offset):
         Return copy on color input, rgb image representing the depth and
         the transformed contour '''
 
-    capture_depth = measure_depth()
+    capture_depth = measure_depth( nmeasurements )
     rgb_frame = np.copy(get_video())
 
     clean_depth = remove_background(capture_depth, background)
