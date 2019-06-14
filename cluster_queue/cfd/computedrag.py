@@ -167,6 +167,7 @@ def compute_drag(project_name, nprocs, num_timesteps):
             #print("FileCount=%04d \t Dragforce=%12.6f \n" % ((fnum+1), drag))
             dragfile.write("%04d \t %12.6f \n" % ((fnum + 1), drag))
             count = count + 1
+    dragfile.close()
 
     plt.figure(1)
     xval = np.linspace(2, count, count - 1)
