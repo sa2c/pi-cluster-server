@@ -48,7 +48,7 @@ On a Rapberry Pi, you have need to compile in manually.
 You will need some development tools and libraries that can be installed with apt.
 Install them with
 ```
-sudo apt install libmumps-dev
+sudo apt install build-essential cmake libmumps-dev
 ```
 
 
