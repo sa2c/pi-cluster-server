@@ -27,7 +27,6 @@ class Controller(object):
         self.contour = np.array([[]])
 
         self.drag = np.empty((0,2))
-        self.list_drag()
 
         if self.kinect_connected():
             self.calibrate()
@@ -97,6 +96,8 @@ class Controller(object):
         nsims = min(10, drag.shape[0])
         drag_sorted_indices = np.argsort(drag[:, 1])
         best_indices = drag[drag_sorted_indices[0:nsims], 0]
+        print(drag_sorted_indices)
+        print([int(i) for i in best_indices])
 
         simulations = []
         for index in best_indices:
@@ -122,12 +123,6 @@ class Controller(object):
     def simulation_postprocess(self, index):
         drag = self.calculate_drag(index)
         self.drag = np.append(self.drag, np.array([[index, drag]]), axis = 0)
-
-    def list_drag(self):
-        for index, name in self.list_simulations():
-            drag = self.calculate_drag(index)
-            self.drag = np.append(self.drag, np.array([[index, drag]]), axis = 0)
-            simulation = cluster_manager.load_simulation(index)
 
     def list_simulations(self):
         return cluster_manager.all_available_indices_and_names()
