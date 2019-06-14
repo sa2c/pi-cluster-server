@@ -1,9 +1,10 @@
-import kinectlib.kinectlib as kinect
 import os, shutil
 from tempfile import mkdtemp
 import numpy as np
+from fabric import Connection
 import pytest
 import settings
+import kinectlib.kinectlib as kinect
 import cluster_manager
 
 class TestClusterManager(object):
@@ -12,6 +13,7 @@ class TestClusterManager(object):
     test_directory = 'simulations/run' + test_index
 
     def setup(self):
+        kinect.setup_mock()
         cluster_manager.cluster_address = 'localhost'
         cluster_manager.cluster_path = mkdtemp()
         settings.cluster_address = 'localhost'
@@ -125,7 +127,7 @@ class TestClusterManager(object):
         assert os.path.exists('contour.dat')
 
     def test_fetch_activity(self):
-        cluster = Connection(cluster_address)
+        cluster = Connection(settings.cluster_address)
         remote_name = settings.cluster_path+'/cpuloadinfo.sh'
         cluster.put('test/mock_cpuloadinfo.sh', remote=remote_name)
         cluster_manager.fetch_activity()

@@ -10,6 +10,9 @@ import numpy as np
 
 class TestKinectLib(object):
 
+    def setup(self):
+        kinect.setup_mock()
+
     def test_get_depth(self):
         ''' Get_depth should return a black and white image '''
         depth = kinect.get_depth()
