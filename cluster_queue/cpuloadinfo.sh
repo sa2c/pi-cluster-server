@@ -4,8 +4,8 @@
 # settings
 
 # All IPs of all compute nodes.
-NNODES=4        # Nodes on the cluster
-NSLOTS=4       # Slots per node
+NNODES=12       # Nodes on the cluster
+NSLOTS=4        # Slots per node
 NODES_REMOVE='' # ips to remove (just in case)
 
 NODESPERJOB=1
@@ -13,8 +13,7 @@ NODESPERJOB=1
 # ips
 for i in `seq $NNODES`
 do
-   #IPs[$i]=10.0.0.$i
-   IPs[$i]=127.0.0.1
+   IPs[$i]=10.0.0.$i
 done
 
 
