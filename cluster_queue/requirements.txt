@@ -1,0 +1,15 @@
+-i https://pypi.org/simple
+atomicwrites==1.3.0
+attrs==19.1.0
+cycler==0.10.0
+kiwisolver==1.1.0
+matplotlib==3.0.3
+more-itertools==7.0.0 ; python_version > '2.7'
+numpy==1.16.3
+pluggy==0.9.0
+py==1.8.0
+pyparsing==2.4.0
+pytest==4.4.1
+python-dateutil==2.8.0
+shapely==1.6.4.post2
+six==1.12.0
