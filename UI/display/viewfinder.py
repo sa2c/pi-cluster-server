@@ -92,7 +92,12 @@ class ViewfinderDialog(QDialog):
         name = load_simulation_name(index_run)
         self.progress_slots[slot_number].setValue(progress)
         text = self.progress_slots_text[slot_number]
-        text.setText(f'{name}: {progress}%')
+        if progress == 0:
+            text.setText(f'{name}: preparing' )
+        elif progress == 100:
+            text.setText(f'{name}: creating images%')
+        else:
+            text.setText(f'{name}: {progress}%')
 
     def queue_simulation(self, index_run):
         name = load_simulation_name(index_run)
