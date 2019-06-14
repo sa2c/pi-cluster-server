@@ -6,12 +6,14 @@ from controller import Controller
 import settings
 import cluster_manager
 from tempfile import mkdtemp
+import kinectlib.kinectlib as kinect
 
 from computedrag import compute_drag_for_simulation 
 
 class TestController(object):
 
     def setup(self):
+        kinect.setup_mock()
         settings.cluster_path = mkdtemp()+'/'
         settings.cluster_address = 'localhost'
         cluster_manager.cluster_path = settings.cluster_path
@@ -44,8 +46,6 @@ class TestController(object):
 
 
     def test_init(self):
-        assert self.controller.offset == [0, 0]
-        assert self.controller.scale == [1.0, 1.0]
         assert len(self.controller.contour.shape) == 2
 
         assert isinstance(self.controller.current_name, str)
@@ -109,7 +109,6 @@ class TestController(object):
         s['index'] = new_index
         cluster_manager.save_simulation(s)
         s=cluster_manager.load_simulation(new_index)
-        print(s['drag'])
         self.controller.print_simulation(
             new_index,
             send_to_printer = False
