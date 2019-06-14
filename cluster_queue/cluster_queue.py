@@ -98,7 +98,7 @@ def run_queue():
 
         os.chdir(local_path)
         check_ping()
-        if slots_available() >= nodes_per_job :
+        if slots_available() > 0 :
             runs += check_signals()
         time.sleep(1)
         
