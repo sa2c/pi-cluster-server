@@ -18,7 +18,6 @@ do
 done
 
 
-# settings specific to cpuloadinfo.sh
 INTERVAL=0.1 # seconds.tenths
 COLUMN=8 # idle cpu percentage column in the output files
 
