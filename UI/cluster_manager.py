@@ -11,8 +11,6 @@ import errno
 from settings import cluster_address, cluster_path
 
 local_path = os.environ['PWD']
-cluster = Connection(cluster_address)
-
 
 def all_available_indices_and_names():
     dir = 'simulations'
@@ -52,6 +50,7 @@ def run_filepath(index, filename):
 def get_run_completion_percentage(index):
     ''' Read the completion percentage of the run
     '''
+    cluster = Connection(cluster_address)
     try:
         directory = '{}/simulations/run{}'.format(cluster_path, index)
         grep = "grep 'MAIN:  Time:' output"
@@ -77,6 +76,7 @@ def write_outline(filename, outline):
 
 
 def setup_cluster_inbox():
+    cluster = Connection(cluster_address)
     try:
         cluster.sftp().stat(cluster_path+'/inbox')
     except IOError:
@@ -84,11 +84,12 @@ def setup_cluster_inbox():
         cluster.sftp().mkdir(cluster_path+'/signal_in')
 
 def queue_run(contour, index):
+    cluster = Connection(cluster_address)
     # save contour to file and copy to the cluster inbox
     filename = run_filepath(index, "contour.dat")
     write_outline(filename, contour)
 
-    setup_cluster_inbox()    
+    setup_cluster_inbox()
     
     # copy the contour
     remote_name = '{}/inbox/run{}'.format(cluster_path, index)
@@ -137,6 +138,7 @@ def load_simulation(index):
 
 
 def fetch_activity():
+    cluster = Connection(cluster_address)
     with cluster.cd(cluster_path):
         output = cluster.run('''bash cpuloadinfo.sh''', hide=True).stdout
     cpu_usage = output.split('\n')[1:-1]
@@ -149,6 +151,7 @@ def fetch_activity():
 
 # Function for working with incoming signals
 def get_signals():
+    cluster = Connection(cluster_address)
     queue_signal_path = cluster_path+"/signal_in/"
     run_signal_path = cluster_path+"/signal_out/"
     try:
@@ -168,6 +171,7 @@ existing_signals = get_signals()
 
 def create_incoming_signal( index, signal_type, slot):
     ''' create an incoming signal, only useful for testing '''
+    cluster = Connection(cluster_address)
     filename = 'signal_out/run{}_{}_{}'.format(index, signal_type, slot)
     path = cluster_path+'/'+filename
     cluster.sftp().open(path, 'a').close()
@@ -208,6 +212,7 @@ def get_slot(index):
             return slot
 
 def download_results(index):
+    cluster = Connection(cluster_address)
     localfolder = run_directory(index)
     remotefolder = 'simulations/run{}'.format(index)
     remotepath = cluster_path+'/'+remotefolder
@@ -225,6 +230,7 @@ def download_results(index):
 
 
 def queue_running():
+    cluster = Connection(cluster_address)
     setup_cluster_inbox()
     remote_name = '{}/signal_in/ping'.format(cluster_path)
     cluster.sftp().file(remote_name, 'a').close()
@@ -251,6 +257,7 @@ class RunCompleteWatcher(QThread):
     completed = Signal(int)
 
     def get_simulations(self):
+        cluster = Connection(cluster_address)
         remotefolder = cluster_path+'/simulations'
         for filename in cluster.sftp().listdir(remotefolder):
             index = int(filename.replace("run", ''))

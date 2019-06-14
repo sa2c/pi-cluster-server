@@ -125,8 +125,9 @@ class TestClusterManager(object):
         assert os.path.exists('contour.dat')
 
     def test_fetch_activity(self):
+        cluster = Connection(cluster_address)
         remote_name = settings.cluster_path+'/cpuloadinfo.sh'
-        cluster_manager.cluster.put('test/mock_cpuloadinfo.sh', remote=remote_name)
+        cluster.put('test/mock_cpuloadinfo.sh', remote=remote_name)
         cluster_manager.fetch_activity()
 
     def test_signals(self):
