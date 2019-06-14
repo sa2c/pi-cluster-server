@@ -172,8 +172,6 @@ def compute_drag(project_name, nprocs, num_timesteps):
     plt.figure(1)
     xval = np.linspace(2, count, count - 1)
     yval = drag_list[1:count]
-    print(xval)
-    print(yval)
     plt.plot(xval, yval, 'k', linewidth=1)
     #plt.axes().set_aspect(1.0)
     #plt.xlim(1,count)

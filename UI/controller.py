@@ -96,8 +96,6 @@ class Controller(object):
         nsims = min(10, drag.shape[0])
         drag_sorted_indices = np.argsort(drag[:, 1])
         best_indices = drag[drag_sorted_indices[0:nsims], 0]
-        print(drag_sorted_indices)
-        print([int(i) for i in best_indices])
 
         simulations = []
         for index in best_indices:
