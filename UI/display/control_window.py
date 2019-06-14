@@ -77,7 +77,7 @@ class ControlWindow(QMainWindow):
 
         self.controller.simulation_postprocess(index)
 
-        self.leaderboard.update(self.controller.best_simulations())
+        self.viewfinder.ui.leaderboard.update(self.controller.best_simulations())
 
     def run_started(self, signal):
         index, slot = signal
