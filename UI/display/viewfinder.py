@@ -93,9 +93,9 @@ class ViewfinderDialog(QDialog):
         self.progress_slots[slot_number].setValue(progress)
         text = self.progress_slots_text[slot_number]
         if progress == 0:
-            text.setText(f'{name}: preparing' )
+            text.setText(f'{name}: Preparing' )
         elif progress == 100:
-            text.setText(f'{name}: creating images%')
+            text.setText(f'{name}: Creating images%')
         else:
             text.setText(f'{name}: {progress}%')
 
