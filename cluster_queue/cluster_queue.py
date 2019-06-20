@@ -68,27 +68,69 @@ def check_ping():
         if signal == "ping":
             create_file("signal_out/pong")
             os.remove("signal/ping")
-  
+            
 
 def check_signals():
     signals = os.listdir('signal_in')
-    if( len(signals) > 0):
-        signal = signals[0]
-        print("Starting", signal)
-        try:
-            os.remove('signal_in/'+signal)
-        except:
+
+    for signal in signals:
+        if "restart" in signal:
+            slot = signal.replace("restart", '')
+            try:
+                os.remove('signal_in/'+signal)
+            except:
+                return []
+            restart_slot(slot)
             return []
 
-        shutil.copyfile(
-            'inbox/'+signal,
-            'cfd/'+signal+'-outline-coords.dat'
-        )
-        run, slot = run_cfd(signal)
-        create_file("signal_out/{}_start_{}".format(signal,slot+1))
-        return [(run, signal, slot)]
-    else:
+    for signal in signals:
+        if "run" in signal:
+            return run_signal(signal)
+
+    return []
+
+
+def run_signal(signal):
+    print("Starting", signal)
+    try:
+        os.remove('signal_in/'+signal)
+    except:
         return []
+    
+    shutil.copyfile(
+        'inbox/'+signal,
+        'cfd/'+signal+'-outline-coords.dat'
+    )
+    run, slot = run_cfd(signal)
+    create_file("signal_out/{}_start_{}".format(signal,slot+1))
+    return [(run, signal, slot)]
+
+
+def restart_slot(slot):
+    
+    print("Restarting slot", slot)
+    kill_slot(int(slot))
+
+    index = -1
+    for signal in os.listdir('signal_out'):
+        if "start" in signal and str(slot) in signal:
+            index = signal.replace("run", '')
+            index = index.replace("_start_"+slot, '')
+            print(index)
+
+    if index != -1:
+        for signal in os.listdir('signal_out'):
+            if index in signal:
+                os.remove('signal_out/'+signal)
+
+        open('signal_in/run{}'.format(index), 'a').close()
+    return []
+
+
+def kill_slot(slot):
+    for node in ips_in_slot[slot]:
+        command = "ssh {} killall ElmerSolver_mpi".format(IPs[node])
+        process = subprocess.run(command, shell=True)
 
 
 def run_queue():
@@ -101,7 +143,6 @@ def run_queue():
             check_ping()
             if slots_available() > 0 :
                 runs += check_signals()
-            time.sleep(1)
         
             for run in runs:
                 process, signal, slot = run
@@ -116,13 +157,14 @@ def run_queue():
                     runs.remove(run)
                     free_slots.add(slot)
 
+            time.sleep(1)
+
         except KeyboardInterrupt:
             print("Stopping queue")
             print("Killing all simulations")
-            for node in nodes:
-                print(node)
-                command = "ssh {} killall ElmerSolver_mpi".format(node)
-                process = subprocess.run(command, shell=True)
+            for slot in slots:
+                print(slot)
+                kill_slot(slot)
 
             print("Removing start signals")
             signals = os.listdir('signal_out')
