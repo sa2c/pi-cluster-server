@@ -137,6 +137,9 @@ class Controller(object):
     def get_completion_percentage(self, index):
         return cluster_manager.get_run_completion_percentage(index)
 
+    def restart_slot(self, slot):
+        return cluster_manager.restart_slot(slot)
+
     def print_running_jobs(self):
         signals = cluster_manager.get_signals()
         starts = []

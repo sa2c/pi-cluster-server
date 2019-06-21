@@ -245,6 +245,12 @@ def queue_running():
 
     return False
 
+def restart_slot(slot):
+    cluster = Connection(cluster_address)
+    for signal in get_signals():
+        path = '{}/signal_in/restart{}'.format(cluster_path,slot)
+        cluster.sftp().file(path, 'a').close()
+
 
 class RunCompleteWatcher(QThread):
     ''' Periodically polls the cluster to check for finished jobs

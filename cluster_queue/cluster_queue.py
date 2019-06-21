@@ -113,9 +113,9 @@ def restart_slot(slot):
 
     index = -1
     for signal in os.listdir('signal_out'):
-        if "start" in signal and str(slot) in signal:
+        if "start_"+str(slot) in signal:
             index = signal.replace("run", '')
-            index = index.replace("_start_"+slot, '')
+            index = index.replace("_start_"+str(slot), '')
             print(index)
 
     if index != -1:
