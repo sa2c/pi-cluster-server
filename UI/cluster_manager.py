@@ -12,6 +12,13 @@ from settings import cluster_address, cluster_path
 
 local_path = os.environ['PWD']
 
+# Check connection
+print("Checking connection to the head node.")
+c = Connection(cluster_address)
+c.open()
+c.close()
+
+
 def all_available_indices_and_names():
     dir = 'simulations'
     simulations = []
@@ -50,22 +57,22 @@ def run_filepath(index, filename):
 def get_run_completion_percentage(index):
     ''' Read the completion percentage of the run
     '''
-    cluster = Connection(cluster_address)
-    try:
-        directory = '{}/simulations/run{}'.format(cluster_path, index)
-        grep = "grep 'MAIN:  Time:' output"
-        get_last = " | tail -n 1"
-        get_time = " | awk '{print $3}'"
-        command = grep + get_last + get_time
+    with Connection(cluster_address) as cluster:
+        try:
+            directory = '{}/simulations/run{}'.format(cluster_path, index)
+            grep = "grep 'MAIN:  Time:' output"
+            get_last = " | tail -n 1"
+            get_time = " | awk '{print $3}'"
+            command = grep + get_last + get_time
 
-        with cluster.cd(directory):
-            output = cluster.run(command, hide=True).stdout
+            with cluster.cd(directory):
+                output = cluster.run(command, hide=True).stdout
 
-        numbers = output.split('/')
-        percentage = int(100 * float(numbers[0]) / float(numbers[1]))
-    except:
-        # Most likely file not found
-        percentage = 0
+            numbers = output.split('/')
+            percentage = int(100 * float(numbers[0]) / float(numbers[1]))
+        except:
+            # Most likely file not found
+            percentage = 0
     return percentage
 
 
@@ -76,37 +83,38 @@ def write_outline(filename, outline):
 
 
 def setup_cluster_inbox():
-    cluster = Connection(cluster_address)
-    try:
-        cluster.sftp().stat(cluster_path+'/inbox')
-    except IOError:
-        cluster.sftp().mkdir(cluster_path+'/inbox')
-        cluster.sftp().mkdir(cluster_path+'/signal_in')
+    with Connection(cluster_address) as cluster:
+        try:
+            cluster.sftp().stat(cluster_path+'/inbox')
+        except IOError:
+            cluster.sftp().mkdir(cluster_path+'/inbox')
+            cluster.sftp().mkdir(cluster_path+'/signal_in')
+
 
 def queue_run(contour, index):
-    cluster = Connection(cluster_address)
-    # save contour to file and copy to the cluster inbox
-    filename = run_filepath(index, "contour.dat")
-    write_outline(filename, contour)
+    with Connection(cluster_address) as cluster:
+        # save contour to file and copy to the cluster inbox
+        filename = run_filepath(index, "contour.dat")
+        write_outline(filename, contour)
 
-    setup_cluster_inbox()
-    
-    # copy the contour
-    remote_name = '{}/inbox/run{}'.format(cluster_path, index)
-    cluster.put(filename, remote=remote_name)
+        setup_cluster_inbox()
 
-    # copy simulation details over to the cluster
-    remote_folder = '{}/simulations/run{}'.format(cluster_path, index)
-    cluster.sftp().mkdir(remote_folder)
-    local_folder  = 'simulations/run{}'.format(index)
-    for filename in os.listdir(local_folder):
-        remote_file  = '{}/{}'.format(remote_folder, filename)
-        local_file  = '{}/{}'.format(local_folder, filename)
-        cluster.put(local_file, remote=remote_file)
+        # copy the contour
+        remote_name = '{}/inbox/run{}'.format(cluster_path, index)
+        cluster.put(filename, remote=remote_name)
 
-    # copy a signal file across
-    remote_name = '{}/signal_in/run{}'.format(cluster_path, index)
-    cluster.sftp().file(remote_name, 'a').close()
+        # copy simulation details over to the cluster
+        remote_folder = '{}/simulations/run{}'.format(cluster_path, index)
+        cluster.sftp().mkdir(remote_folder)
+        local_folder  = 'simulations/run{}'.format(index)
+        for filename in os.listdir(local_folder):
+            remote_file  = '{}/{}'.format(remote_folder, filename)
+            local_file  = '{}/{}'.format(local_folder, filename)
+            cluster.put(local_file, remote=remote_file)
+
+        # copy a signal file across
+        remote_name = '{}/signal_in/run{}'.format(cluster_path, index)
+        cluster.sftp().file(remote_name, 'a').close()
 
 
 
@@ -138,32 +146,32 @@ def load_simulation(index):
 
 
 def fetch_activity():
-    cluster = Connection(cluster_address)
-    with cluster.cd(cluster_path):
-        output = cluster.run('''bash cpuloadinfo.sh''', hide=True).stdout
-    cpu_usage = output.split('\n')[1:-1]
-    cpu_usage = [
-        float(cpu_usage_meas.split(' ')[1]) for cpu_usage_meas in cpu_usage
-    ]
-    cpu_usage = np.array(cpu_usage)
-    return cpu_usage
+    with Connection(cluster_address) as cluster:
+        with cluster.cd(cluster_path):
+            output = cluster.run('''bash cpuloadinfo.sh''', hide=True).stdout
+        cpu_usage = output.split('\n')[1:-1]
+        cpu_usage = [
+            float(cpu_usage_meas.split(' ')[1]) for cpu_usage_meas in cpu_usage
+        ]
+        cpu_usage = np.array(cpu_usage)
+        return cpu_usage
 
 
 # Function for working with incoming signals
 def get_signals():
-    cluster = Connection(cluster_address)
-    queue_signal_path = cluster_path+"/signal_in/"
-    run_signal_path = cluster_path+"/signal_out/"
-    try:
-        signals = cluster.sftp().listdir(queue_signal_path)
-        signals = [s+'_queue_-1' for s in signals]
-        signals += cluster.sftp().listdir(run_signal_path)
-        return set(signals)
-    except FileNotFoundError:
-        print('not found')
-        cluster.sftp().mkdir(queue_signal_path)
-        cluster.sftp().mkdir(run_signal_path)
-        return set([])
+    with Connection(cluster_address) as cluster:
+        queue_signal_path = cluster_path+"/signal_in/"
+        run_signal_path = cluster_path+"/signal_out/"
+        try:
+            signals = cluster.sftp().listdir(queue_signal_path)
+            signals = [s+'_queue_-1' for s in signals]
+            signals += cluster.sftp().listdir(run_signal_path)
+            return set(signals)
+        except FileNotFoundError:
+            print('not found')
+            cluster.sftp().mkdir(queue_signal_path)
+            cluster.sftp().mkdir(run_signal_path)
+            return set([])
 
 
 existing_signals = get_signals()
@@ -171,10 +179,10 @@ existing_signals = get_signals()
 
 def create_incoming_signal( index, signal_type, slot):
     ''' create an incoming signal, only useful for testing '''
-    cluster = Connection(cluster_address)
-    filename = 'signal_out/run{}_{}_{}'.format(index, signal_type, slot)
-    path = cluster_path+'/'+filename
-    cluster.sftp().open(path, 'a').close()
+    with Connection(cluster_address) as cluster:
+        filename = 'signal_out/run{}_{}_{}'.format(index, signal_type, slot)
+        path = cluster_path+'/'+filename
+        cluster.sftp().open(path, 'a').close()
 
 
 def remove_incoming_signal(signal):
@@ -212,21 +220,21 @@ def get_slot(index):
             return slot
 
 def download_results(index):
-    cluster = Connection(cluster_address)
-    localfolder = run_directory(index)
-    remotefolder = 'simulations/run{}'.format(index)
-    remotepath = cluster_path+'/'+remotefolder
-    try:
-        dirlist = cluster.sftp().listdir(remotepath)
-    except:
-        print("Could not download",remotepath)
-        return
-    
-    for filename in dirlist:
-        localfile = os.path.join(localfolder,filename)
-        remotefile = remotepath+'/'+filename
-        if not os.path.isfile(localfile):
-            cluster.sftp().get( remotefile, localfile )
+    with Connection(cluster_address) as cluster:
+        localfolder = run_directory(index)
+        remotefolder = 'simulations/run{}'.format(index)
+        remotepath = cluster_path+'/'+remotefolder
+        try:
+            dirlist = cluster.sftp().listdir(remotepath)
+        except:
+            print("Could not download",remotepath)
+            return
+
+        for filename in dirlist:
+            localfile = os.path.join(localfolder,filename)
+            remotefile = remotepath+'/'+filename
+            if not os.path.isfile(localfile):
+                cluster.sftp().get( remotefile, localfile )
 
 
 def queue_running():
