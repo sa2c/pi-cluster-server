@@ -163,6 +163,7 @@ def get_signals():
         run_signal_path = cluster_path+"/signal_out/"
         try:
             signals = cluster.sftp().listdir(queue_signal_path)
+            signals = [s for s in signals if 'run' in s]
             signals = [s+'_queue_-1' for s in signals]
             signals += cluster.sftp().listdir(run_signal_path)
             return set(signals)
@@ -252,11 +253,11 @@ def queue_running():
 
     return False
 
+
 def restart_slot(slot):
     cluster = Connection(cluster_address)
-    for signal in get_signals():
-        path = '{}/signal_in/restart{}'.format(cluster_path,slot)
-        cluster.sftp().file(path, 'a').close()
+    path = '{}/signal_in/restart{}'.format(cluster_path,slot)
+    cluster.sftp().file(path, 'a').close()
 
 
 class RunCompleteWatcher(QThread):
