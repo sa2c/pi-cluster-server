@@ -10,6 +10,9 @@ from settings import *
 nodes = set(range(len(IPs)))
 nslots = int(len(nodes) / nodes_per_job)
 
+# Currently running
+runs = []
+
 # Divide nodes to slots
 ips_in_slot = []
 for slot in range(nslots):
@@ -38,8 +41,9 @@ def slots_available():
     return( len(free_slots) )
 
 
-def run_cfd( id ):
-    my_slot = reserve_nodes()
+def run_cfd( id, my_slot = None ):
+    if my_slot==None :
+        my_slot = reserve_nodes()
     my_nodes = ips_in_slot[my_slot]
     try:
         os.makedirs('simulations/'+id)
@@ -80,7 +84,7 @@ def check_signals():
                 os.remove('signal_in/'+signal)
             except:
                 return []
-            restart_slot(slot)
+            restart_slot(int(slot)-1)
             return []
 
     for signal in signals:
@@ -107,23 +111,18 @@ def run_signal(signal):
 
 
 def restart_slot(slot):
-    
+    global runs
     print("Restarting slot", slot)
-    kill_slot(int(slot))
 
-    index = -1
-    for signal in os.listdir('signal_out'):
-        if "start_"+str(slot) in signal:
-            index = signal.replace("run", '')
-            index = index.replace("_start_"+str(slot), '')
-            print(index)
-
-    if index != -1:
-        for signal in os.listdir('signal_out'):
-            if index in signal:
-                os.remove('signal_out/'+signal)
-
-        open('signal_in/run{}'.format(index), 'a').close()
+    # Rerun and replace process in runs
+    for run in runs:
+        process, signal, run_slot = run
+        if run_slot == slot:
+            runs.remove(run)
+            process.kill()
+            process, slot = run_cfd( signal, slot )
+            runs += [(process, signal, slot)]
+            
     return []
 
 
@@ -134,15 +133,14 @@ def kill_slot(slot):
 
 
 def run_queue():
-    runs = []
+    global runs
     while True:
         try:
             print("Open slots:", free_slots)
 
             os.chdir(local_path)
             check_ping()
-            if slots_available() > 0 :
-                runs += check_signals()
+            runs += check_signals()
         
             for run in runs:
                 process, signal, slot = run
@@ -162,9 +160,10 @@ def run_queue():
         except KeyboardInterrupt:
             print("Stopping queue")
             print("Killing all simulations")
-            for slot in slots:
-                print(slot)
-                kill_slot(slot)
+            for run in runs:
+                process, signal, run_slot = run
+                print(run_slot)
+                process.kill()
 
             print("Removing start signals")
             signals = os.listdir('signal_out')
