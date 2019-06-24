@@ -95,7 +95,7 @@ class ViewfinderDialog(QDialog):
         if progress == 0:
             text.setText(f'{name}: Preparing' )
         elif progress == 100:
-            text.setText(f'{name}: Creating images%')
+            text.setText(f'{name}: Creating images')
         else:
             text.setText(f'{name}: {progress}%')
 
@@ -146,6 +146,7 @@ class ViewfinderDialog(QDialog):
             text.setText(f'Slot {slot_number + 1}: Idle')
         except:
             print(f"Simulation {index_run} completed not in queue")
+
 
     def start_progress_checking(self):
         print(f'start progress checking')
