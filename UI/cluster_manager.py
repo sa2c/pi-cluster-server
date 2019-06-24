@@ -4,7 +4,6 @@ from fabric import Connection
 import os, io
 import time
 import pickle
-from fabric import Connection
 import tempfile
 import errno
 
