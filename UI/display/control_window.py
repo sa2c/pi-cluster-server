@@ -31,6 +31,7 @@ class ControlWindow(QMainWindow):
         self.ui.capture_button.released.connect(self.capture_action)
         self.ui.process_button.released.connect(self.run_cfd_action)
         self.ui.print_button.released.connect(self.print_action)
+        self.ui.restart_button.released.connect(self.restart_action)
         self.ui.details_button.released.connect(self.fill_in_details_action)
         self.ui.calibrate_button.released.connect(self.controller.calibrate)
         self.ui.show_button.released.connect(self.show_capture_action)
@@ -129,6 +130,16 @@ class ControlWindow(QMainWindow):
         index = self.ui.view_selector.selected_index()
         self.controller.print_simulation(index)
 
+    def restart_action(self):
+        print("Restart button pressed")
+        slot, result = QInputDialog.getInt(
+            self,
+            "Restart Queue Slot",
+            "Which slot to restart?"
+        )
+        cluster_manager.restart_slot(slot)
+
+
     def fill_in_details_action(self):
         prev_name, prev_email = self.controller.get_user_details()
 
@@ -141,7 +152,7 @@ class ControlWindow(QMainWindow):
 
     def run_cfd_action(self):
         index = self.controller.start_simulation()
-    
+
     def reset_action(self):
         self.name_changed_action('', '')
 
