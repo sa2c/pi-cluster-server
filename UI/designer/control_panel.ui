@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1822</width>
-    <height>986</height>
+    <width>1289</width>
+    <height>497</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -32,16 +32,7 @@
       <property name="spacing">
        <number>5</number>
       </property>
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
+      <property name="margin">
        <number>0</number>
       </property>
       <item>
@@ -62,7 +53,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string></string>
+            <string/>
            </property>
           </widget>
          </item>
@@ -75,7 +66,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string></string>
+            <string/>
            </property>
           </widget>
          </item>
@@ -88,7 +79,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string></string>
+            <string/>
            </property>
           </widget>
          </item>
@@ -199,6 +190,13 @@
            </property>
            <property name="text">
             <string>&amp;Go...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="restart_button">
+           <property name="text">
+            <string>Restart Slot</string>
            </property>
           </widget>
          </item>
