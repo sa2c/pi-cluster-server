@@ -60,15 +60,14 @@ class VideoCaptureThread(QThread):
     changeDepthPixmap = Signal(np.ndarray)
 
     def run(self):
-        if freenect_loaded:
-            while True:
-                self.capture_video_frame()
-                self.capture_depth()
-                time.sleep(0.1)
+        while True:
+            self.capture_video_frame()
+            self.capture_depth()
+            time.sleep(0.1)
 
     def capture_video_frame(self):
         # Capture video frame
-        frame = get_video()
+        frame = device.get_video()
 
         # Emit video frame
         self.changeFramePixmap.emit(frame)

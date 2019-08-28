@@ -38,14 +38,6 @@ class ControlWindow(QMainWindow):
         self.ui.color_calibrate_button.released.connect(
             self.calibrate_color_action)
 
-        if not self.controller.kinect_connected():
-            self.ui.calibrate_button.setEnabled(False)
-            self.ui.color_calibrate_button.setEnabled(False)
-            self.ui.details_button.setEnabled(False)
-            self.ui.capture_button.setEnabled(False)
-            self.ui.show_button.setEnabled(False)
-            self.ui.process_button.setEnabled(False)
-        
         # create viewfinder
         self.viewfinder = ViewfinderDialog()
         self.viewfinder.show()
@@ -60,7 +52,7 @@ class ControlWindow(QMainWindow):
 
         # create color calibration window
         self.calibration_window = ColorCalibration()
-        self.calibration_window.color_changed.connect(kinect.set_color_scale)
+        self.calibration_window.color_changed.connect(kinect.device.set_color_scale)
 
         # create file system watcher
         self.run_watcher = cluster_manager.RunCompleteWatcher(self)
@@ -119,12 +111,12 @@ class ControlWindow(QMainWindow):
         self.ui.captured_depth.setImage(depthimage)
     
     def calibrate_color_action(self):
-        old = kinect.get_color_scale()
+        old = kinect.device.get_color_scale()
 
         accepted = self.calibration_window.exec()
 
         if not accepted:
-            kinect.set_color_scale(old)
+            kinect.device.set_color_scale(old)
 
     def print_action(self):
         index = self.ui.view_selector.selected_index()
