@@ -12,106 +12,106 @@ from settings import num_points, corner_cutting_steps
 from settings import color_scale, flip_display_axis
 from settings import mock_kinect
 
-freenect_loaded = False
+# Try loading the kinect libraries
+try:
+    print("Loading kinect libraries...")
+    from freenect import sync_get_depth, sync_get_video
+    from freenect import DEPTH_MM
 
-
-def setup_kinect():
-    # Use the actual kinect
-    try:
-        from freenect import sync_get_depth, sync_get_video
-        from freenect import DEPTH_MM
-        # Try getting data to check if the device is connected
-        if sync_get_depth(format=DEPTH_MM):
-            freenect_loaded = True
-        mock_kinect = False
-    except:
-        print("Freenect not found")
-        pass
-
-
-def setup_mock():
-    # Use recorded Kinect data to mock the device. Load the data
-    # from kinect_data.npy and color_kinect_data.npy here.
-    global mock_kinect_index, mock_depth, mock_color, mock_kinect, freenect_loaded
-    mock_kinect_index = 0
-
-    mock_depth = np.load("test_data/kinect_data.npy")
-    mock_color = np.load("test_data/color_kinect_data.npy")
-    
-    freenect_loaded = True
+    # Try getting data to check if the device is connected
+    if not sync_get_depth(format=DEPTH_MM):
+        mock_kinect = True
+        print("Kinect data could not be read - falling back to mock input")
+    else:
+        print("Kinect libraries loaded")
+except:
+    print("Freenect library could not be loaded - falling back to mock input")
     mock_kinect = True
 
+class KinectAdapter:
+    def __init__(self):
+        self.color_scale = color_scale
 
-if not mock_kinect:
-    setup_kinect()
-
-if mock_kinect:
-    print('WARNING: MOCKING KINECT')
-    setup_mock()
-
-
-def get_depth():
-    if mock_kinect:
-        global mock_kinect_index, mock_depth, mock_color
-        mock_kinect_index = mock_kinect_index + 1
-        index = mock_kinect_index % len(mock_depth)
-        depth = np.copy(mock_depth[index])
-    else:
+    def _get_depth(self):
+        "This function is overriden in the kinect mock adapter"
         (depth, _) = sync_get_depth(format=DEPTH_MM)
+
+        # create a copy, as kinect library mutates a single object by default
         depth = np.copy(depth)
 
-    if flip_display_axis:
-        depth = np.fliplr(depth)
+        return depth
 
-    return depth
+    def get_depth(self):
+        depth = self._get_depth()
 
+        if flip_display_axis:
+            depth = np.fliplr(depth)
 
-def get_video():
-    global color_scale
-    if mock_kinect:
-        global mock_kinect_index, mock_depth, mock_color
-        index = mock_kinect_index % len(mock_color)
-        rgb = np.copy(mock_color[index])
-    else:
+        return depth
+
+    def _get_video(self):
+        "This function is overriden in the kinect mock adapter"
         (rgb, _) = sync_get_video()
+
+        return rgb
+
+    def get_video(self):
+        rgb = self._get_video()
+
         rgb = np.copy(rgb)
 
-    # scale colours by colour calibration
-    rgb[:, :, 0] = rgb[:, :, 0] * color_scale[0]
-    rgb[:, :, 1] = rgb[:, :, 1] * color_scale[1]
-    rgb[:, :, 2] = rgb[:, :, 2] * color_scale[2]
+        # scale colours by colour calibration
+        rgb[:, :, 0] = rgb[:, :, 0] * self.color_scale[0]
+        rgb[:, :, 1] = rgb[:, :, 1] * self.color_scale[1]
+        rgb[:, :, 2] = rgb[:, :, 2] * self.color_scale[2]
 
-    if flip_display_axis:
-        rgb = np.fliplr(rgb)
+        if flip_display_axis:
+            rgb = np.fliplr(rgb)
 
-    return invert_color_order(rgb)
+        return invert_color_order(rgb)
 
+    def set_color_scale(self, color_scale):
+        self.color_scale = color_scale
 
-# Mock data for testing
-def get_mock_video():
-    return np.load("test_data/color_image.npy")
-
-
-def get_mock_depth():
-    return np.load("test_data/depth_image.npy")
+    def get_color_scale(self):
+        return self.color_scale
 
 
-def get_mock_background_depth():
-    return np.load("test_data/depth_background_image.npy")
 
+class MockKinectAdapter(KinectAdapter):
+    def __init__(self):
+        super().__init__()
+        # Use recorded Kinect data to mock the device. Load the data
+        # from kinect_data.npy and color_kinect_data.npy here.
+        self.current_frame = 0
+
+        self.mock_depth = np.load("test_data/kinect_data.npy")
+        self.mock_color = np.load("test_data/color_kinect_data.npy")
+
+        mock_kinect = True
+
+    def _get_depth(self):
+        self.current_frame = self.current_frame + 1
+        current_frame = self.current_frame % len(self.mock_depth)
+        depth = np.copy(self.mock_depth[current_frame])
+
+        return depth
+
+
+    def _get_video(self):
+        self.current_frame = self.current_frame % len(self.mock_color)
+        rgb = np.copy(self.mock_color[self.current_frame])
+
+        return rgb
+
+
+if mock_kinect:
+    device = MockKinectAdapter()
+else:
+    device = KinectAdapter()
 
 def invert_color_order(rgb):
     return cv2.cvtColor(rgb, cv2.COLOR_BGR2RGB)
-
-
-def set_color_scale(rgb):
-    global color_scale
-    color_scale = rgb
-
-
-def get_color_scale():
-    global color_scale
-    return color_scale
 
 
 def threshold(d):
@@ -123,11 +123,13 @@ def threshold(d):
 
 
 def measure_depth(n=1):
-    depth = get_depth()
+    global device
+
+    depth = device.get_depth()
     depth = threshold(depth)
     depth = depth.astype(np.float32) / n
     for m in range(1, n):
-        d = get_depth()
+        d = device.get_depth()
         d = threshold(d)
         d = d.astype(np.float32) / n
         depth += d
@@ -207,7 +209,7 @@ def images_and_outline(background, scale, offset):
         the transformed contour '''
 
     capture_depth = measure_depth( nmeasurements )
-    rgb_frame = np.copy(get_video())
+    rgb_frame = np.copy(device.get_video())
 
     clean_depth = remove_background(capture_depth, background)
     contour = normalised_depth_to_contour(clean_depth)
@@ -225,3 +227,16 @@ def images_and_outline(background, scale, offset):
                 (0, 0, 255), 2)
 
     return rgb_frame, rgb_frame_with_outline, depthimage, transformed_outline
+
+# Mock data utility functions for testing
+def get_mock_video():
+    return np.load("test_data/color_image.npy")
+
+
+def get_mock_depth():
+    return np.load("test_data/depth_image.npy")
+
+
+def get_mock_background_depth():
+    return np.load("test_data/depth_background_image.npy")
+

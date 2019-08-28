@@ -28,11 +28,7 @@ class Controller(object):
 
         self.drag = np.empty((0,2))
 
-        if self.kinect_connected():
-            self.calibrate()
-
-    def kinect_connected(self):
-        return kinect.freenect_loaded
+        self.calibrate()
 
     def calibrate(self):
         self.background = kinect.measure_depth(nmeasurements)        

@@ -15,12 +15,12 @@ class TestKinectLib(object):
 
     def test_get_depth(self):
         ''' Get_depth should return a black and white image '''
-        depth = kinect.get_depth()
+        depth = kinect.device.get_depth()
         assert depth.shape == (480, 640)
     
     def test_get_video(self):
         ''' Get_video should return a color image '''
-        rgb = kinect.get_video()
+        rgb = kinect.device.get_video()
         assert rgb.shape == (480, 640, 3)
 
     def test_get_mock_depth(self):
@@ -58,11 +58,11 @@ class TestKinectLib(object):
     def test_color_scale(self):
         ''' '''
         color_scale = settings.color_scale
-        kinect_scale = kinect.get_color_scale()
+        kinect_scale = kinect.device.get_color_scale()
         assert color_scale == kinect_scale
 
-        kinect.set_color_scale([1, 2, 3])
-        kinect_scale = kinect.get_color_scale()
+        kinect.device.set_color_scale([1, 2, 3])
+        kinect_scale = kinect.device.get_color_scale()
         assert kinect_scale == [1, 2, 3]
 
     def test_treshold(self):
