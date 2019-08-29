@@ -14,23 +14,6 @@ import os
 from settings import local_path
 
 
-def create_secondary_panel(parent, video_cap_thread):
-    window = QDialog(parent)
-    panel = loadUiWidget(
-        '../designer/secondary_panel.ui',
-        customWidgets=[QVideoWidget, ActivityPlotter])
-    window.setLayout(QVBoxLayout())
-    window.layout().addWidget(panel)
-    window.setStyleSheet('background-color: #efebd8;')
-
-    th.changeFramePixmap.connect(panel.video_rgb.setImage)
-    th.changeDepthPixmap.connect(panel.video_depth.setImage)
-
-    window.show()
-
-    return window
-
-
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     #app.setStyle(QStyleFactory.create("Fusion"))
