@@ -3,60 +3,23 @@ import numpy as np
 from fabric import Connection
 import os, io
 import time
-import pickle
 import tempfile
 import errno
+import datetime
+import calendar
+import requests
 
-from settings import cluster_address, cluster_path
+from settings import cluster_address
 
 local_path = os.environ['PWD']
+
+drags = np.empty((0,2))
 
 # Check connection
 print("Checking connection to the head node.")
 c = Connection(cluster_address)
 c.open()
 c.close()
-
-
-def all_available_indices_and_names():
-    dir = 'simulations'
-    simulations = []
-
-    for file in os.listdir(dir):
-        if 'run' in file:
-            try:
-                index = int(file.replace('run', ''))
-                if os.path.exists(run_filepath(index, 'elmeroutput0010.vtk')):
-                    name = load_simulation_name(index)
-                    simulations.append([index, name])
-            except Exception as e:
-                print(f'failed to load file: {file}')
-                print(str(e))
-    return simulations
-
-
-def run_directory(index):
-    directory = 'simulations/run{index}'.format(index=index)
-
-    while not os.path.exists(directory):
-        try:
-            os.makedirs(directory)
-        except OSError as e:
-            print(f'directory creation failed: {directory}')
-
-    return directory
-
-
-def run_filepath(index, filename):
-    directory = run_directory(index)
-    path = os.path.join(directory, filename)
-    return path
-
-
-def write_outline(filename, outline):
-    flipped_outline = np.copy(outline.reshape((-1, 2)))
-    flipped_outline[:, 1:] = 480 - flipped_outline[:, 1:]
-    np.savetxt(filename, flipped_outline, fmt='%i %i')
 
 
 def setup_cluster_inbox():
@@ -94,7 +57,50 @@ def queue_run(contour, index):
         cluster.sftp().file(remote_name, 'a').close()
 
 
+def save_and_run_simulation(simulation):
+    # determining the index should be on the server really
+    now = datetime.datetime.utcnow()
+    index = calendar.timegm(now.utctimetuple())
 
+    simulation['index'] = index
+
+    save_simulation(simulation)
+    queue_run(simulation['contour'], simulation['index'])
+
+
+    return index
+
+def get_drag(index):
+    print("Temporarily disabled")
+    ## drag = compute_drag_for_simulation(index)
+
+    ## simulation = load_simulation(index)
+    ## simulation['score'] = drag
+    ## simulation['index'] = index        
+    ## save_simulation(simulation)        
+
+    ##return drag
+    return 10
+
+def best_simulations(nsims):
+    print("Needs to be re-implemented")
+    global drags
+
+    drag = np.array(drags)
+    nsims = min(10, drag.shape[0])
+    drag_sorted_indices = np.argsort(drag[:, 1])
+    best_indices = drag[drag_sorted_indices[0:nsims], 0]
+
+    simulations = [ load_simulation(int(i)) for index in best_indices ]
+
+    return simulations
+
+
+def simulation_postprocess(self, index):
+    global drags
+
+    drag = get_drag(index)
+    drags = np.append(drags, np.array([[index, drag]]), axis = 0)
 
 def save_simulation(simulation):
 
@@ -108,12 +114,6 @@ def save_simulation(simulation):
     # save simulation
     with open(run_filepath(index, 'simulation.npy'), 'wb') as file:
         pickle.dump(simulation, file, protocol=pickle.HIGHEST_PROTOCOL)
-
-
-def load_simulation_name(index):
-    # save simulation
-    with open(run_filepath(index, 'name.npy'), 'rb') as file:
-        return pickle.load(file)
 
 
 def load_simulation(index):
@@ -133,26 +133,9 @@ def fetch_activity():
         cpu_usage = np.array(cpu_usage)
         return cpu_usage
 
-
-# Function for working with incoming signals
-def get_signals():
-    with Connection(cluster_address) as cluster:
-        queue_signal_path = cluster_path+"/signal_in/"
-        run_signal_path = cluster_path+"/signal_out/"
-        try:
-            signals = cluster.sftp().listdir(queue_signal_path)
-            signals = [s for s in signals if 'run' in s]
-            signals = [s+'_queue_-1' for s in signals]
-            signals += cluster.sftp().listdir(run_signal_path)
-            return set(signals)
-        except FileNotFoundError:
-            print('not found')
-            cluster.sftp().mkdir(queue_signal_path)
-            cluster.sftp().mkdir(run_signal_path)
-            return set([])
-
-
-existing_signals = get_signals()
+def get_run_completion_percentage(index):
+    response = requests.post(f'{cluster_address}/simulation/{id}/percentage')
+    import pdb; pdb.set_trace()
 
 
 def create_incoming_signal( index, signal_type, slot):
@@ -249,23 +232,7 @@ class RunCompleteWatcher(QThread):
     completed = Signal(int)
 
     def get_simulations(self):
-        cluster = Connection(cluster_address)
-        remotefolder = cluster_path+'/simulations'
-        for filename in cluster.sftp().listdir(remotefolder):
-            index = int(filename.replace("run", ''))
-            download_results(index)
-            if os.path.isfile(f'simulations/run{index}/elmeroutput0010.vtk'):
-                self.completed.emit(index)
-            else:
-                # Check if the run is in queue or has been started
-                for signal in get_signals():
-                    if str(index) in signal:
-                        if "queue" in signal:
-                            self.queued.emit(index)
-                        if "start" in signal:
-                            slot = get_slot(index)
-                            if slot is not None:
-                                self.started.emit((index, slot))
+        # TODO this needs to be reimplemented over http
 
     def run(self):
         self.get_simulations()

@@ -9,7 +9,7 @@ from display.pyside_dynamic import loadUiWidget
 from display.activity_monitor import ActivityPlotter
 from display.matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
-from cluster_manager import get_run_completion_percentage, run_filepath, load_simulation_name
+from cluster_manager import get_run_completion_percentage
 
 SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
@@ -17,6 +17,7 @@ SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 class ViewfinderDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
+
         self.ui = loadUiWidget(
             os.path.join(SCRIPT_DIRECTORY, '../designer/viewfinder.ui'),
             customWidgets=[
@@ -71,21 +72,24 @@ class ViewfinderDialog(QDialog):
         if not self.currently_shown_simulation is None:
             image = self.currently_shown_simulation['rgb']
 
-            vtk_file = run_filepath(self.currently_shown_simulation['index'],
-                                    f'elmeroutput{self.image_index:04}.vtk')
-            print(f'reading vtk file {vtk_file}')
+            #  TODO Commented out while data download is sorted
+            #  vtk_file = run_filepath(self.currently_shown_simulation['index'],
+            #                          f'elmeroutput{self.image_index:04}.vtk')
+            #  print(f'reading vtk file {vtk_file}')
 
-            if self.image_index > 0:
-                vtk_to_plot(self.ui.left_view, vtk_file, 16, False, True,
-                            False, image)
-                vtk_to_plot(self.ui.right_view, vtk_file, 16, True, False,
-                            True, None)
+            #  if self.image_index > 0:
+            #      vtk_to_plot(self.ui.left_view, vtk_file, 16, False, True,
+            #                  False, image)
+            #      vtk_to_plot(self.ui.right_view, vtk_file, 16, True, False,
+            #                  True, None)
 
-            self.image_index = (self.image_index + 1) % (ntimesteps + 1)
+            #  self.image_index = (self.image_index + 1) % (ntimesteps + 1)
 
     def set_currently_shown_simulation(self, index):
-        datafile = run_filepath(index, 'simulation.npy')
-        self.currently_shown_simulation = np.load(datafile)
+        pass
+        # TODO Commented out while data download is sorted
+        # datafile = run_filepath(index, 'simulation.npy')
+        # self.currently_shown_simulation = np.load(datafile)
 
     def set_progress(self, index_run, progress):
         slot_number = self.indices_in_slots.index(index_run)

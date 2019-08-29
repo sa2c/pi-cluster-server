@@ -138,5 +138,4 @@ if __name__ == "__main__":
     generator = PDFPrinter('test_pil.pdf',
                              image1, image2, image3, image4,
                              'Test user with PIL', 69)
-#    import pdb; pdb.set_trace()
     generator.run(send_to_printer = False)

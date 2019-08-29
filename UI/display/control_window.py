@@ -10,14 +10,13 @@ from display.leaderboard import LeaderboardWidget
 from display.viewfinder import ViewfinderDialog
 from display.color_calibration import ColorCalibration
 from display.simulation_selector import SimulationSelector
-from controller import Controller
 import cluster_manager
 
 class ControlWindow(QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, controller, viewfinder, parent=None):
         super().__init__(parent)
 
-        self.controller = Controller()
+        self.controller = controller
 
         # set control window size
         self.resize(1920, 1080)
@@ -39,10 +38,8 @@ class ControlWindow(QMainWindow):
             self.calibrate_color_action)
 
         # create viewfinder
-        self.viewfinder = ViewfinderDialog()
+        self.viewfinder = viewfinder
         self.viewfinder.show()
-        self.viewfinder.start_progress_checking()
-        self.viewfinder.ui.leaderboard.update(self.controller.best_simulations())
 
         # connect view selector
         self.ui.view_selector.simulation_view_changed.connect(
@@ -67,8 +64,6 @@ class ControlWindow(QMainWindow):
         print(f'finished {index}')
         self.viewfinder.finish_simulation(index)
         self.ui.view_selector.simulation_finished_action(index)
-
-        self.controller.simulation_postprocess(index)
 
         self.viewfinder.ui.leaderboard.update(self.controller.best_simulations())
 

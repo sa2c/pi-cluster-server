@@ -12,11 +12,11 @@ opencv-python = "*"
 opencv-contrib-python = "*"
 matplotlib = "*"
 "pyside2" = "*"
-fabric = "*"
 pdfrw = "*"
 reportlab = "*"
 pillow = "*"
 pytest = "*"
+requests = "*"
 
 [dev-packages]
 
