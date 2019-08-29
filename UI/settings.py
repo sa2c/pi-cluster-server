@@ -19,8 +19,7 @@ color_scale = [1, 1, 0.8]
 flip_display_axis = True
 
 # Cluster settings
-cluster_address = "pi@10.0.0.253"
-cluster_path = 'picluster/cluster_queue'
+cluster_address = "localhost"
 
 # Local settings
 local_path = os.environ['PWD']

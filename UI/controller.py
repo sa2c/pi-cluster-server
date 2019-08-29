@@ -1,17 +1,11 @@
 import numpy as np
 import kinectlib.kinectlib as kinect
-import cluster_manager
-import datetime
-import calendar
-from computedrag import compute_drag_for_simulation
 from images_to_pdf.pdfgen import PDFPrinter
 from display.matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
 import matplotlib.pyplot as plt
 
 from settings import nmeasurements
-
-
 
 
 class Controller(object):
@@ -25,8 +19,6 @@ class Controller(object):
         self.outline = None
         self.transformed_outline = None
         self.contour = np.array([[]])
-
-        self.drag = np.empty((0,2))
 
         self.calibrate()
 
@@ -43,7 +35,7 @@ class Controller(object):
         self.capture_frame = rgb
         self.capture_frame_with_outline = rgb_with_outline
         self.capture_depth = depth
-        
+
         # Set contour for simulation
         self.contour = outline
 
@@ -66,11 +58,9 @@ class Controller(object):
 
     def start_simulation(self):
 
-        index = self.get_epoch()
-
         # save simulation details for later
-        simulation = {
-            'index': index,
+
+        index = cluster_manager.save_and_run_simulation({
             'name': self.current_name,
             'email': self.current_email,
             'rgb': self.capture_frame,
@@ -78,45 +68,13 @@ class Controller(object):
             'depth': self.capture_depth,
             'background': self.background,
             'contour': self.contour
-        }
-
-        cluster_manager.save_simulation(simulation)
-
-        cluster_manager.queue_run(self.contour, simulation['index'])
+        })
 
         return index
 
     def best_simulations(self):
         nsims = 10
-        drag = np.array(self.drag)
-        nsims = min(10, drag.shape[0])
-        drag_sorted_indices = np.argsort(drag[:, 1])
-        best_indices = drag[drag_sorted_indices[0:nsims], 0]
-
-        simulations = []
-        for index in best_indices:
-            i = int(index)
-            simulations.append(cluster_manager.load_simulation(i))
-
-        return simulations
-
-    def get_epoch(self):
-        now = datetime.datetime.utcnow()
-        timestamp = calendar.timegm(now.utctimetuple())
-        return timestamp
-
-    def calculate_drag(self, index):
-        drag = compute_drag_for_simulation(index)
-        
-        simulation = cluster_manager.load_simulation(index)
-        simulation['score'] = drag
-        simulation['index'] = index        
-        cluster_manager.save_simulation(simulation)        
-        return drag
-
-    def simulation_postprocess(self, index):
-        drag = self.calculate_drag(index)
-        self.drag = np.append(self.drag, np.array([[index, drag]]), axis = 0)
+        return cluster_manager.best_simulations(nsims)
 
     def list_simulations(self):
         return cluster_manager.all_available_indices_and_names()

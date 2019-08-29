@@ -9,6 +9,8 @@ from display.video_capture import VideoCaptureThread, QVideoWidget
 from display.control_window import ControlWindow
 from display.pyside_dynamic import loadUiWidget
 from display.activity_monitor import ActivityPlotter
+from display.viewfinder import ViewfinderDialog
+from controller import Controller
 import os
 
 from settings import local_path
@@ -18,18 +20,20 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     #app.setStyle(QStyleFactory.create("Fusion"))
     # initialise another thread for video capture
-    th = VideoCaptureThread()
+    video_source = VideoCaptureThread()
 
-    window = ControlWindow()
+    controller = Controller()
 
-    th.changeFramePixmap.connect(window.ui.video_rgb.setImage)
-    th.changeDepthPixmap.connect(window.ui.video_depth.setImage)
+    viewfinder = ViewfinderDialog()
 
-    th.changeFramePixmap.connect(window.viewfinder.ui.main_video.setImage)
-    th.changeDepthPixmap.connect(window.viewfinder.ui.depth_video.setImage)
+    window = ControlWindow(controller, viewfinder)
 
-    th.setParent(window)
-    th.start()
+    video_source.changeFramePixmap.connect(window.ui.video_rgb.setImage)
+    video_source.changeDepthPixmap.connect(window.ui.video_depth.setImage)
+
+
+    video_source.setParent(window)
+    video_source.start()
 
     window.show()
     sys.exit(app.exec_())

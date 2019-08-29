@@ -60,6 +60,16 @@ def get_simulation(id):
 
     return sim
 
+@app.route('/simulations/max_drag/<nsim>', methods=['GET'])
+def best_simulations(nsims):
+    drag = np.array(drags)
+    nsims = min(10, drag.shape[0])
+    drag_sorted_indices = np.argsort(drag[:, 1])
+    best_indices = drag[drag_sorted_indices[0:nsims], 0]
+
+    simulations = [ load_simulation(int(i)) for index in best_indices ]
+
+    return simulations
 def ensure_exists(directory):
     "Creates a directory unless it exists"
 
