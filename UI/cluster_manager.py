@@ -24,45 +24,6 @@ def setup_cluster_inbox():
             cluster.sftp().mkdir(cluster_path+'/signal_in')
 
 
-def queue_run(contour, index):
-    with Connection(cluster_address) as cluster:
-        # save contour to file and copy to the cluster inbox
-        filename = run_filepath(index, "contour.dat")
-        write_outline(filename, contour)
-
-        setup_cluster_inbox()
-
-        # copy the contour
-        remote_name = '{}/inbox/run{}'.format(cluster_path, index)
-        cluster.put(filename, remote=remote_name)
-
-        # copy simulation details over to the cluster
-        remote_folder = '{}/simulations/run{}'.format(cluster_path, index)
-        cluster.sftp().mkdir(remote_folder)
-        local_folder  = 'simulations/run{}'.format(index)
-        for filename in os.listdir(local_folder):
-            remote_file  = '{}/{}'.format(remote_folder, filename)
-            local_file  = '{}/{}'.format(local_folder, filename)
-            cluster.put(local_file, remote=remote_file)
-
-        # copy a signal file across
-        remote_name = '{}/signal_in/run{}'.format(cluster_path, index)
-        cluster.sftp().file(remote_name, 'a').close()
-
-
-def save_and_run_simulation(simulation):
-    # determining the index should be on the server really
-    now = datetime.datetime.utcnow()
-    index = calendar.timegm(now.utctimetuple())
-
-    simulation['index'] = index
-
-    save_simulation(simulation)
-    queue_run(simulation['contour'], simulation['index'])
-
-
-    return index
-
 def get_drag(index):
     print("Temporarily disabled")
     ## drag = compute_drag_for_simulation(index)
