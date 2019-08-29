@@ -75,7 +75,7 @@ def best_simulations(nsims):
 def get_activity():
 
     if settings.devel:
-        cpu_usage = np.random.rand(5)
+        cpu_usage = np.random.rand(12)*100
     else:
         output = check_output(["bash", "cpuloadinfo.sh"]).decode('utf-8')
 

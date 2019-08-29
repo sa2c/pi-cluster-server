@@ -83,4 +83,4 @@ def test_activity(client):
     response = client.get(f'/cluster/activity')
     json = response.json
 
-    assert len(json['cpu_usage']) == 5
+    assert len(json['cpu_usage']) == 12
