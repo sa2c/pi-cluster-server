@@ -1,6 +1,7 @@
 import numpy as np
 import kinectlib.kinectlib as kinect
 from images_to_pdf.pdfgen import PDFPrinter
+import cluster_manager
 from display.matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
 import matplotlib.pyplot as plt
@@ -60,7 +61,7 @@ class Controller(object):
 
         # save simulation details for later
 
-        index = cluster_manager.save_and_run_simulation({
+        index = cluster_manager.dispatch_simulation({
             'name': self.current_name,
             'email': self.current_email,
             'rgb': self.capture_frame,
