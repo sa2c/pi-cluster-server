@@ -53,28 +53,6 @@ def run_filepath(index, filename):
     return path
 
 
-def get_run_completion_percentage(index):
-    ''' Read the completion percentage of the run
-    '''
-    with Connection(cluster_address) as cluster:
-        try:
-            directory = '{}/simulations/run{}'.format(cluster_path, index)
-            grep = "grep 'MAIN:  Time:' output"
-            get_last = " | tail -n 1"
-            get_time = " | awk '{print $3}'"
-            command = grep + get_last + get_time
-
-            with cluster.cd(directory):
-                output = cluster.run(command, hide=True).stdout
-
-            numbers = output.split('/')
-            percentage = int(100 * float(numbers[0]) / float(numbers[1]))
-        except:
-            # Most likely file not found
-            percentage = 0
-    return percentage
-
-
 def write_outline(filename, outline):
     flipped_outline = np.copy(outline.reshape((-1, 2)))
     flipped_outline[:, 1:] = 480 - flipped_outline[:, 1:]
