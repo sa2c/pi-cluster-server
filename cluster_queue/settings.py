@@ -15,3 +15,5 @@ cfdcommand = "python runcfd.py {id} {ncores} {hostfile} {diskaddress} >> ../simu
 
 cluster_path = '/home/mark/code/picluster/cluster_queue'
 
+devel = True
+

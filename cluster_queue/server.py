@@ -70,6 +70,24 @@ def best_simulations(nsims):
     simulations = [ load_simulation(int(i)) for index in best_indices ]
 
     return simulations
+
+@app.route('/cluster/activity', methods=['GET'])
+def get_activity():
+
+    if settings.devel:
+        cpu_usage = np.random.rand(5)
+    else:
+        output = check_output(["bash", "cpuloadinfo.sh"]).decode('utf-8')
+
+        cpu_usage = output.split('\n')[1:-1]
+        cpu_usage = [
+            float(cpu_usage_meas.split(' ')[1]) for cpu_usage_meas in cpu_usage
+        ]
+
+        cpu_usage = np.array(cpu_usage)
+
+    return {'cpu_usage' : cpu_usage.tolist()}
+
 def ensure_exists(directory):
     "Creates a directory unless it exists"
 

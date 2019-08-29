@@ -75,3 +75,12 @@ def test_percenteage(client):
     json = response.json
 
     assert json['percentage'] == 40
+
+def test_activity(client):
+    sim_id = '1566995659'
+
+    # fetch simulation completion percentage
+    response = client.get(f'/cluster/activity')
+    json = response.json
+
+    assert len(json['cpu_usage']) == 5
