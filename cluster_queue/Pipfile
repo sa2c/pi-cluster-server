@@ -8,6 +8,7 @@ shapely = "*"
 matplotlib = "*"
 numpy = "*"
 pytest = "*"
+sqlalchemy = "*"
 
 [dev-packages]
 

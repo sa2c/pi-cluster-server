@@ -13,9 +13,5 @@ nodes_per_job = 1
 
 cfdcommand = "python runcfd.py {id} {ncores} {hostfile} {diskaddress} >> ../simulations/{id}/output"
 
-os.makedirs('signal_out', exist_ok=True)
-os.makedirs('signal_in', exist_ok=True)
-os.makedirs('inbox', exist_ok=True)
-os.makedirs('simulations', exist_ok=True)
-
+cluster_path = '/home/mark/code/picluster/cluster_queue'
 

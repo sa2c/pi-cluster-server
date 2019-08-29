@@ -26,7 +26,7 @@ free_slots = set(range(nslots))
 
 def reserve_nodes():
 	return free_slots.pop()
-    
+
 def write_hostfile( nodes, id ):
     hostfilename="hostfile_"+id
     with open(hostfilename, "w") as f:
@@ -42,6 +42,7 @@ def slots_available():
 
 
 def run_cfd( id, my_slot = None ):
+
     if my_slot==None :
         my_slot = reserve_nodes()
     my_nodes = ips_in_slot[my_slot]
@@ -97,10 +98,11 @@ def check_signals():
 def run_signal(signal):
     print("Starting", signal)
     try:
+        # removing this early means that if the system is restarted during a run it won't resume?
         os.remove('signal_in/'+signal)
     except:
         return []
-    
+
     shutil.copyfile(
         'inbox/'+signal,
         'cfd/'+signal+'-outline-coords.dat'
