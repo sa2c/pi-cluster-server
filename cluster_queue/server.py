@@ -1,4 +1,4 @@
-
+from subprocess import check_output
 import numpy as np
 import datetime
 import calendar
@@ -31,6 +31,28 @@ def all_simulations():
     simulations = model.all_simulations()
 
     return simulations
+
+@app.route('/simulation/<id>/percentage', methods=['GET'])
+def get_run_completion_percentage(id):
+    ''' Read the completion percentage of the run
+    '''
+    directory = '{}/simulations/run{}'.format(settings.cluster_path, id)
+
+    ensure_exists(directory)
+
+    if not os.path.exists(directory):
+        percentage = 0
+    else:
+        fname = f'/home/mark/code/picluster/cluster_queue/simulations/run{id}/output'
+
+        output = check_output(["grep", "MAIN:  Time", fname]).decode('utf-8')
+
+        numer, denom = output.splitlines()[-1].split()[2].split("/")
+
+
+        percentage = int(100 * float(numer) / float(denom))
+
+    return {'percentage' : percentage }
 
 @app.route('/simulation/<id>', methods=['GET'])
 def get_simulation(id):

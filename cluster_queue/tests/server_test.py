@@ -66,3 +66,12 @@ def test_create_simulation(client):
     json = response.json
 
     assert_sim_equal(json, json_data)
+
+def test_percenteage(client):
+    sim_id = '1566995659'
+
+    # fetch simulation completion percentage
+    response = client.get(f'/simulation/{sim_id}/percentage')
+    json = response.json
+
+    assert json['percentage'] == 40
