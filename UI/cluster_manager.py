@@ -2,6 +2,7 @@ from PySide2.QtCore import *
 import numpy as np
 import os, io
 import time
+import requests
 import tempfile
 import errno
 import datetime
@@ -94,18 +95,18 @@ def simulation_postprocess(self, index):
     drag = get_drag(index)
     drags = np.append(drags, np.array([[index, drag]]), axis = 0)
 
-def save_simulation(simulation):
+def dispatch_simulation(simulation):
+    "Posts data to server to create a new run of a simulation"
 
-    name = simulation['name']
-    index = simulation['index']
+    for key, val in simulation.items():
+        if type(val) == np.ndarray:
+            simulation[key] = val.tolist()
 
-    # save name
-    with open(run_filepath(index, 'name.npy'), 'wb') as file:
-        pickle.dump(name, file, protocol=pickle.HIGHEST_PROTOCOL)
+    response = requests.post(f'{cluster_address}/simulation', json=simulation)
 
-    # save simulation
-    with open(run_filepath(index, 'simulation.npy'), 'wb') as file:
-        pickle.dump(simulation, file, protocol=pickle.HIGHEST_PROTOCOL)
+    sim_id = response.json()['id']
+
+    return sim_id
 
 
 def load_simulation(index):
