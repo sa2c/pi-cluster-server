@@ -6,9 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import glob
 
-from cluster_manager import run_filepath
-
-from settings import nprocs
+from settings import nnodes
 
 
 def compute_drag_for_simulation(index):
