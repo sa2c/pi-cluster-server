@@ -116,6 +116,9 @@ def load_simulation(index):
 
 def fetch_activity():
     response = requests.get(f'{cluster_address}/cluster/activity')
+    cpu_usage = response.json()['cpu_usage']
+
+    return cpu_usage
 
 def get_run_completion_percentage(index):
     response = requests.post(f'{cluster_address}/simulation/{id}/percentage')
