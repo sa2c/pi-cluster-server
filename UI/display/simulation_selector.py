@@ -2,7 +2,7 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-from cluster_manager import load_simulation
+from simulation_proxy import load_simulation
 import numpy as np
 
 

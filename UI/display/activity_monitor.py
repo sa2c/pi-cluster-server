@@ -7,7 +7,7 @@ import sys
 import time
 import io, os, tempfile
 
-from cluster_manager import fetch_activity
+from simulation_proxy import fetch_activity
 
 
 class ActivityPlotter(PlotCanvas):

@@ -4,7 +4,7 @@ import glob
 import numpy as np
 from controller import Controller
 import settings
-import cluster_manager
+import simulation_proxy
 from tempfile import mkdtemp
 import kinectlib.kinectlib as kinect
 
@@ -16,8 +16,8 @@ class TestController(object):
         kinect.setup_mock()
         settings.cluster_path = mkdtemp()+'/'
         settings.cluster_address = 'localhost'
-        cluster_manager.cluster_path = settings.cluster_path
-        cluster_manager.cluster_address = 'localhost'
+        simulation_proxy.cluster_path = settings.cluster_path
+        simulation_proxy.cluster_address = 'localhost'
 
         if os.path.exists(settings.cluster_path):
             shutil.rmtree(settings.cluster_path)
@@ -84,7 +84,7 @@ class TestController(object):
         assert os.path.exists(settings.cluster_path+'simulations/run'+str(index))
         assert os.path.exists(settings.cluster_path+'simulations/run'+str(index)+'/simulation.npy')
 
-        loaded_simulation = cluster_manager.load_simulation(index)
+        loaded_simulation = simulation_proxy.load_simulation(index)
 
         assert loaded_simulation['name'] == 'Tester'
 
@@ -100,15 +100,15 @@ class TestController(object):
         
 
     def test_print_simulation(self):
-        s=cluster_manager.load_simulation(self.complete_index)
+        s=simulation_proxy.load_simulation(self.complete_index)
         new_index = self.complete_index+'0'
         os.makedirs(self.complete_runpath+'0', exist_ok=True)
         for filename in glob.glob(self.complete_runpath+'/*'):
             shutil.copy(filename, self.complete_runpath+'0')
         s['drag'] = 10
         s['index'] = new_index
-        cluster_manager.save_simulation(s)
-        s=cluster_manager.load_simulation(new_index)
+        simulation_proxy.save_simulation(s)
+        s=simulation_proxy.load_simulation(new_index)
         self.controller.print_simulation(
             new_index,
             send_to_printer = False

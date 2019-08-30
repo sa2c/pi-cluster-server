@@ -1,7 +1,7 @@
 import numpy as np
 import kinectlib.kinectlib as kinect
 from images_to_pdf.pdfgen import PDFPrinter
-import cluster_manager
+import simulation_proxy
 from display.matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
 import matplotlib.pyplot as plt
@@ -61,7 +61,7 @@ class Controller(object):
 
         # save simulation details for later
 
-        index = cluster_manager.dispatch_simulation({
+        index = simulation_proxy.dispatch_simulation({
             'name': self.current_name,
             'email': self.current_email,
             'rgb': self.capture_frame,
@@ -75,32 +75,32 @@ class Controller(object):
 
     def best_simulations(self):
         nsims = 10
-        return cluster_manager.best_simulations(nsims)
+        return simulation_proxy.best_simulations(nsims)
 
     def list_simulations(self):
-        return cluster_manager.all_available_indices_and_names()
+        return simulation_proxy.all_available_indices_and_names()
 
     def get_activity(self):
-        return cluster_manager.fetch_activity()
+        return simulation_proxy.fetch_activity()
 
     def get_simulation(self, index):
-        return cluster_manager.load_simulation(index)
+        return simulation_proxy.load_simulation(index)
     
     def get_simulation_name(self, index):
-        return cluster_manager.load_simulation_name(index)
+        return simulation_proxy.load_simulation_name(index)
 
     def get_completion_percentage(self, index):
-        return cluster_manager.get_run_completion_percentage(index)
+        return simulation_proxy.get_run_completion_percentage(index)
 
     def restart_slot(self, slot):
-        return cluster_manager.restart_slot(slot)
+        return simulation_proxy.restart_slot(slot)
 
     def print_running_jobs(self):
-        signals = cluster_manager.get_signals()
+        signals = simulation_proxy.get_signals()
         starts = []
         ends = []
         for signal in signals:
-            index, signal_type, _ = cluster_manager.get_signal_info(signal)
+            index, signal_type, _ = simulation_proxy.get_signal_info(signal)
             if signal_type == 'start':
                 starts += [index]
             if signal_type == 'end':
@@ -116,13 +116,13 @@ class Controller(object):
 
 
     def print_simulation(self, index, send_to_printer = True):
-        simulation = cluster_manager.load_simulation(index)
+        simulation = simulation_proxy.load_simulation(index)
         rgb = simulation['rgb']
         depth = simulation['depth']
         rgb = simulation['rgb_with_contour']
 
         a = PlotCanvas()
-        vtk_filename = cluster_manager.run_filepath(index, 'elmeroutput0010.vtk')
+        vtk_filename = simulation_proxy.run_filepath(index, 'elmeroutput0010.vtk')
         vtk_to_plot(a, vtk_filename, 16, True, False, True, None)
         data = np.fromstring(a.tostring_rgb(), dtype=np.uint8, sep='')
         data = data.reshape(a.get_width_height()[::-1] + (3, ))

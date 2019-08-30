@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import glob
 
-from cluster_manager import run_filepath
+from simulation_proxy import run_filepath
 
 nprocs = 4
 

@@ -5,7 +5,7 @@ from fabric import Connection
 import pytest
 import settings
 import kinectlib.kinectlib as kinect
-import cluster_manager
+import simulation_proxy
 
 class TestClusterManager(object):
 
@@ -14,10 +14,10 @@ class TestClusterManager(object):
 
     def setup(self):
         kinect.setup_mock()
-        cluster_manager.cluster_address = 'localhost'
-        cluster_manager.cluster_path = mkdtemp()
+        simulation_proxy.cluster_address = 'localhost'
+        simulation_proxy.cluster_path = mkdtemp()
         settings.cluster_address = 'localhost'
-        settings.cluster_path = cluster_manager.cluster_path
+        settings.cluster_path = simulation_proxy.cluster_path
         self.remote_directory = '{}/simulations/run{}'.format(
             settings.cluster_path,
             self.test_index
@@ -41,8 +41,8 @@ class TestClusterManager(object):
             shutil.rmtree(self.test_directory)
 
     def test_save_and_load_simulation(self):
-        directory = cluster_manager.run_directory(self.test_index)
-        cluster_manager.save_simulation({
+        directory = simulation_proxy.run_directory(self.test_index)
+        simulation_proxy.save_simulation({
             'name': 'test',
             'index': '0'
         })
@@ -50,23 +50,23 @@ class TestClusterManager(object):
         assert os.path.exists(self.test_directory+'/name.npy')
         assert os.path.exists(self.test_directory+'/simulation.npy')
 
-        loaded_simulation = cluster_manager.load_simulation(self.test_index)
+        loaded_simulation = simulation_proxy.load_simulation(self.test_index)
 
         assert loaded_simulation['name'] == 'test'
         assert loaded_simulation['index'] == '0'
 
-        loaded_name = cluster_manager.load_simulation_name(self.test_index)
+        loaded_name = simulation_proxy.load_simulation_name(self.test_index)
 
         assert loaded_name == 'test'
 
         
     def test_all_available_indices_and_names(self):
-        directory = cluster_manager.run_directory(self.test_index)
-        cluster_manager.save_simulation({
+        directory = simulation_proxy.run_directory(self.test_index)
+        simulation_proxy.save_simulation({
             'name': 'test',
             'index': '0'
         })
-        sims = cluster_manager.all_available_indices_and_names()
+        sims = simulation_proxy.all_available_indices_and_names()
 
         assert len(sims) > 0
         assert len(sims[0]) == 2
@@ -76,12 +76,12 @@ class TestClusterManager(object):
         if os.path.exists(self.test_directory):
             shutil.rmtree(self.test_directory)
 
-        directory = cluster_manager.run_directory(self.test_index)
+        directory = simulation_proxy.run_directory(self.test_index)
 
         assert directory == self.test_directory
         assert os.path.exists(directory)
 
-        directory = cluster_manager.run_directory(self.test_index)
+        directory = simulation_proxy.run_directory(self.test_index)
 
         assert directory == self.test_directory
         assert os.path.exists(directory)
@@ -91,13 +91,13 @@ class TestClusterManager(object):
     def test_get_run_completion_percentage(self):
         ''' Checks the output file for completion percentage '''
         os.makedirs(self.remote_directory)
-        percentage = cluster_manager.get_run_completion_percentage(self.test_index)
+        percentage = simulation_proxy.get_run_completion_percentage(self.test_index)
 
         assert percentage == 0
 
         with open(self.remote_directory+"/output","w+") as f:
             f.write("MAIN:  Time: 10/100\n")
-        percentage = cluster_manager.get_run_completion_percentage(self.test_index)
+        percentage = simulation_proxy.get_run_completion_percentage(self.test_index)
 
         assert percentage == 10
 
@@ -113,14 +113,14 @@ class TestClusterManager(object):
 
         rgb_frame, rgb_frame_with_outline, depthimage, outline = kinect.images_and_outline(background_depth, scale, offset)
 
-        cluster_manager.queue_run(outline, self.test_index)
+        simulation_proxy.queue_run(outline, self.test_index)
 
         assert os.path.exists(settings.cluster_path+'/inbox')
         assert os.path.exists(settings.cluster_path+'/inbox/run0')
         assert os.path.exists(settings.cluster_path+'/signal_in/run0')
         
     def test_write_outline(self):
-        cluster_manager.write_outline(
+        simulation_proxy.write_outline(
             'contour.dat',
             np.array([[[1,0],[1,1],[0,1],[0,0]]])
         )
@@ -130,22 +130,22 @@ class TestClusterManager(object):
         cluster = Connection(settings.cluster_address)
         remote_name = settings.cluster_path+'/cpuloadinfo.sh'
         cluster.put('test/mock_cpuloadinfo.sh', remote=remote_name)
-        cluster_manager.fetch_activity()
+        simulation_proxy.fetch_activity()
 
     def test_signals(self):
-        new_signals = cluster_manager.get_new_signals()
+        new_signals = simulation_proxy.get_new_signals()
 
         assert len(new_signals) == 0
 
-        cluster_manager.create_incoming_signal( 0, 'start', 3)
-        new_signals = cluster_manager.get_new_signals()
+        simulation_proxy.create_incoming_signal( 0, 'start', 3)
+        new_signals = simulation_proxy.get_new_signals()
 
         assert len(new_signals) == 1
 
         signal = new_signals.pop()
-        index, signal_type, slot = cluster_manager.get_signal_info( signal )
+        index, signal_type, slot = simulation_proxy.get_signal_info( signal )
 
-        cluster_manager.remove_incoming_signal(signal)
+        simulation_proxy.remove_incoming_signal(signal)
 
         assert index == 0
         assert signal_type == 'start'
@@ -160,13 +160,13 @@ class TestClusterManager(object):
 
         open(outbox+'/testfile','a').close()
 
-        cluster_manager.download_results(self.test_index)
+        simulation_proxy.download_results(self.test_index)
 
         assert os.path.exists(self.test_directory+'/testfile')
 
     @pytest.mark.skip()
     def test_queue_running(self):
-        assert cluster_manager.queue_running()
+        assert simulation_proxy.queue_running()
 
 
 
