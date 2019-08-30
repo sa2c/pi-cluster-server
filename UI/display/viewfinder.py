@@ -17,9 +17,7 @@ class ViewfinderWindow(QMainWindow):
         super().__init__(parent)
         self.ui = loadUiWidget(
             os.path.join(script_directory, '../designer/viewfinder.ui'),
-            customWidgets=[
-                QVideoWidget
-            ])
+            customWidgets=[QVideoWidget])
         self.setCentralWidget(self.ui)
 
         self.freeze = False
@@ -43,6 +41,7 @@ class ViewfinderWindow(QMainWindow):
     def resume_dynamic(self):
         self.ui.main_video.resumeDynamicUpdate()
         self.ui.depth_video.resumeDynamicUpdate()
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

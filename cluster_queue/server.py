@@ -142,7 +142,7 @@ class AeroSimulation(object):
     # SERVER
     def calculate_drag(self, index):
         drag = compute_drag_for_simulation(index)
-        
+
         simulation = cluster_manager.load_simulation(index)
         simulation['score'] = drag
         simulation['index'] = index        
