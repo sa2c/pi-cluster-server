@@ -7,7 +7,6 @@ from display.pyside_dynamic import loadUiWidget
 from display.video_capture import QVideoWidget
 from display.detail_form import DetailForm
 from display.leaderboard import LeaderboardWidget
-from display.viewfinder import ViewfinderDialog
 from display.color_calibration import ColorCalibration
 from display.simulation_selector import SimulationSelector
 import cluster_manager
@@ -41,12 +40,6 @@ class ControlWindow(QMainWindow):
         self.viewfinder = viewfinder
         self.viewfinder.show()
 
-        # connect view selector
-        self.ui.view_selector.simulation_view_changed.connect(
-            self.viewfinder.switch_to_simulation_view)
-        self.ui.view_selector.viewfinder_view_selected.connect(
-            self.viewfinder.switch_to_viewfinder)
-
         # create color calibration window
         self.calibration_window = ColorCalibration()
         self.calibration_window.color_changed.connect(kinect.device.set_color_scale)
@@ -63,7 +56,6 @@ class ControlWindow(QMainWindow):
     def run_completed(self, index):
         print(f'finished {index}')
         self.viewfinder.finish_simulation(index)
-        self.ui.view_selector.simulation_finished_action(index)
 
         self.viewfinder.ui.leaderboard.update(self.controller.best_simulations())
 
@@ -77,7 +69,6 @@ class ControlWindow(QMainWindow):
         self.viewfinder.queue_simulation(index)
 
     def show_capture_action(self):
-        self.ui.view_selector.set_to_viewfinder()
         if self.viewfinder.ui.main_video.dynamic_update:
             # Show capture
             rgb_frame, depthimage = self.controller.get_capture_images()
@@ -114,7 +105,6 @@ class ControlWindow(QMainWindow):
             kinect.device.set_color_scale(old)
 
     def print_action(self):
-        index = self.ui.view_selector.selected_index()
         self.controller.print_simulation(index)
 
     def restart_action(self):
