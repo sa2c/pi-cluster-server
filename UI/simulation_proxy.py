@@ -29,10 +29,10 @@ def dispatch(simulation):
 
 def fetch_all():
     "fetches a list of all simulations and their details from the server"
-    response = requests.get('/simulations')
-    json = response.json
+    response = requests.get(f'{cluster_address}/simulations')
+    simulations = response.json()
 
-    assert_sim_equal(json[sim_id], json_data)
+    return simulations
 
 def fetch_activity():
     response = requests.get(f'{cluster_address}/cluster/activity')
