@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1289</width>
+    <width>1680</width>
     <height>497</height>
    </rect>
   </property>
@@ -32,7 +32,16 @@
       <property name="spacing">
        <number>5</number>
       </property>
-      <property name="margin">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
        <number>0</number>
       </property>
       <item>
@@ -206,32 +215,6 @@
      </layout>
     </widget>
    </item>
-   <item>
-    <widget class="SimulationSelector" name="view_selector">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>500</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <item>
-      <property name="text">
-       <string>test</string>
-      </property>
-     </item>
-    </widget>
-   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -239,11 +222,6 @@
    <class>QVideoWidget</class>
    <extends>QLabel</extends>
    <header>qvideowidget.h</header>
-  </customwidget>
-  <customwidget>
-   <class>SimulationSelector</class>
-   <extends>QListWidget</extends>
-   <header>simulationselector.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

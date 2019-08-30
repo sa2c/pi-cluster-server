@@ -9,7 +9,7 @@ from display.video_capture import VideoCaptureThread, QVideoWidget
 from display.control_window import ControlWindow
 from display.pyside_dynamic import loadUiWidget
 from display.activity_monitor import ActivityPlotter
-from display.viewfinder import ViewfinderDialog
+from display.viewfinder import ViewfinderWindow
 from controller import Controller
 import os
 
@@ -24,16 +24,16 @@ if __name__ == '__main__':
 
     controller = Controller()
 
-    viewfinder = ViewfinderDialog()
+    viewfinder = ViewfinderWindow(video_source)
 
     window = ControlWindow(controller, viewfinder)
 
     video_source.changeFramePixmap.connect(window.ui.video_rgb.setImage)
     video_source.changeDepthPixmap.connect(window.ui.video_depth.setImage)
 
-
     video_source.setParent(window)
     video_source.start()
 
     window.show()
+    viewfinder.show()
     sys.exit(app.exec_())
