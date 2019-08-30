@@ -60,3 +60,6 @@ class ResultsWindow(QMainWindow):
     def set_currently_shown_simulation(self, index):
         datafile = run_filepath(index, 'simulation.npy')
         self.currently_shown_simulation = np.load(datafile)
+
+    def simulations_changed(self, simulations):
+        self.ui.leaderboard.update(simulations)
