@@ -25,7 +25,7 @@ class ControlWindow(QMainWindow):
             customWidgets=[QVideoWidget, SimulationSelector])
         self.setCentralWidget(self.ui)
 
-        # instance variables
+        # connect signals
         self.ui.capture_button.released.connect(self.capture_action)
         self.ui.process_button.released.connect(self.run_cfd_action)
         self.ui.print_button.released.connect(self.print_action)
@@ -46,37 +46,20 @@ class ControlWindow(QMainWindow):
 
         self.reset_action()
 
-    def run_completed(self, index):
-        print(f'finished {index}')
-        self.viewfinder.finish_simulation(index)
-
-        self.viewfinder.ui.leaderboard.update(self.controller.best_simulations())
-
-    def run_started(self, signal):
-        index, slot = signal
-        print(f'started {index} in {slot}')
-        self.viewfinder.start_simulation(index, slot - 1)
-
-    def run_queued(self, index):
-        print(f'queued {index}')
-        self.viewfinder.queue_simulation(index)
-
     def show_capture_action(self):
         if self.viewfinder.ui.main_video.dynamic_update:
             # Show capture
             rgb_frame, depthimage = self.controller.get_capture_images()
 
             # set images
-            self.viewfinder.ui.main_video.setStaticImage(rgb_frame)
-            self.viewfinder.ui.depth_video.setStaticImage(depthimage)
+            self.viewfinder.set_static(rgb_frame, depthimage)
 
             # change button text
             self.ui.show_button.setText('&Resume Video')
             self.ui.capture_button.setEnabled(False)
         else:
             # resume video feed
-            self.viewfinder.ui.main_video.resumeDynamicUpdate()
-            self.viewfinder.ui.depth_video.resumeDynamicUpdate()
+            self.viewfinder.resume_dynamic()
             self.ui.capture_button.setEnabled(True)
 
             # change button text
@@ -88,7 +71,7 @@ class ControlWindow(QMainWindow):
         # set images
         self.ui.captured_rgb.setImage(rgb_frame)
         self.ui.captured_depth.setImage(depthimage)
-    
+
     def calibrate_color_action(self):
         old = kinect.device.get_color_scale()
 

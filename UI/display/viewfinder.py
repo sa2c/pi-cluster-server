@@ -36,11 +36,13 @@ class ViewfinderWindow(QMainWindow):
         if not self.freeze:
             self.ui.main_video.setImage(image)
 
-    def set_static(self, video, depth):
-        self.freeze = False
-        self.set_video(video)
-        self.set_depth(depth)
-        self.freeze = True
+    def set_static(self, rgb_frame, depthimage):
+        self.ui.main_video.setStaticImage(rgb_frame)
+        self.ui.depth_video.setStaticImage(depthimage)
+
+    def resume_dynamic(self):
+        self.ui.main_video.resumeDynamicUpdate()
+        self.ui.depth_video.resumeDynamicUpdate()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
