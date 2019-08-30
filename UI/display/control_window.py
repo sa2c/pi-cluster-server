@@ -44,13 +44,6 @@ class ControlWindow(QMainWindow):
         self.calibration_window = ColorCalibration()
         self.calibration_window.color_changed.connect(kinect.device.set_color_scale)
 
-        # create file system watcher
-        self.run_watcher = cluster_manager.RunCompleteWatcher(self)
-        self.run_watcher.queued.connect(self.run_queued)
-        self.run_watcher.started.connect(self.run_started)
-        self.run_watcher.completed.connect(self.run_completed)
-        self.run_watcher.start()
-
         self.reset_action()
 
     def run_completed(self, index):
