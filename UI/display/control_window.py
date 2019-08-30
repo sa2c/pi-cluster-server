@@ -9,7 +9,7 @@ from display.detail_form import DetailForm
 from display.leaderboard import LeaderboardWidget
 from display.color_calibration import ColorCalibration
 from display.simulation_selector import SimulationSelector
-import cluster_manager
+import simulation_proxy
 
 
 class ControlWindow(QMainWindow):
@@ -89,7 +89,7 @@ class ControlWindow(QMainWindow):
         print("Restart button pressed")
         slot, result = QInputDialog.getInt(self, "Restart Queue Slot",
                                            "Which slot to restart?")
-        cluster_manager.restart_slot(slot)
+        simulation_proxy.restart_slot(slot)
 
     def fill_in_details_action(self):
         prev_name, prev_email = self.controller.get_user_details()
