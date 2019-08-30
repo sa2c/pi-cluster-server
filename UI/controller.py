@@ -61,7 +61,7 @@ class Controller(object):
 
         # save simulation details for later
 
-        index = simulation_proxy.dispatch_simulation({
+        index = simulation_proxy.dispatch({
             'name': self.current_name,
             'email': self.current_email,
             'rgb': self.capture_frame,
