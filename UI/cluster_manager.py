@@ -84,32 +84,3 @@ def fetch_activity():
 
 def get_run_completion_percentage(index):
     response = requests.post(f'{cluster_address}/simulation/{id}/percentage')
-
-
-class RunCompleteWatcher(QThread):
-    ''' Periodically polls the cluster to check for finished jobs
-        Gets the resulting images as numpy arrays and 
-        communicates them through a signal
-    '''
-
-    queued = Signal(int)
-    started = Signal(object)
-    completed = Signal(int)
-
-    def get_simulations(self):
-        pass
-        # TODO this needs to be reimplemented over http
-
-    def run(self):
-        pass
-        # TODO this needs to be reimplemented over http
-
-
-def test_app():
-    app = QApplication(sys.argv)
-    label = QLabel("<font color=red size=40>Hello World!</font>")
-    label.show()
-    rcw = RunCompleteWatcher()
-    sys.exit(app.exec_())
-
-
