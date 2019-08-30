@@ -9,6 +9,7 @@ matplotlib = "*"
 numpy = "*"
 pytest = "*"
 sqlalchemy = "*"
+flask = "*"
 
 [dev-packages]
 
