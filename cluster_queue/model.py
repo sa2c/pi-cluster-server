@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, PickleType
 from sqlalchemy.sql import select
+import status_codes
 
 engine = create_engine('sqlite:///db.sql', echo=True)
 
@@ -14,7 +15,8 @@ simulations = Table('runs', metadata,
                     Column('rgb_with_contour', PickleType),
                     Column('depth', PickleType),
                     Column('background', PickleType),
-                    Column('contour', PickleType)
+                    Column('contour', PickleType),
+                    Column('status', Integer)
 )
 
 metadata.create_all(engine)
@@ -27,7 +29,8 @@ def create_simulation(simulation):
         rgb_with_contour = simulation['rgb_with_contour'],
         depth = simulation['depth'],
         background = simulation['background'],
-        contour = simulation['contour']
+        contour = simulation['contour'],
+        status = status_codes.SIMULATION_WAITING
         )
 
     result = engine.execute(insert)
