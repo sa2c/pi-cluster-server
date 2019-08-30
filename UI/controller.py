@@ -24,7 +24,7 @@ class Controller(object):
         self.calibrate()
 
     def calibrate(self):
-        self.background = kinect.measure_depth(nmeasurements)        
+        self.background = kinect.measure_depth(nmeasurements)
 
     def capture(self):
         rgb, rgb_with_outline, depth, outline = kinect.images_and_outline(
