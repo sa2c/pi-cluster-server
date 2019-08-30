@@ -3,7 +3,6 @@ import numpy as np
 import datetime
 import calendar
 import os
-import pickle
 import json
 from computedrag import compute_drag_for_simulation
 import matplotlib.pyplot as plt

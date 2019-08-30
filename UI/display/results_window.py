@@ -1,7 +1,7 @@
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-import cv2, sys, time, os
+import sys, time, os
 import numpy as np
 from display.leaderboard import LeaderboardWidget
 from display.pyside_dynamic import loadUiWidget
