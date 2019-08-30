@@ -42,3 +42,9 @@ def fetch_activity():
 
 def get_run_completion_percentage(index):
     response = requests.post(f'{cluster_address}/simulation/{id}/percentage')
+
+def load_simulation(index):
+    pass
+
+def load_simulation_name(index):
+    pass

@@ -2,7 +2,7 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-from simulation_proxy import load_simulation
+from simulation_proxy import load_simulation, load_simulation_name
 import numpy as np
 
 
