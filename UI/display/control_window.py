@@ -11,6 +11,7 @@ from display.color_calibration import ColorCalibration
 from display.simulation_selector import SimulationSelector
 import cluster_manager
 
+
 class ControlWindow(QMainWindow):
     def __init__(self, controller, viewfinder, parent=None):
         super().__init__(parent)
@@ -42,7 +43,8 @@ class ControlWindow(QMainWindow):
 
         # create color calibration window
         self.calibration_window = ColorCalibration()
-        self.calibration_window.color_changed.connect(kinect.device.set_color_scale)
+        self.calibration_window.color_changed.connect(
+            kinect.device.set_color_scale)
 
         self.reset_action()
 
@@ -85,13 +87,9 @@ class ControlWindow(QMainWindow):
 
     def restart_action(self):
         print("Restart button pressed")
-        slot, result = QInputDialog.getInt(
-            self,
-            "Restart Queue Slot",
-            "Which slot to restart?"
-        )
+        slot, result = QInputDialog.getInt(self, "Restart Queue Slot",
+                                           "Which slot to restart?")
         cluster_manager.restart_slot(slot)
-
 
     def fill_in_details_action(self):
         prev_name, prev_email = self.controller.get_user_details()
