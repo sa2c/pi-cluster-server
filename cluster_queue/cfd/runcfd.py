@@ -20,11 +20,13 @@
 
 import os
 import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 from cfdpi_step3 import *
 from cfdpi_step4 import *
 from cfdpi_step5 import *
 from createcontoureps import *
-
 import model
 
 # Read the project name and other flags from the command line arguments
@@ -34,7 +36,6 @@ import model
 sim_id = "Square"
 nprocs = 1
 hostfile = "hostfile1"
-diskaddress = "127.0.0.1:" + os.getcwd() + "/"
 
 if len(sys.argv) > 1:
     sim_id = sys.argv[1]
@@ -44,9 +45,6 @@ if len(sys.argv) > 2:
 
 if len(sys.argv) > 3:
     hostfile = sys.argv[3]
-
-if len(sys.argv) > 4:
-    diskaddress = sys.argv[4]
 
 print("Starting Step 1 (Model Outline  -->  CFD Mesh)")
 print("###################################################################\n")
@@ -65,7 +63,7 @@ print("###################################################################\n")
 #
 ##########################################################
 
-run_cfd_simulation(sim_id, hostfile, nprocs, diskaddress)
+run_cfd_simulation(sim_id, hostfile, nprocs)
 
 print("Step 2 completed successfully\n\n")
 print("Starting Step 3 (CFD Results  -->  VTK files)")

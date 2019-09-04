@@ -104,7 +104,7 @@ def run_simulation(sim_id, hostfilename):
 
     set_started(sim_id)
 
-    run_dir = f'runs/run{sim_id}'
+    run_dir = run_directory(sim_id)
 
     utils.ensure_exists(run_dir)
 
@@ -112,11 +112,13 @@ def run_simulation(sim_id, hostfilename):
 
     write_outline(outline_coords, simulation['contour'])
 
+    outfile = f'{run_dir}/output'
+
     command = settings.cfdcommand.format(
         id=sim_id,
         ncores=settings.nodes_per_job*settings.cores_per_node,
         hostfile=hostfilename,
-        diskaddress=settings.diskaddress
+        output=outfile
     )
 
     process = subprocess.Popen(command, shell=True)
@@ -125,8 +127,11 @@ def run_simulation(sim_id, hostfilename):
 
 
 def run_directory(index):
-    directory = 'simulations/{index}'.format(index=index)
+    directory = f'{settings.root_dir}/simulations/{index}'.format(index=index)
 
     utils.ensure_exists(directory)
 
     return directory
+
+def outline_coords_file(sim_id):
+    return '{dir}/outline-coords.dat'.format(dir=run_directory(sim_id))

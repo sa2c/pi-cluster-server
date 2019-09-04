@@ -124,7 +124,6 @@ Modify the following variables to match your system:
 
 | Variable | |
 |-------------|------------------------------|
-| diskaddress | Network address to the disk the compute nodes have access to. If the master node and the compute nodes share the disk, just leave this as it is. |
 | IPs | A list of the IP addresses of the nodes available to the queue. |
 | nnodes | The total number of nodes on the cluster. |
 | nslots | The number of (virtual) cores on each node. |

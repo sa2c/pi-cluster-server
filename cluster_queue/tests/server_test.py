@@ -87,7 +87,7 @@ def test_activity(client):
     assert len(json['cpu_usage']) == 12
 
 def test_dispatch_real_simulation(client):
-    filename = 'simulation_sent_over_http.pickle'
+    filename = 'sent_over_http_simulation.pickle'
 
     with open(filename, 'rb') as handle:
         simulation = pickle.load(handle)

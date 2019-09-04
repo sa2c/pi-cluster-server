@@ -4,7 +4,6 @@ import datetime
 import calendar
 import os
 import json
-from computedrag import compute_drag_for_simulation
 import matplotlib.pyplot as plt
 
 import settings

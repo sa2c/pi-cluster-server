@@ -6,6 +6,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
+import model
 
 
 def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
@@ -148,19 +149,13 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
 
 # Generates the images for all the time steps requested
 #
-def step6_generate_images_vtk(project_name, nprocs, num_timesteps):
-    #print("Loading ", filename_prefix)
-
-    print("The dir is: %s", os.getcwd())
-    #dst="./" + project_name + "/mesh/"
-    #dst="./mesh/"
-    #os.chdir(dst)
+def generate_images_vtk(sim_id, nprocs, num_timesteps):
 
     fname_temp="elmeroutput"
     global velo_magn_max
 
     for fnum in range(num_timesteps):
-        vtkfilename = fname_temp + str(fnum+1).zfill(4) + ".vtk"
+        vtkfilename = model.run_directory(sim_id) + "/" + fname_temp + str(fnum+1).zfill(4) + ".vtk"
         print(vtkfilename)
         if(os.path.isfile(vtkfilename) == True):
             generate_velocityvectorplots_from_vtk(vtkfilename, (fnum == 0), nprocs)

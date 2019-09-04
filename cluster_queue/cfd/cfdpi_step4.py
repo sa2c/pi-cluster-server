@@ -3,7 +3,7 @@ import time
 import settings
 import model
 
-def run_cfd_simulation(sim_id, hostfile, nprocs, diskaddress):
+def run_cfd_simulation(sim_id, hostfile, nprocs):
     print("run_cfd_simulation")
 
     # create the ELMERSOLVER_STARTINFO file
@@ -14,7 +14,7 @@ def run_cfd_simulation(sim_id, hostfile, nprocs, diskaddress):
     file = open(f"{run_dir}/ELMERSOLVER_STARTINFO", "w") 
 
     file.write(settings.elmer_sif_file) 
-    file.write("\n1") 
+    file.write("\n1")
     file.close()
 
     # run the simulation with Elmer solver
