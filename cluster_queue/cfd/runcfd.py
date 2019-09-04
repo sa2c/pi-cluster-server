@@ -27,6 +27,7 @@ from cfdpi_step3 import *
 from cfdpi_step4 import *
 from cfdpi_step5 import *
 from createcontoureps import *
+import computedrag
 import model
 
 # Read the project name and other flags from the command line arguments
@@ -88,6 +89,15 @@ num_timesteps = 10
 generate_images_vtk(sim_id, nprocs, num_timesteps)
 
 print("Step 4 completed successfully\n\n")
+print("Starting Step 5 (Compute drag)")
+print("###################################################################\n")
+#
+# Step 5: Compute drag from simulation output
+#
+##################################################################
+
+computedrag.compute_drag(sim_id, nprocs, num_timesteps)
+
 
 print("Hurrayyyyy! The program is executed successfully.")
 print("\nYou can now display the images\n")
