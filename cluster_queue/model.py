@@ -60,7 +60,12 @@ def simulations_by_status(status):
 
     results = engine.execute(sql)
 
-    return results_to_simulation(results)
+    sims = results_to_simulation(results)
+
+    # results_to_simulation returns a dictionary with IDs as keys, we just want a list
+    sims = [ sims[key]['id'] for key in sims.keys() ]
+
+    return sims
 
 def set_simulation_status(sim_id, status):
     sql = simulations.update().where(simulations.c.id == sim_id).values(status = status_codes.SIMULATION_STARTED)

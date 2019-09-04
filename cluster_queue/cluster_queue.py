@@ -93,13 +93,13 @@ def run_queue():
         try:
             print("Open slots:", free_slots)
 
-            os.chdir(local_path)
             check_ping()
 
             # Run waiting simulations
-            next = model.waiting_simulations()
+            pending = model.waiting_simulations()
+            runs = []
 
-            for simulation in simulations:
+            for simulation in pending:
                 if slots_available():
                     runs += run_simulation(simulation)
 
