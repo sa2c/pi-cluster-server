@@ -13,7 +13,7 @@ import simulation_proxy
 
 
 class ControlWindow(QMainWindow):
-    def __init__(self, controller, viewfinder, parent=None):
+    def __init__(self, controller, viewfinder, video_source, parent=None):
         super().__init__(parent)
 
         self.controller = controller
@@ -47,6 +47,12 @@ class ControlWindow(QMainWindow):
             kinect.device.set_color_scale)
 
         self.reset_action()
+
+        # connect video sources
+        video_source.changeFramePixmap.connect(self.ui.video_rgb.setImage)
+        video_source.changeDepthPixmap.connect(self.ui.video_depth.setImage)
+
+
 
     def show_capture_action(self):
         if self.viewfinder.ui.main_video.dynamic_update:
