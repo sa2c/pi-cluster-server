@@ -32,7 +32,7 @@ class LeaderboardWidget(QListWidget):
             depth_image = sim['depth']
 
             widget = loadUiWidget(
-                'designer/leaderboard_list_item.ui',
+                'leaderboard_list_item.ui',
                 customWidgets=[QVideoWidget]
             )
 

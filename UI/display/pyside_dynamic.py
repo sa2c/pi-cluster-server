@@ -42,7 +42,7 @@ from PySide2.QtCore import Slot, QMetaObject, QFile
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtWidgets import QApplication, QMainWindow, QMessageBox
 
-SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+file_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class UiLoader(QUiLoader):
@@ -149,6 +149,8 @@ def loadUi(uifile,
     return the newly created instance of the user interface.
     """
 
+    uifilename = os.path.join(file_dir, uifilename)
+
     loader = UiLoader(baseinstance, customWidgets)
 
     if workingDirectory is not None:
@@ -161,6 +163,8 @@ def loadUi(uifile,
 
 
 def loadUiWidget(uifilename, parent=None, customWidgets=[]):
+    uifilename = os.path.join(file_dir, uifilename)
+
     loader = QUiLoader()
 
     for widget in customWidgets:

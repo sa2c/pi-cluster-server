@@ -5,8 +5,6 @@ import cv2, sys, time, os
 import numpy as np
 from display.pyside_dynamic import loadUi
 
-SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
-
 
 class ColorCalibration(QDialog):
 
@@ -14,9 +12,7 @@ class ColorCalibration(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        loadUi(
-            os.path.join(SCRIPT_DIRECTORY, '../designer/color_calibrate.ui'),
-            self)
+        loadUi('color_calibrate.ui', self)
 
         self.red.valueChanged.connect(self._color_changed)
         self.green.valueChanged.connect(self._color_changed)

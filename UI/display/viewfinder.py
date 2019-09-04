@@ -9,15 +9,11 @@ from display.activity_monitor import ActivityPlotter
 from display.matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
 
-script_directory = os.path.dirname(os.path.abspath(__file__))
-
 
 class ViewfinderWindow(QMainWindow):
     def __init__(self, video_source, parent=None):
         super().__init__(parent)
-        self.ui = loadUiWidget(
-            os.path.join(script_directory, '../designer/viewfinder.ui'),
-            customWidgets=[QVideoWidget])
+        self.ui = loadUiWidget('viewfinder.ui', customWidgets=[QVideoWidget])
         self.setCentralWidget(self.ui)
 
         self.freeze = False
