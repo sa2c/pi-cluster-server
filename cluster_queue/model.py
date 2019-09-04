@@ -1,6 +1,11 @@
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, PickleType
 from sqlalchemy.sql import select
 import status_codes
+import numpy as np
+import utils
+import settings
+import os
+import subprocess
 
 engine = create_engine('sqlite:///db.sql', echo=True)
 
@@ -42,9 +47,27 @@ def all_simulations():
 
     results = engine.execute(sql)
 
-    columns = ['name', 'email']
+    return results_to_simulation(results)
+
+def waiting_simulations():
+    return simulations_by_status(status_codes.SIMULATION_WAITING)
+
+def set_started(sim_id):
+    set_simulation_status(sim_id, status_codes.SIMULATION_STARTED)
+
+def simulations_by_status(status):
+    sql = simulations.select().where(simulations.c.status == status)
+
+    results = engine.execute(sql)
 
     return results_to_simulation(results)
+
+def set_simulation_status(sim_id, status):
+    sql = simulations.update().where(simulations.c.id == sim_id).values(status = status_codes.SIMULATION_STARTED)
+
+    results = engine.execute(sql)
+
+    return results
 
 def results_to_simulation(results):
 
@@ -66,3 +89,44 @@ def get_simulation(id):
     result = results[int(id)]
 
     return result
+
+def write_outline(filename, outline):
+    "Takes an outline as an array and saves it to file outline file"
+    outline = np.array(outline)
+    flipped_outline = np.copy(outline.reshape((-1, 2)))
+    flipped_outline[:, 1:] = 480 - flipped_outline[:, 1:]
+    np.savetxt(filename, flipped_outline, fmt='%i %i')
+
+
+def run_simulation(sim_id, hostfilename):
+
+    simulation = get_simulation(sim_id)
+
+    set_started(sim_id)
+
+    run_dir = f'runs/run{sim_id}'
+
+    utils.ensure_exists(run_dir)
+
+    outline_coords = f'{run_dir}/outline-coords.dat'
+
+    write_outline(outline_coords, simulation['contour'])
+
+    command = settings.cfdcommand.format(
+        id=sim_id,
+        ncores=settings.nodes_per_job*settings.cores_per_node,
+        hostfile=hostfilename,
+        diskaddress=settings.diskaddress
+    )
+
+    process = subprocess.Popen(command, shell=True)
+
+    return process
+
+
+def run_directory(index):
+    directory = 'simulations/{index}'.format(index=index)
+
+    utils.ensure_exists(directory)
+
+    return directory

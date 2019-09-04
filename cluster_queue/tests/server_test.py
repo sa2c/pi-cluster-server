@@ -2,6 +2,7 @@ import pytest
 import os, sys, shutil
 import numpy as np
 import json
+import pickle
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
@@ -84,3 +85,12 @@ def test_activity(client):
     json = response.json
 
     assert len(json['cpu_usage']) == 12
+
+def test_dispatch_real_simulation(client):
+    filename = 'simulation_sent_over_http.pickle'
+
+    with open(filename, 'rb') as handle:
+        simulation = pickle.load(handle)
+
+    response = client.post('/simulation', json=simulation, follow_redirects=True)
+    sim_id = response.json['id']

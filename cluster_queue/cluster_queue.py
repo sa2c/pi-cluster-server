@@ -3,15 +3,14 @@ import subprocess
 import time
 import shutil
 import glob
+import model
 
 from settings import *
+import utils
 
 # The set of free nodes
 nodes = set(range(len(IPs)))
 nslots = int(len(nodes) / nodes_per_job)
-
-# Currently running
-runs = []
 
 # Divide nodes to slots
 ips_in_slot = []
@@ -28,7 +27,9 @@ def reserve_nodes():
 	return free_slots.pop()
 
 def write_hostfile( nodes, id ):
-    hostfilename="hostfile_"+id
+
+    hostfilename=f'hostfile_{id}'
+
     with open(hostfilename, "w") as f:
         for node in nodes:
             ip = IPs[node]
@@ -40,29 +41,6 @@ def write_hostfile( nodes, id ):
 def slots_available():
     return( len(free_slots) )
 
-
-def run_cfd( id, my_slot = None ):
-
-    if my_slot==None :
-        my_slot = reserve_nodes()
-    my_nodes = ips_in_slot[my_slot]
-    try:
-        os.makedirs('simulations/'+id)
-    except FileExistsError:
-        pass
-    os.chdir('cfd')
-    hostfilename = write_hostfile( my_nodes, id )
-    command = cfdcommand.format(
-        id=id,
-        ncores=nodes_per_job*cores_per_node,
-        hostfile=hostfilename,
-        diskaddress=diskaddress
-    )
-    process = subprocess.Popen(command, shell=True)
-    os.chdir(local_path)
-    return [process, my_slot]
-
-
 def create_file(filename):
     open(filename, 'a').close()
 
@@ -73,47 +51,23 @@ def check_ping():
         if signal == "ping":
             create_file("signal_out/pong")
             os.remove("signal/ping")
-            
 
-def check_signals():
-    signals = os.listdir('signal_in')
+def run_simulation(sim_id, my_slot=None):
+    print("Starting", sim_id)
 
-    for signal in signals:
-        if "restart" in signal:
-            slot = signal.replace("restart", '')
-            try:
-                os.remove('signal_in/'+signal)
-            except:
-                return []
-            restart_slot(int(slot)-1)
-            return []
+    if my_slot==None :
+        my_slot = reserve_nodes()
 
-    for signal in signals:
-        if "run" in signal:
-            return run_signal(signal)
+    my_nodes = ips_in_slot[my_slot]
 
-    return []
+    hostfilename = write_hostfile( my_nodes, sim_id )
+
+    process = model.run_simulation(sim_id, hostfilename)
+
+    return [(process, slot)]
 
 
-def run_signal(signal):
-    print("Starting", signal)
-    try:
-        # removing this early means that if the system is restarted during a run it won't resume?
-        os.remove('signal_in/'+signal)
-    except:
-        return []
-
-    shutil.copyfile(
-        'inbox/'+signal,
-        'cfd/'+signal+'-outline-coords.dat'
-    )
-    run, slot = run_cfd(signal)
-    create_file("signal_out/{}_start_{}".format(signal,slot+1))
-    return [(run, signal, slot)]
-
-
-def restart_slot(slot):
-    global runs
+def restart_slot(runs, slot):
     print("Restarting slot", slot)
 
     # Rerun and replace process in runs
@@ -124,7 +78,7 @@ def restart_slot(slot):
             process.kill()
             process, slot = run_cfd( signal, slot )
             runs += [(process, signal, slot)]
-            
+
     return []
 
 
@@ -135,25 +89,24 @@ def kill_slot(slot):
 
 
 def run_queue():
-    global runs
     while True:
         try:
             print("Open slots:", free_slots)
 
             os.chdir(local_path)
             check_ping()
-            runs += check_signals()
-        
-            for run in runs:
-                process, signal, slot = run
-                if process.poll() is not None:
-                    print("finished", signal)
-                    filelist =  glob.glob('cfd/'+signal+'/mesh/*.vtk')
-                    filelist +=  glob.glob('cfd/'+signal+'/*.poly')
-                    for f in filelist:
-                        shutil.copy(f, 'simulations/'+signal+'/')
 
-                    create_file("signal_out/{}_end_{}".format(signal,slot+1))
+            # Run waiting simulations
+            next = model.waiting_simulations()
+
+            for simulation in simulations:
+                if slots_available():
+                    runs += run_simulation(simulation)
+
+            # Remove finished simulations
+            for run in runs:
+                process, slot = run
+                if process.poll() is not None:
                     runs.remove(run)
                     free_slots.add(slot)
 

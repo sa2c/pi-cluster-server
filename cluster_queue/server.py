@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 import settings
 import model
+import utils
 
 from flask import Flask, request
 
@@ -35,14 +36,14 @@ def all_simulations():
 def get_run_completion_percentage(id):
     ''' Read the completion percentage of the run
     '''
-    directory = '{}/simulations/run{}'.format(settings.cluster_path, id)
+    directory = model.run_directory()
 
-    ensure_exists(directory)
+    utils.ensure_exists(directory)
 
     if not os.path.exists(directory):
         percentage = 0
     else:
-        fname = f'/home/mark/code/picluster/cluster_queue/simulations/run{id}/output'
+        fname = f'{directory}/output'
 
         output = check_output(["grep", "MAIN:  Time", fname]).decode('utf-8')
 
@@ -87,37 +88,14 @@ def get_activity():
 
     return {'cpu_usage' : cpu_usage.tolist()}
 
-def ensure_exists(directory):
-    "Creates a directory unless it exists"
-
-    while not os.path.exists(directory):
-        try:
-            os.makedirs(directory)
-        except OSError as e:
-            print(f'directory creation failed: {directory}')
-
-def run_directory(index):
-    directory = 'simulations/run{index}'.format(index=index)
-
-    ensure_exists(directory)
-
-    return directory
-
 def run_filepath(index, filename):
     directory = run_directory(index)
     path = os.path.join(directory, filename)
     return path
 
-def write_outline(filename, outline):
-    "Takes an outline as an array and saves it to file outline file"
-    outline = np.array(outline)
-    flipped_outline = np.copy(outline.reshape((-1, 2)))
-    flipped_outline[:, 1:] = 480 - flipped_outline[:, 1:]
-    np.savetxt(filename, flipped_outline, fmt='%i %i')
-
 def setup_cluster_inbox():
-    ensure_exists(settings.cluster_path + '/inbox')
-    ensure_exists(settings.cluster_path + '/signal_in')
+    utils.ensure_exists(settings.cluster_path + '/inbox')
+    utils.ensure_exists(settings.cluster_path + '/signal_in')
 
 
 if __name__ == '__main__':
