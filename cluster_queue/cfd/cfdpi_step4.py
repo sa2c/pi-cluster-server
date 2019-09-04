@@ -3,7 +3,7 @@ import os
 import time
 
 def run_cfd_simulation(project_name, hostfile, nprocs, diskaddress):
-    print("step4_run_cfd_simulation")
+    print("run_cfd_simulation")
 
     project_dir="./" + project_name + "/"
 
