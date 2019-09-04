@@ -251,7 +251,7 @@ def create_prescontours_from_vtk(filename):
 
 # Generates the images for all the time steps requested
 #
-def step6_generate_images_vtk(project_name, if_serial, num_timesteps):
+def generate_images_vtk(project_name, if_serial, num_timesteps):
     #print("Loading ", filename_prefix)
 
     print("The dir is: %s", os.getcwd())

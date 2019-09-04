@@ -111,7 +111,7 @@ def step3_generate_polyline_from_outline(project_name, domain_area):
 
 # Generates the Finite Element mesh from the polyline file
 #
-def step3_generate_mesh_from_outline(project_name, nprocs):
+def generate_mesh_from_outline(project_name, nprocs):
     print("step3_generate_mesh_from_outline")
 
     domain_area=1.0

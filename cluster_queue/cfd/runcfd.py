@@ -92,7 +92,7 @@ print("###################################################################\n")
 #################################################
 
 
-step3_generate_mesh_from_outline(project_name, nprocs)
+generate_mesh_from_outline(project_name, nprocs)
 
 
 print("Step 3 completed successfully\n\n")
@@ -103,7 +103,7 @@ print("###################################################################\n")
 #
 ##########################################################
 
-step4_run_cfd_simulation(project_name, hostfile, nprocs, diskaddress)
+run_cfd_simulation(project_name, hostfile, nprocs, diskaddress)
 
 
 
@@ -115,7 +115,7 @@ print("###################################################################\n")
 #
 #####################################################
 
-step5_generate_vtk_files(project_name, nprocs)
+generate_vtk_files(project_name, nprocs)
 
 
 print("Step 5 completed successfully\n\n")
@@ -128,7 +128,7 @@ print("###################################################################\n")
 
 num_timesteps = 10
 
-step6_generate_images_vtk(project_name, nprocs, num_timesteps)
+generate_images_vtk(project_name, nprocs, num_timesteps)
 
 
 print("Step 6 completed successfully\n\n")

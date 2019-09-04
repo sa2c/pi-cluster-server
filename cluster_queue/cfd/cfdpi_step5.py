@@ -2,7 +2,7 @@
 import os
 
 
-def step5_generate_vtk_files(project_name, nprocs):
+def generate_vtk_files(project_name, nprocs):
     print("step5_generate_vtk_files")
 
     print("The dir is: %s", os.getcwd())
