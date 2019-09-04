@@ -4,8 +4,12 @@ import numpy as np
 import random
 from shapely.geometry import Point
 from shapely.geometry import Polygon
+import settings
 #import matplotlib.pyplot as plt
 
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+import model
 
 # Generates a random point inside a polygon
 #
@@ -21,11 +25,11 @@ def get_random_point_in_polygon(poly):
 
 # Generates the polyline file from the outline
 #
-def step3_generate_polyline_from_outline(project_name, domain_area):
+def generate_polyline_from_outline(sim_id, domain_area):
 
     # Read the coordinates of the points on the outline
     ##
-    outline_coords_fname = project_name+"-outline-coords.dat"
+    outline_coords_fname = model.outline_coords_file(sim_id)
     outline_coords_file = open(outline_coords_fname, "r")
 
     outline_coords = np.loadtxt(outline_coords_fname)
@@ -60,7 +64,8 @@ def step3_generate_polyline_from_outline(project_name, domain_area):
 
     # Create and write the .poly file to be used for generating the mesh
 
-    poly_fname = project_name + ".poly"
+    poly_fname = f"{model.run_directory(sim_id)}/simulation.poly"
+
     poly_file = open(poly_fname, "w")
 
     # Header - <Number of poiints> <DIM> <Flag> <Flag>
@@ -111,14 +116,13 @@ def step3_generate_polyline_from_outline(project_name, domain_area):
 
 # Generates the Finite Element mesh from the polyline file
 #
-def generate_mesh_from_outline(project_name, nprocs):
-    print("step3_generate_mesh_from_outline")
+def generate_mesh_from_outline(sim_id, nprocs):
+    print("generate_mesh_from_outline")
 
     domain_area=1.0
-    step3_generate_polyline_from_outline(project_name, domain_area)
+    generate_polyline_from_outline(sim_id, domain_area)
 
-    project_dir="./" + project_name + "/"
-    poly_fname = project_name + ".poly"
+    project_dir=model.run_directory(sim_id)
 
     # generate the mesh with "triangle" library
     ###########################################
@@ -132,41 +136,22 @@ def generate_mesh_from_outline(project_name, nprocs):
     mesh_size = mesh_size.lstrip('.')
 
     #cmd = "./triangle-lib/triangle -pq32.0 -a0.05" + str(mesh_size) + " " + project_name
-    cmd = "./triangle-lib/triangle -pq32.0 -a2000 " + project_name
+    cmd = f'cd {project_dir} && {settings.triangle_exe} -pq32.0 -a2000 simulation'
     print(cmd)
-    os.system(cmd)
-
-
-    # copy the .poly, .node, .ele file to project directory
-    #######################################################
-
-    cmd = "cp " + poly_fname + "  " + project_dir
-    os.system(cmd)
-
-    cmd = "mv " + project_name + ".1.poly" + "  " + project_dir
-    os.system(cmd)
-    cmd = "mv " + project_name + ".1.node" + "  " + project_dir
-    os.system(cmd)
-    cmd = "mv " + project_name + ".1.ele" + "  " + project_dir
     os.system(cmd)
 
     # generate the mesh using ElmerGrid
     # also partition it if nprocs > 1
     ###################################
 
-    os.chdir(project_dir)
-
     if(nprocs == 1):
-      cmd="ElmerGrid 11 2 " + project_name + ".1"
+      cmd=f" cd {project_dir} && ElmerGrid 11 2 simulation.1"
     else:
       nn = np.ceil(np.sqrt(nprocs))
-      cmd="ElmerGrid 11 2 " + project_name + ".1 " + "-partition " + str(nn) + " " + str(nn) + " " + str(nn)
+      cmd=f"cd {project_dir} && ElmerGrid 11 2 simulation.1 -partition " + str(nn) + " " + str(nn) + " " + str(nn)
     print(cmd)
     os.system(cmd)
-    os.rename(project_name,"mesh")
 
-    print("The dir is: %s", os.getcwd())
-    
     return
 ##################################################
 ##################################################

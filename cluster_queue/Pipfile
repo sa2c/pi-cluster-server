@@ -10,6 +10,7 @@ numpy = "*"
 pytest = "*"
 sqlalchemy = "*"
 flask = "*"
+vtk = "*"
 
 [dev-packages]
 

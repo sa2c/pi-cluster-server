@@ -1,30 +1,21 @@
-
 import os
 import time
+import settings
+import model
 
-def run_cfd_simulation(project_name, hostfile, nprocs, diskaddress):
+def run_cfd_simulation(sim_id, hostfile, nprocs, diskaddress):
     print("run_cfd_simulation")
-
-    project_dir="./" + project_name + "/"
 
     # create the ELMERSOLVER_STARTINFO file
     #
     #######################################
-    #os.chdir(project_dir)
 
-    file = open("ELMERSOLVER_STARTINFO", "w") 
+    run_dir = model.run_directory(sim_id)
+    file = open(f"{run_dir}/ELMERSOLVER_STARTINFO", "w") 
 
-    sif_fname = project_name + ".sif"
-
-    file.write(sif_fname) 
+    file.write(settings.elmer_sif_file) 
     file.write("\n1") 
     file.close()
-
-    # copy the .sif file
-    #######################################
-
-    cmd="cp ../test.sif " + sif_fname
-    os.system(cmd)
 
     # run the simulation with Elmer solver
     #######################################
@@ -34,16 +25,11 @@ def run_cfd_simulation(project_name, hostfile, nprocs, diskaddress):
       os.system(cmd)
     else:
       # First copy the mesh files over
-      cmd="scp -r ../"+project_name+" "+diskaddress+'/cfd'
-      os.system(cmd)
-      cmd="mpirun --hostfile ../"+hostfile+" -np "+ str(nprocs) + " ElmerSolver_mpi"
+      cmd=f"cd {run_dir} && mpirun --hostfile hostfile -np "+ str(nprocs) + " ElmerSolver_mpi"
       os.system(cmd)
       time.sleep(2)
-      cmd="scp -r "+diskaddress+"/cfd/"+project_name+"/* ./"
-      os.system(cmd)
 
-
-    return
+      return
 ##################################################
 ##################################################
 

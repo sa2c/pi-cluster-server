@@ -1,5 +1,5 @@
 Header
-  Mesh DB "." "mesh"
+  Mesh DB "." "simulation"
   Include Path ""
   Results Directory ""
 End

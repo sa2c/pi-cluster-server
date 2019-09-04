@@ -145,7 +145,6 @@ def compute_drag_from_vtk(fname_poly, vtkfilename, nprocs):
 # Compute drag from the pressure at the nodes on the outline
 #
 def compute_drag(project_name, nprocs, num_timesteps):
-    #print("The dir is: %s", os.getcwd())
 
     fname_temp = "elmeroutput"
     global drag

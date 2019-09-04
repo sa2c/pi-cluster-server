@@ -18,28 +18,26 @@
 #
 ##################################################
 
-
 import os
 import sys
 from cfdpi_step3 import *
 from cfdpi_step4 import *
 from cfdpi_step5 import *
-#from cfdpi_step6 import *
 from createcontoureps import *
 
-
+import model
 
 # Read the project name and other flags from the command line arguments
 #
 
 # Default entries
-project_name = "Square"
+sim_id = "Square"
 nprocs = 1
 hostfile = "hostfile1"
-diskaddress = "127.0.0.1:"+os.getcwd()+"/"
+diskaddress = "127.0.0.1:" + os.getcwd() + "/"
 
 if len(sys.argv) > 1:
-    project_name = sys.argv[1]
+    sim_id = sys.argv[1]
 
 if len(sys.argv) > 2:
     nprocs = int(sys.argv[2])
@@ -57,9 +55,7 @@ print("###################################################################\n")
 #
 #################################################
 
-
-generate_mesh_from_outline(project_name, nprocs)
-
+generate_mesh_from_outline(sim_id, nprocs)
 
 print("Step 1 completed successfully\n\n")
 print("Starting Step 2 (CFD Mesh  -->  CFD Results)")
@@ -69,9 +65,7 @@ print("###################################################################\n")
 #
 ##########################################################
 
-run_cfd_simulation(project_name, hostfile, nprocs, diskaddress)
-
-
+run_cfd_simulation(sim_id, hostfile, nprocs, diskaddress)
 
 print("Step 2 completed successfully\n\n")
 print("Starting Step 3 (CFD Results  -->  VTK files)")
@@ -81,8 +75,7 @@ print("###################################################################\n")
 #
 #####################################################
 
-generate_vtk_files(project_name, nprocs)
-
+generate_vtk_files(sim_id, nprocs)
 
 print("Step 3 completed successfully\n\n")
 print("Starting Step 4 (VTK files  -->  Images)")
@@ -94,12 +87,9 @@ print("###################################################################\n")
 
 num_timesteps = 10
 
-generate_images_vtk(project_name, nprocs, num_timesteps)
-
+generate_images_vtk(sim_id, nprocs, num_timesteps)
 
 print("Step 4 completed successfully\n\n")
 
 print("Hurrayyyyy! The program is executed successfully.")
 print("\nYou can now display the images\n")
-
-

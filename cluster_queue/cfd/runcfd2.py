@@ -11,7 +11,6 @@ nprocs = 1
 
 if len(sys.argv) > 1:
     project_name = sys.argv[1]
-
 if len(sys.argv) > 2:
     nprocs = int(sys.argv[2])
 

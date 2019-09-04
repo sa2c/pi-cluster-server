@@ -7,9 +7,9 @@ if_serial = True
 
 project_name = "test"
 
-#step3_generate_polyline_from_outline(project_name)
+#generate_polyline_from_outline(project_name)
 
-step3_generate_mesh_from_outline(project_name)
+generate_mesh_from_outline(project_name)
 
 #print("Step 3 completed successfully\n\n")
 
