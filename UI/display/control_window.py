@@ -22,7 +22,7 @@ class ControlWindow(QMainWindow):
         self.resize(1920, 1080)
 
         self.ui = loadUiWidget(
-            'designer/control_panel.ui',
+            'control_panel.ui',
             customWidgets=[QVideoWidget, SimulationSelector])
         self.setCentralWidget(self.ui)
 

@@ -9,14 +9,11 @@ from display.activity_monitor import ActivityPlotter
 from display.matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
 
-script_directory = os.path.dirname(os.path.abspath(__file__))
-
-
 class ResultsWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = loadUiWidget(
-            os.path.join(script_directory, '../designer/results.ui'),
+            'results.ui',
             customWidgets=[
                 LeaderboardWidget, PlotCanvas
             ])
