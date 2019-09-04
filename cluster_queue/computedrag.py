@@ -5,19 +5,9 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import glob
+import model
 
-from settings import nnodes
-
-
-def compute_drag_for_simulation(index):
-    final_vtk_file = run_filepath(index, f'elmeroutput0010.vtk')
-
-    fname_poly = run_filepath(index, f'run{index}.poly')
-
-    if os.path.exists(fname_poly):
-        return compute_drag_from_vtk(fname_poly, final_vtk_file, nprocs)
-    else:
-        return 9999
+import settings
 
 
 def compute_drag_from_vtk(fname_poly, vtkfilename, nprocs):
@@ -142,42 +132,50 @@ def compute_drag_from_vtk(fname_poly, vtkfilename, nprocs):
 
 # Compute drag from the pressure at the nodes on the outline
 #
-def compute_drag(project_name, nprocs, num_timesteps):
-    #print("The dir is: %s", os.getcwd())
+def compute_drag(sim_id, nprocs, num_timesteps):
+
+    sim_dir = model.run_directory(sim_id)
 
     fname_temp = "elmeroutput"
     global drag
 
-    filename_drag = project_name + "-drag.dat"
+    filename_drag = sim_dir + "/drag.dat"
     dragfile = open(filename_drag, "w")
 
     dragfile.write("FileCount \t Dragforce \n")
 
     drag_list = np.zeros(num_timesteps, dtype=float)
     count = 0
+
     for fnum in range(num_timesteps):
-        vtkfilename = fname_temp + str(fnum + 1).zfill(4) + ".vtk"
-        #print vtkfilename
+        vtkfilename = sim_dir + "/" + fname_temp + str(fnum + 1).zfill(4) + ".vtk"
+        print(vtkfilename)
+
         if (os.path.isfile(vtkfilename) == True):
-            compute_drag_from_vtk(project_name, vtkfilename, nprocs)
+            fname_poly = f'{sim_dir}/simulation.poly'
+            drag = compute_drag_from_vtk(fname_poly, vtkfilename, nprocs)
             drag = -drag
             drag_list[fnum] = drag
-            #print("FileCount=%04d \t Dragforce=%12.6f \n" % ((fnum+1), drag))
             dragfile.write("%04d \t %12.6f \n" % ((fnum + 1), drag))
             count = count + 1
+        else:
+            print(f'File {vtkfilename} not found')
 
-    plt.figure(1)
-    xval = np.linspace(2, count, count - 1)
-    yval = drag_list[1:count]
-    plt.plot(xval, yval, 'k', linewidth=1)
-    #plt.axes().set_aspect(1.0)
-    #plt.xlim(1,count)
-    #plt.ylim(0,np.ceil(yval[min(5,count)]))
-    plt.xlabel("Time step")
-    plt.ylabel("Drag force")
-    outfile = project_name + "-dragforce.png"
-    plt.savefig(outfile, dpi=200)
-    plt.close()
+    if count > 0:
+        plt.figure(1)
+        xval = np.linspace(2, count, count - 1)
+        yval = drag_list[1:count]
+
+        plt.plot(xval, yval, 'k', linewidth=1)
+        plt.xlabel("Time step")
+        plt.ylabel("Drag force")
+
+        outfile = f"{sim_dir}/dragforce.png"
+
+        plt.savefig(outfile, dpi=200)
+        plt.close()
+    else:
+        print("ERROR: no vtk files")
 
     return
 
