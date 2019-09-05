@@ -33,15 +33,14 @@ if __name__ == '__main__':
 
     window = ControlWindow(controller, viewfinder, video_source)
 
-    #results = ResultsWindow()
-    #cluster_notify.simulations_changed.connect(results.simulations_changed)
+    results = ResultsWindow(cluster_notify)
 
     video_source.setParent(window)
     video_source.start()
 
-    #cluster_notify.start()
+    cluster_notify.start()
 
     window.show()
     viewfinder.show()
-    #results.show()
+    results.show()
     sys.exit(app.exec_())

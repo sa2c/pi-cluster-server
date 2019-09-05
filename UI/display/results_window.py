@@ -11,8 +11,10 @@ from postplotting import vtk_to_plot
 
 
 class ResultsWindow(QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, cluster_notify, parent=None):
+
         super().__init__(parent)
+
         self.ui = loadUiWidget('results.ui',
                                customWidgets=[LeaderboardWidget, PlotCanvas])
         self.setCentralWidget(self.ui)
@@ -20,6 +22,8 @@ class ResultsWindow(QMainWindow):
         self.image_index = 0
         self.run_queue = []
         self.currently_shown_simulation = None
+
+        cluster_notify.simulations_changed.connect(self.simulations_changed)
 
         # cycle simulation image every 5ms seconds (for video effect)
         timer = QTimer(self)
