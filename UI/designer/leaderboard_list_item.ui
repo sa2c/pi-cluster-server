@@ -6,80 +6,98 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1503</width>
-    <height>150</height>
+    <width>1473</width>
+    <height>617</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QLabel" name="rank">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>34</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>#1</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QVideoWidget" name="rgb_image">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>RGB Image Placeholder</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QVideoWidget" name="depth_image">
-     <property name="text">
-      <string>Depth Image Placeholder</string>
-     </property>
+    <widget class="QWidget" name="widget_3" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLabel" name="rank">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>34</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>#1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QVideoWidget" name="rgb_image">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>RGB Image Placeholder</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QVideoWidget" name="depth_image">
+        <property name="text">
+         <string>Depth Image Placeholder</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
     <widget class="QWidget" name="widget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="font">
       <font>
        <pointsize>14</pointsize>
       </font>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="QWidget" name="widget_2" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QLabel" name="name">
-           <property name="font">
-            <font>
-             <pointsize>28</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>My Name Here</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+       <widget class="QLabel" name="name">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>19</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>My Name Here</string>
+        </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="score">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="font">
          <font>
           <pointsize>19</pointsize>
