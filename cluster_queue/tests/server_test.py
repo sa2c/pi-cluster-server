@@ -69,16 +69,16 @@ def test_create_simulation(client):
     assert_sim_equal(json, json_data)
 
 def test_percenteage(client):
-    sim_id = '1566995659'
+    sim_id = '1'
 
     # fetch simulation completion percentage
     response = client.get(f'/simulation/{sim_id}/percentage')
     json = response.json
 
-    assert json['percentage'] == 40
+    assert json['percentage'] == 100
 
 def test_activity(client):
-    sim_id = '1566995659'
+    sim_id = '1'
 
     # fetch simulation completion percentage
     response = client.get(f'/cluster/activity')
