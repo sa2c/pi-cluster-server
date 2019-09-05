@@ -28,8 +28,8 @@ class LeaderboardWidget(QListWidget):
         self.clear()
 
         for i, sim in enumerate(simulations):
-            rgb_image = sim['rgb']
-            depth_image = sim['depth']
+            rgb_image = np.array(sim['rgb'], dtype=np.uint8)
+            depth_image = np.array(sim['depth'], dtype=np.uint8)
 
             widget = loadUiWidget(
                 'leaderboard_list_item.ui',
