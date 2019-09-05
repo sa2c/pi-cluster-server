@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, PickleType
+from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, PickleType, Float
 from sqlalchemy.sql import select
 import status_codes
 import numpy as np
@@ -21,6 +21,7 @@ simulations = Table('runs', metadata,
                     Column('depth', PickleType),
                     Column('background', PickleType),
                     Column('contour', PickleType),
+                    Column('drag', Float),
                     Column('status', Integer)
 )
 
@@ -129,6 +130,13 @@ def run_simulation(sim_id, hostfilename):
     process = subprocess.Popen(command, shell=True)
 
     return process
+
+def set_drag(sim_id, drag):
+    sql = simulations.update().where(simulations.c.id == sim_id).values(drag = drag)
+
+    results = engine.execute(sql)
+
+    return results
 
 
 def run_directory(index):

@@ -177,7 +177,7 @@ def compute_drag(sim_id, nprocs, num_timesteps):
     else:
         print("ERROR: no vtk files")
 
-    return
+    return drag_list[-1]
 
 
 ##################################################

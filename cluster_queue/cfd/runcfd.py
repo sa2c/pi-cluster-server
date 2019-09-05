@@ -96,7 +96,9 @@ print("###################################################################\n")
 #
 ##################################################################
 
-computedrag.compute_drag(sim_id, nprocs, num_timesteps)
+drag = computedrag.compute_drag(sim_id, nprocs, num_timesteps)
+
+model.set_drag(sim_id, drag)
 
 
 print("Hurrayyyyy! The program is executed successfully.")
