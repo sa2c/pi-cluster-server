@@ -9,14 +9,12 @@ from display.activity_monitor import ActivityPlotter
 from display.matplotlib_widget import PlotCanvas
 from postplotting import vtk_to_plot
 
+
 class ResultsWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.ui = loadUiWidget(
-            'results.ui',
-            customWidgets=[
-                LeaderboardWidget, PlotCanvas
-            ])
+        self.ui = loadUiWidget('results.ui',
+                               customWidgets=[LeaderboardWidget, PlotCanvas])
         self.setCentralWidget(self.ui)
 
         self.image_index = 0
