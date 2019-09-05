@@ -13,6 +13,7 @@ from settings import cluster_address
 
 local_path = os.environ['PWD']
 
+
 def dispatch(simulation):
     "Posts data to server to create a new run of a simulation"
 
@@ -34,17 +35,31 @@ def fetch_all():
 
     return simulations
 
+
 def fetch_activity():
     response = requests.get(f'{cluster_address}/cluster/activity')
     cpu_usage = response.json()['cpu_usage']
 
     return cpu_usage
 
+
+def fetch_max_drag(number):
+    response = requests.get(f'{cluster_address}/simulations/max_drag/{number}')
+
+    ids = response.json()['ids']
+
+    return ids
+
+
 def get_run_completion_percentage(index):
     response = requests.post(f'{cluster_address}/simulation/{id}/percentage')
 
+
 def load_simulation(index):
-    pass
+    response = requests.get(f'{cluster_address}/simulation/{index}')
+
+    return response.json()
+
 
 def load_simulation_name(index):
     pass
