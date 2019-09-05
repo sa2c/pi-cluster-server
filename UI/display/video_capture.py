@@ -1,7 +1,10 @@
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-from kinectlib.kinectlib import *
+from kinectlib.kinectlib import device, measure_depth, depth_to_depthimage
+import time
+import cv2
+import numpy as np
 
 
 class QVideoWidget(QLabel):
