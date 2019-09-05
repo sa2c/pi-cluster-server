@@ -149,7 +149,7 @@ def loadUi(uifile,
     return the newly created instance of the user interface.
     """
 
-    uifilename = os.path.join(file_dir, uifilename)
+    uifile = os.path.join(file_dir, uifile)
 
     loader = UiLoader(baseinstance, customWidgets)
 
