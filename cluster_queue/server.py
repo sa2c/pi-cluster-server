@@ -31,11 +31,11 @@ def all_simulations():
 
     return simulations
 
-@app.route('/simulation/<id>/percentage', methods=['GET'])
-def get_run_completion_percentage(id):
+@app.route('/simulation/<sim_id>/percentage', methods=['GET'])
+def get_run_completion_percentage(sim_id):
     ''' Read the completion percentage of the run
     '''
-    directory = model.run_directory()
+    directory = model.run_directory(sim_id)
 
     utils.ensure_exists(directory)
 
