@@ -42,7 +42,7 @@ from PySide2.QtCore import Slot, QMetaObject, QFile
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtWidgets import QApplication, QMainWindow, QMessageBox
 
-file_dir = os.path.dirname(os.path.abspath(__file__))
+file_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..','designer'))
 
 
 class UiLoader(QUiLoader):
@@ -175,33 +175,3 @@ def loadUiWidget(uifilename, parent=None, customWidgets=[]):
     ui = loader.load(uifile, parent)
     uifile.close()
     return ui
-
-
-class MainWindow(QMainWindow):
-    def __init__(self, parent=None):
-        QMainWindow.__init__(self, parent)
-        loadUi(os.path.join(SCRIPT_DIRECTORY, 'mainwindow.ui'), self)
-
-    @Slot(bool)
-    def on_clickMe_clicked(self, is_checked):
-        if is_checked:
-            message = self.trUtf8(b'I am checked now.')
-        else:
-            message = self.trUtf8(b'I am unchecked now.')
-        QMessageBox.information(self, self.trUtf8(b'You clicked me'), message)
-
-    @Slot()
-    def on_actionHello_triggered(self):
-        QMessageBox.information(self, self.trUtf8(b'Hello world'),
-                                self.trUtf8(b'Greetings to the world.'))
-
-
-def main():
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    app.exec_()
-
-
-if __name__ == '__main__':
-    main()
