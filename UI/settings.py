@@ -25,3 +25,5 @@ cluster_address = "http://localhost:3524"
 local_path = os.environ['PWD']
 nprocs = 1
 
+
+leaderboard_number = 10

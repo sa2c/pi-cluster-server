@@ -15,6 +15,7 @@ from flask import Flask, request
 app = Flask(__name__)
 app.config['WTF_CSRF_ENABLED'] = False
 
+
 @app.route('/simulation', methods=['POST'])
 def start_simulation():
 
@@ -23,13 +24,15 @@ def start_simulation():
 
     sim_id = model.create_simulation(simulation)
 
-    return { 'id' : str(sim_id) }
+    return {'id': str(sim_id)}
+
 
 @app.route('/simulations', methods=['GET'])
 def all_simulations():
     simulations = model.all_simulations()
 
     return simulations
+
 
 @app.route('/simulation/<sim_id>/percentage', methods=['GET'])
 def get_run_completion_percentage(sim_id):
@@ -48,10 +51,10 @@ def get_run_completion_percentage(sim_id):
 
         numer, denom = output.splitlines()[-1].split()[2].split("/")
 
-
         percentage = int(100 * float(numer) / float(denom))
 
-    return {'percentage' : percentage }
+    return {'percentage': percentage}
+
 
 @app.route('/simulation/<id>', methods=['GET'])
 def get_simulation(id):
@@ -59,22 +62,20 @@ def get_simulation(id):
 
     return sim
 
-@app.route('/simulations/max_drag/<nsim>', methods=['GET'])
-def best_simulations(nsims):
-    drag = np.array(drags)
-    nsims = min(10, drag.shape[0])
-    drag_sorted_indices = np.argsort(drag[:, 1])
-    best_indices = drag[drag_sorted_indices[0:nsims], 0]
 
-    simulations = [ load_simulation(int(i)) for index in best_indices ]
+@app.route('/simulations/max_drag/<nsims>', methods=['GET'])
+def max_drag_simulation(nsims):
 
-    return simulations
+    ids = model.highest_drag_simulations_sorted(int(nsims))
+
+    return {'ids': ids}
+
 
 @app.route('/cluster/activity', methods=['GET'])
 def get_activity():
 
     if settings.devel:
-        cpu_usage = np.random.rand(12)*100
+        cpu_usage = np.random.rand(12) * 100
     else:
         output = check_output(["bash", "cpuloadinfo.sh"]).decode('utf-8')
 
@@ -85,12 +86,14 @@ def get_activity():
 
         cpu_usage = np.array(cpu_usage)
 
-    return {'cpu_usage' : cpu_usage.tolist()}
+    return {'cpu_usage': cpu_usage.tolist()}
+
 
 def run_filepath(index, filename):
     directory = run_directory(index)
     path = os.path.join(directory, filename)
     return path
+
 
 def setup_cluster_inbox():
     utils.ensure_exists(settings.cluster_path + '/inbox')

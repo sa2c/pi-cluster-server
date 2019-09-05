@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, PickleType, Float
+from sqlalchemy import desc
 from sqlalchemy.sql import select
 import status_codes
 import numpy as np
@@ -148,3 +149,18 @@ def run_directory(index):
 
 def outline_coords_file(sim_id):
     return '{dir}/outline-coords.dat'.format(dir=run_directory(sim_id))
+
+def highest_drag_simulations_sorted(num_sims):
+    "fetches all the simulations and orders them by value of drag"
+
+    # list of drags and IDs
+    sql = select([simulations.c.id, simulations.c.drag]).where(simulations.c.status == status_codes.SIMULATION_STARTED).order_by(desc(simulations.c.drag))
+
+    results = engine.execute(sql)
+
+    sorted_ids = [ row['id'] for row in results ]
+
+    if len(sorted_ids) >= num_sims:
+        sorted_ids = sorted_ids[:num_sims]
+
+    return sorted_ids
