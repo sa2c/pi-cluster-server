@@ -40,8 +40,10 @@ class LeaderboardWidget(QListWidget):
             widget.setStyleSheet(self.stylesheets[i % 2])
 
             # populate data
+            drag = sim["drag"]
+
             widget.name.setText(sim['name'])
-            widget.score.setText(f'score: {sim["score"]}')
+            widget.score.setText(f'drag: {drag:.2f}')
             widget.rank.setText(f'#{i + 1}')
 
             # set image dimensions
