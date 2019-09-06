@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Results</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <script type="text/javascript">
+     function select_simulation(sid) {
+         src = "http://localhost:3524/simulations/" + sid + "/elmeroutput0001-velomagn.png";
+        document.getElementById('result-main-image').src = src;
+        }
+    </script>
+
+
+    <style>
+     div.is-scroll {
+        height: 100vh;
+        overflow-x: hidden;
+        overflow-x: auto;
+     }
+
+     div.columns, div.column {
+         margin: 0px;
+     }
+
+     div#leaderboard {
+         margin: 10px
+     }
+
+     .is-vertical-centre {
+        display: flex;
+        align-items: center;
+        }
+
+     .simulation {
+         border: solid 1px #aea9a9;
+     }
+
+     div.columns.simulation div.column.ranking {
+         background-color: #eae6e6;
+         display: flex;
+         align-items: center;
+         padding-left: : 10%;
+     }
+
+     div.columns.simulation div.column.ranking h2 {
+         font-size: 2em;
+     }
+
+     .simulation-info {
+         padding-left: 10px;
+     }
+
+
+    </style>
+</head>
+
+<body>
+        <div class="container">
+            <div class="columns">
+                <div class="column is-three-quarters is-vertical-centre">
+                    <img id="result-main-image" src="http://localhost:3524/simulations/1/elmeroutput0001-velomagn.png" alt="Image 1" width="100%" />
+                </div>
+                <div id="leaderboard" class="column is-scroll" style="padding: 0px">
+                    {% for i in range(10) %}
+                    <div class="columns simulation" id="simulation-{{i + 1}}" onclick="select_simulation({{i + 1}})">
+                        <div class="ranking column is-one-fifth">
+                            <h2> {{ i + 1 }}</h2>
+                        </div>
+                        <div class="simulation-data">
+                            <img src="http://localhost:3524/simulations/{{i + 1}}/elmeroutput0001-velomagn.png" alt="Image 1" width="100%" />
+                            <div class="simulation-info">
+                                <p>Mark Dawson</p>
+                                <p>Drag: 1.3354</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+</body>
+
+</html>

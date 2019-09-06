@@ -10,11 +10,17 @@ import settings
 import model
 import utils
 
-from flask import Flask, request
+from flask import Flask, request, render_template
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder = 'simulations')
 app.config['WTF_CSRF_ENABLED'] = False
 
+# HTML routes
+@app.route('/results', methods=['GET'])
+def results_html():
+    return render_template("results.html")
+
+# Service routes
 
 @app.route('/simulation', methods=['POST'])
 def start_simulation():
