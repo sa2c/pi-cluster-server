@@ -14,9 +14,10 @@ image_height = 100
 
 
 class LeaderboardListItem(QWidget):
-    clicked = Signal(int)
+    clicked = Signal(int, int)
 
     def __init__(self, rank, parent=None):
+        "Initialise with a given rank (stored internally) and set initial state"
 
         super().__init__(parent)
 
@@ -33,26 +34,46 @@ class LeaderboardListItem(QWidget):
         self.layout().addWidget(self.widget)
         self.layout().setMargin(0)
 
+        self.sim_id = None
+
         self.selected = False
         self.active = False
 
     def setActive(self, bool):
+        """
+        set this list item as active, then redraw. Active items are those which
+        contain simulations. Non-active items are also included, and total of all items
+        is constant. Setting an item to non-active also should clear the simulation data
+        """
+
         self.active = bool
+
+        if not self.active:
+            self._clear_simulation()
         self._updateBorder()
 
     def setSelected(self, bool):
+        "set this item as selected or not"
+
         self.selected = bool
         self._updateBorder()
 
     def _updateBorder(self):
+        "Update the border display based on what is selected and/or active"
+
         if self.selected and self.active:
-            self.widget.setStyleSheet("#ListWidget { border: 5px solid blue; }");
+            self.widget.setStyleSheet(
+                "#ListWidget { border: 5px solid blue; }")
         elif self.active:
-            self.widget.setStyleSheet("#ListWidget { border: 5px solid green; }");
+            self.widget.setStyleSheet(
+                "#ListWidget { border: 5px solid green; }")
         else:
-            self.widget.setStyleSheet("#ListWidget { }");
+            self.widget.setStyleSheet("#ListWidget { }")
 
     def setSimulation(self, sim):
+        "Update the data displayed in a widget to reflect a given simulation"
+        self.sim_id = sim['id']
+
         rgb_image = np.array(sim['rgb'], dtype=np.uint8)
         depth_image = np.array(sim['depth'], dtype=np.uint8)
 
@@ -76,19 +97,18 @@ class LeaderboardListItem(QWidget):
 
         self.setActive(True)
 
-    def clearSimulation(self):
+    def _clear_simulation(self):
         self.widget.name.setText("")
         self.widget.score.setText("")
         self.widget.rank.setText("")
         self.widget.rgb_image.setText("")
         self.widget.depth_image.setText("")
 
-        self.setActive(False)
-
     def mouseReleaseEvent(self, e):
         if self.active:
-            self.clicked.emit(self.rank)
+            self.clicked.emit(self.rank, self.sim_id)
         super().mouseReleaseEvent(e)
+
 
 class LeaderboardWidget(QScrollArea):
     selection_changed = Signal(int)
@@ -112,13 +132,13 @@ class LeaderboardWidget(QScrollArea):
 
         self.setWidget(self.container)
 
-    def change_selection(self, selection):
+    def change_selection(self, selection, simulation_id):
         for widget in self.widgets:
             widget.setSelected(False)
 
         self.widgets[selection].setSelected(True)
 
-        self.selection_changed.emit(selection)
+        self.selection_changed.emit(simulation_id)
 
     def setSimulations(self, simulations):
         for i, widget in enumerate(self.widgets):
@@ -126,7 +146,7 @@ class LeaderboardWidget(QScrollArea):
                 sim = simulations[i]
                 widget.setSimulation(sim)
             else:
-                widget.clearSimulation()
+                widget._clear_simulation()
 
 
 def load_pickle(filename):
@@ -141,6 +161,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     simulation = {
+        'id': 1,
         'rgb': load_pickle('rgb_image.pickle'),
         'depth': load_pickle('depth_image.pickle'),
         'name': 'MARK',
