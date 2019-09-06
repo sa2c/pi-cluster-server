@@ -9,7 +9,7 @@
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <script type="text/javascript">
      function select_simulation(sid) {
-         src = "http://localhost:3524/simulations/" + sid + "/elmeroutput0001-velomagn.png";
+         src = "simulations/" + sid + "/elmeroutput0001-velomagn.png";
         document.getElementById('result-main-image').src = src;
         }
     </script>
@@ -62,7 +62,7 @@
         <div class="container">
             <div class="columns">
                 <div class="column is-three-quarters is-vertical-centre">
-                    <img id="result-main-image" src="http://localhost:3524/simulations/1/elmeroutput0001-velomagn.png" alt="Image 1" width="100%" />
+                    <img id="result-main-image" src="simulations/1/elmeroutput0001-velomagn.png" alt="Image 1" width="100%" />
                 </div>
                 <div id="leaderboard" class="column is-scroll" style="padding: 0px">
                     {% for i in range(10) %}
@@ -71,7 +71,7 @@
                             <h2> {{ i + 1 }}</h2>
                         </div>
                         <div class="simulation-data">
-                            <img src="http://localhost:3524/simulations/{{i + 1}}/elmeroutput0001-velomagn.png" alt="Image 1" width="100%" />
+                            <img src="simulations/{{i + 1}}/elmeroutput0001-velomagn.png" alt="Image 1" width="100%" />
                             <div class="simulation-info">
                                 <p>Mark Dawson</p>
                                 <p>Drag: 1.3354</p>
