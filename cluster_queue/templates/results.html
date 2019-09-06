@@ -66,18 +66,18 @@
                 </div>
                 <div id="leaderboard" class="column is-scroll" style="padding: 0px">
                     {% for i in range(10) %}
-                    <div class="columns simulation" id="simulation-{{i + 1}}" onclick="select_simulation({{i + 1}})">
-                        <div class="ranking column is-one-fifth">
-                            <h2> {{ i + 1 }}</h2>
-                        </div>
-                        <div class="simulation-data">
-                            <img src="simulations/{{i + 1}}/elmeroutput0001-velomagn.png" alt="Image 1" width="100%" />
-                            <div class="simulation-info">
-                                <p>Mark Dawson</p>
-                                <p>Drag: 1.3354</p>
+                        <div class="columns simulation" id="rank-{{i + 1}}" onclick="select_simulation({{i + 1}})">
+                            <div class="ranking column is-one-fifth">
+                                <h2> {{ i + 1 }}</h2>
+                            </div>
+                            <div class="simulation-data">
+                                <img src="simulations/{{i + 1}}/elmeroutput0001-velomagn.png" alt="Image 1" width="100%" />
+                                <div class="simulation-info">
+                                    <p>Mark Dawson</p>
+                                    <p>Drag: 1.3354</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     {% endfor %}
                 </div>
             </div>
