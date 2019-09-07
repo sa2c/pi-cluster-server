@@ -56,7 +56,7 @@ function SimulationList(props) {
             </div>
           </div>
           </div>
-      )
+      );
     })
   );
 }
@@ -73,14 +73,15 @@ class Layout extends React.Component {
   }
 
   // fetch best simulations from server and update in component state
-  fetchBestSimulations() {
-    fetch("/simulations/max_drag/10")
+  simulationFetcher(url, target) {
+    fetch(url)
       .then(res => res.json())
       .then(
         (result) => {
-          this.setState({
-            bestSimulations: result.ids
-          });
+          var state = {};
+          state[target] = result;
+
+          this.setState(state);
         },
         (error) => {
           this.setState({
@@ -90,8 +91,12 @@ class Layout extends React.Component {
       );
   }
 
+  fetchBestSimulations() {
+    this.simulationFetcher("/simulations/max_drag/10", 'bestSimulations');
+  }
+
   componentDidMount() {
-    this.fetchBestSimulations()
+    this.fetchBestSimulations();
   }
 
   simulationChoiceHandler(sim_id) {
