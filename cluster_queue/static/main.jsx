@@ -1,6 +1,11 @@
 function MainPanel(props) {
+    const img_src = "simulations/" + props.currentSimulation + "/elmeroutput0001-velomagn.png"
+
   return (
-    <img id="result-main-image" src="simulations/1/elmeroutput0001-velomagn.png" alt="Image 1" width="100%" />
+    <img id="result-main-image"
+         src={img_src}
+         alt="Simulation Main View"
+         width="100%" />
   );
 }
 
@@ -49,7 +54,9 @@ class Layout extends React.Component {
   }
 
   simulationChoiceHandler(sim_id) {
-    alert('selected ' + sim_id);
+      this.setState({
+          currentSimulation : sim_id
+      });
   }
 
   render() {
@@ -57,11 +64,11 @@ class Layout extends React.Component {
       <div className="container">
               <div className="columns">
                 <div className="column is-three-quarters is-vertical-centre">
-                  <MainPanel/>
+                  <MainPanel currentSimulation={this.state.currentSimulation}/>
                 </div>
                 <div id="leaderboard" className="column is-scroll">
                   <SimulationList simulations={ this.state.bestSimulations }
-                                  onClick={ this.simulationChoiceHandler }/>
+                                  onClick={ this.simulationChoiceHandler.bind(this) }/>
                 </div>
               </div>
             </div>
