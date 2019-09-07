@@ -61,33 +61,63 @@ class Layout extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-        bestSimulations: [1, 3, 2, 1, 3, 4, 1],
-        recentSimulations: [3, 1, 2, 1, 5, 1, 3],
-        currentSimulation: 1, 
-        simulations : {
-            1 : {
-                name : "Name1",
-                drag : 1.245 },
-            2 : {
-                name : "Name2",
-                drag : 1.245 }, 
-            3 : {
-                name : "Name3",
-                drag : 1.245 },
-            4 : {
-                name : "Name4",
-                drag : 1.245 },
-            5 : {
-                name : "Name5",
-                drag : 1.245 },
-            6 : {
-                name : "Name6",
-                drag : 1.245 },
-            7 : {
-                name : "Name7",
-                drag : 1.245 }
+      bestSimulations: [],
+      recentSimulations: [],
+      currentSimulation: 1,
+      simulations: {
+        1: {
+          name: "Name1",
+          drag: 1.245
+        },
+        2: {
+          name: "Name2",
+          drag: 1.245
+        },
+        3: {
+          name: "Name3",
+          drag: 1.245
+        },
+        4: {
+          name: "Name4",
+          drag: 1.245
+        },
+        5: {
+          name: "Name5",
+          drag: 1.245
+        },
+        6: {
+          name: "Name6",
+          drag: 1.245
+        },
+        7: {
+          name: "Name7",
+          drag: 1.245
         }
+      },
+      errors: []
     };
+  }
+
+  // fetch best simulations from server and update in component state
+  fetchBestSimulations() {
+    fetch("/simulations/max_drag/10")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          this.setState({
+            bestSimulations: result.ids
+          });
+        },
+        (error) => {
+          this.setState({
+            errors: ["failed to load max drag data"]
+          });
+        }
+      );
+  }
+
+  componentDidMount() {
+    this.fetchBestSimulations()
   }
 
   simulationChoiceHandler(sim_id) {
