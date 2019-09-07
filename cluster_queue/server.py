@@ -21,6 +21,10 @@ app.config['WTF_CSRF_ENABLED'] = False
 def custom_static(filename):
     return send_from_directory('simulations', filename)
 
+# Root route (dashboard)
+@app.route('/', methods=['GET'])
+def dashboard():
+    return render_template("dashboard.html")
 
 # HTML routes
 @app.route('/results', methods=['GET'])
