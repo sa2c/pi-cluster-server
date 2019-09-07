@@ -10,10 +10,15 @@ import settings
 import model
 import utils
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, send_from_directory
 
-app = Flask(__name__, static_folder = 'simulations')
+app = Flask(__name__)
 app.config['WTF_CSRF_ENABLED'] = False
+
+# Static routes for simulation data
+@app.route('/simulations/<path:filename>')
+def custom_static(filename):
+    return send_from_directory('simulations', filename)
 
 # HTML routes
 @app.route('/results', methods=['GET'])
