@@ -16,6 +16,10 @@ div#leaderboard {
     margin: 10px
 }
 
+.hidden {
+    display: none !important;
+}
+
 .is-vertical-centre {
     display: flex;
     align-items: center;
