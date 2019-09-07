@@ -95,8 +95,12 @@ class Layout extends React.Component {
     this.simulationFetcher("/simulations/max_drag/10", 'bestSimulations');
   }
 
+  fetchRecentSimulations() {
+    this.simulationFetcher("/simulations/recent/10", 'recentSimulations');
+  }
   componentDidMount() {
     this.fetchBestSimulations();
+    this.fetchRecentSimulations();
   }
 
   simulationChoiceHandler(sim_id) {

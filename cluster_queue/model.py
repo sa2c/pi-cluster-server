@@ -160,12 +160,25 @@ def outline_coords_file(sim_id):
 def highest_drag_simulations_sorted(num_sims):
     "fetches all the simulations and orders them by value of drag"
 
-    # list of drags and IDs
     sql = select([
         simulations.c.id, simulations.c.name, simulations.c.drag
     ]).where(simulations.c.status == status_codes.SIMULATION_STARTED).order_by(
         desc(simulations.c.drag))
 
+    return _select_num_sims_by_sql(sql, num_sims)
+
+def recent_simulations(num_sims):
+    "fetches the num_sims simulations with the highest ID"
+
+    sql = select([
+        simulations.c.id, simulations.c.name, simulations.c.drag
+    ]).where(simulations.c.status == status_codes.SIMULATION_STARTED).order_by(
+        desc(simulations.c.id))
+
+    return _select_num_sims_by_sql(sql, num_sims)
+
+
+def _select_num_sims_by_sql(sql, num_sims):
     results = engine.execute(sql)
 
     sorted_sims = [{

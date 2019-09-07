@@ -75,12 +75,18 @@ def get_simulation(id):
 
 
 @app.route('/simulations/max_drag/<nsims>', methods=['GET'])
-def max_drag_simulation(nsims):
+def max_drag_simulations(nsims):
 
     simulations = model.highest_drag_simulations_sorted(int(nsims))
 
     return json.dumps(simulations)
 
+@app.route('/simulations/recent/<nsims>', methods=['GET'])
+def most_recent_simulations(nsims):
+
+    simulations = model.recent_simulations(int(nsims))
+
+    return json.dumps(simulations)
 
 @app.route('/cluster/activity', methods=['GET'])
 def get_activity():
