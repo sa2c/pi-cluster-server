@@ -147,20 +147,29 @@ def run_directory(index):
 
     return directory
 
+
 def outline_coords_file(sim_id):
     return '{dir}/outline-coords.dat'.format(dir=run_directory(sim_id))
+
 
 def highest_drag_simulations_sorted(num_sims):
     "fetches all the simulations and orders them by value of drag"
 
     # list of drags and IDs
-    sql = select([simulations.c.id, simulations.c.drag]).where(simulations.c.status == status_codes.SIMULATION_STARTED).order_by(desc(simulations.c.drag))
+    sql = select([
+        simulations.c.id, simulations.c.name, simulations.c.drag
+    ]).where(simulations.c.status == status_codes.SIMULATION_STARTED).order_by(
+        desc(simulations.c.drag))
 
     results = engine.execute(sql)
 
-    sorted_ids = [ row['id'] for row in results ]
+    sorted_sims = [{
+        'id': row['id'],
+        'name': row['name'],
+        'drag': row['drag']
+    } for row in results]
 
-    if len(sorted_ids) >= num_sims:
-        sorted_ids = sorted_ids[:num_sims]
+    if len(sorted_sims) >= num_sims:
+        sorted_sims = sorted_sims[:num_sims]
 
-    return sorted_ids
+    return sorted_sims

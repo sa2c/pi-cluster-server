@@ -12,7 +12,9 @@ function MainPanel(props) {
 
 function SimulationList(props) {
   return (
-    props.simulations.map((sim_id, rank) => {
+    props.simulations.map((simulation, rank) => {
+
+      const sim_id = simulation['id'];
 
       const image_url = "simulations/" + sim_id +
         "/elmeroutput0001-velomagn.png";
@@ -46,9 +48,11 @@ function SimulationList(props) {
 
             <div className="simulation-info">
               <p>
-                {props.simulation_data[sim_id]['name']}
+                {simulation['name']}
               </p>
-                {props.simulation_data[sim_id]['drag']}
+              <p>
+                drag: {simulation['drag'].toFixed(2)}
+              </p>
             </div>
           </div>
           </div>
@@ -64,36 +68,6 @@ class Layout extends React.Component {
       bestSimulations: [],
       recentSimulations: [],
       currentSimulation: 1,
-      simulations: {
-        1: {
-          name: "Name1",
-          drag: 1.245
-        },
-        2: {
-          name: "Name2",
-          drag: 1.245
-        },
-        3: {
-          name: "Name3",
-          drag: 1.245
-        },
-        4: {
-          name: "Name4",
-          drag: 1.245
-        },
-        5: {
-          name: "Name5",
-          drag: 1.245
-        },
-        6: {
-          name: "Name6",
-          drag: 1.245
-        },
-        7: {
-          name: "Name7",
-          drag: 1.245
-        }
-      },
       errors: []
     };
   }
@@ -137,7 +111,6 @@ class Layout extends React.Component {
                   <h2>Leaderboard</h2>
                   <SimulationList showIndex={ true }
                                   simulations={ this.state.bestSimulations }
-                                  simulation_data={ this.state.simulations }
                                   currentSimulation={this.state.currentSimulation}
                                   onClick={ this.simulationChoiceHandler.bind(this) }/>
                 </div>
@@ -145,7 +118,6 @@ class Layout extends React.Component {
                   <h2>Recent</h2>
                   <SimulationList showIndex={ false }
                                   simulations={ this.state.recentSimulations }
-                                  simulation_data={ this.state.simulations }
                                   currentSimulation={this.state.currentSimulation}
                                   onClick={ this.simulationChoiceHandler.bind(this) }/>
                 </div>
