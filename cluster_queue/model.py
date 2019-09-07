@@ -13,36 +13,33 @@ engine = create_engine('sqlite:///db.sql', echo=True)
 # Creates tables if the don't exist
 metadata = MetaData()
 
-simulations = Table('runs', metadata,
-                    Column('id', Integer, primary_key=True),
-                    Column('name', String),
-                    Column('email',String),
-                    Column('rgb', PickleType ),
+simulations = Table('runs', metadata, Column('id', Integer, primary_key=True),
+                    Column('name', String), Column('email', String),
+                    Column('rgb', PickleType),
                     Column('rgb_with_contour', PickleType),
                     Column('depth', PickleType),
                     Column('background', PickleType),
-                    Column('contour', PickleType),
-                    Column('drag', Float),
-                    Column('status', Integer)
-)
+                    Column('contour', PickleType), Column('drag', Float),
+                    Column('status', Integer))
 
 metadata.create_all(engine)
 
+
 def create_simulation(simulation):
     insert = simulations.insert().values(
-        name = simulation['name'],
-        email = simulation['email'],
-        rgb = simulation['rgb'],
-        rgb_with_contour = simulation['rgb_with_contour'],
-        depth = simulation['depth'],
-        background = simulation['background'],
-        contour = simulation['contour'],
-        status = status_codes.SIMULATION_WAITING
-        )
+        name=simulation['name'],
+        email=simulation['email'],
+        rgb=simulation['rgb'],
+        rgb_with_contour=simulation['rgb_with_contour'],
+        depth=simulation['depth'],
+        background=simulation['background'],
+        contour=simulation['contour'],
+        status=status_codes.SIMULATION_WAITING)
 
     result = engine.execute(insert)
 
     return result.lastrowid
+
 
 def all_simulations():
     sql = simulations.select()
@@ -51,11 +48,14 @@ def all_simulations():
 
     return results_to_simulation(results)
 
+
 def waiting_simulations():
     return simulations_by_status(status_codes.SIMULATION_WAITING)
 
+
 def set_started(sim_id):
     set_simulation_status(sim_id, status_codes.SIMULATION_STARTED)
+
 
 def simulations_by_status(status):
     sql = simulations.select().where(simulations.c.status == status)
@@ -65,23 +65,26 @@ def simulations_by_status(status):
     sims = results_to_simulation(results)
 
     # results_to_simulation returns a dictionary with IDs as keys, we just want a list
-    sims = [ sims[key]['id'] for key in sims.keys() ]
+    sims = [sims[key]['id'] for key in sims.keys()]
 
     return sims
 
+
 def set_simulation_status(sim_id, status):
-    sql = simulations.update().where(simulations.c.id == sim_id).values(status = status_codes.SIMULATION_STARTED)
+    sql = simulations.update().where(simulations.c.id == sim_id).values(
+        status=status_codes.SIMULATION_STARTED)
 
     results = engine.execute(sql)
 
     return results
 
+
 def results_to_simulation(results):
 
-    results = [ dict(row) for row in results ]
+    results = [dict(row) for row in results]
 
     # index by ID
-    results = { row['id'] : row for row in results }
+    results = {row['id']: row for row in results}
 
     return results
 
@@ -96,6 +99,7 @@ def get_simulation(id):
     result = results[int(id)]
 
     return result
+
 
 def write_outline(filename, outline):
     "Takes an outline as an array and saves it to file outline file"
@@ -121,19 +125,20 @@ def run_simulation(sim_id, hostfilename):
 
     outfile = f'{run_dir}/output'
 
-    command = settings.cfdcommand.format(
-        id=sim_id,
-        ncores=settings.nodes_per_job*settings.cores_per_node,
-        hostfile=hostfilename,
-        output=outfile
-    )
+    command = settings.cfdcommand.format(id=sim_id,
+                                         ncores=settings.nodes_per_job *
+                                         settings.cores_per_node,
+                                         hostfile=hostfilename,
+                                         output=outfile)
 
     process = subprocess.Popen(command, shell=True)
 
     return process
 
+
 def set_drag(sim_id, drag):
-    sql = simulations.update().where(simulations.c.id == sim_id).values(drag = drag)
+    sql = simulations.update().where(simulations.c.id == sim_id).values(
+        drag=drag)
 
     results = engine.execute(sql)
 
