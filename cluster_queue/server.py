@@ -15,17 +15,21 @@ from flask import Flask, request, render_template, send_from_directory
 app = Flask(__name__)
 app.config['WTF_CSRF_ENABLED'] = False
 
+
 # Static routes for simulation data
 @app.route('/simulations/<path:filename>')
 def custom_static(filename):
     return send_from_directory('simulations', filename)
+
 
 # HTML routes
 @app.route('/results', methods=['GET'])
 def results_html():
     return render_template("results.html")
 
+
 # Service routes
+
 
 @app.route('/simulation', methods=['POST'])
 def start_simulation():
@@ -81,12 +85,14 @@ def max_drag_simulations(nsims):
 
     return json.dumps(simulations)
 
+
 @app.route('/simulations/recent/<nsims>', methods=['GET'])
 def most_recent_simulations(nsims):
 
     simulations = model.recent_simulations(int(nsims))
 
     return json.dumps(simulations)
+
 
 @app.route('/cluster/activity', methods=['GET'])
 def get_activity():
