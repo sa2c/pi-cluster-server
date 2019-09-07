@@ -1,0 +1,50 @@
+div#leaderboard.column {
+    padding: 0px;
+}
+
+div.is-scroll {
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-x: auto;
+}
+
+div.columns, div.column {
+    margin: 0px;
+}
+
+div#leaderboard {
+    margin: 10px
+}
+
+.is-vertical-centre {
+    display: flex;
+    align-items: center;
+}
+
+.simulation {
+    border: solid 2px #aea9a9;
+}
+
+.simulation.selected {
+    border-color: #46ca0e;
+}
+
+div.columns.simulation.selected div.column.ranking {
+    background-color: #9aec78;
+}
+
+div.columns.simulation div.column.ranking {
+    background-color: #eae6e6;
+    display: flex;
+    align-items: center;
+    padding-left: : 10%;
+}
+
+div.columns.simulation div.column.ranking h2 {
+    font-size: 2em;
+}
+
+.simulation-info {
+    padding-left: 10px;
+}
+
