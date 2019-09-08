@@ -1,30 +1,52 @@
 const Plot = createPlotlyComponent(Plotly);
 
-class Layout extends React.Component {
+class PercentagePlot extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cpuActivity: Array(12)
+      yValue: Array(props.nBars)
         .fill(0),
-      coreIDs: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      errors: []
+      currAnimationIncrementList: 0,
+      animationIncrements: props.animationIncrements,
+      xValue: [...Array(props.nBars)
+        .keys()
+      ],
+      dataUrl: props.dataUrl
     };
+  }
+
+  updatePlotAnimation() {
+    const yValue = this.state.yValue.map((val, index) => {
+      return val + this.state.currAnimationIncrementList[index];
+    });
+    this.setState({
+      yValue: yValue
+    });
   }
 
   // fetch best simulations from server and update in component state
   fetchActivity() {
-    fetch("/cluster/activity")
+    fetch(this.state.dataUrl)
       .then(res => res.json())
       .then(
         (result) => {
-          this.setState({
-            'cpuActivity': result['cpu_usage'],
+
+          const plotSteps = this.state.yValue.map((val, index) => {
+            return (result['cpu_usage'][index] - val) / this.state
+              .animationIncrements;
           });
+
+          this.setState({
+            'currAnimationIncrementList': plotSteps,
+          });
+
+          for (var x = 0; x <= this.state.animationIncrements; x++) {
+            setTimeout(this.updatePlotAnimation.bind(this), x * this.state
+              .updateInterval);
+          }
         },
         (error) => {
-          this.setState({
-            errors: ["failed to load cluster activity data"]
-          });
+          console.log("failed to load data from " + this.state.dataUrl);
         }
       );
   }
@@ -43,8 +65,8 @@ class Layout extends React.Component {
       <div className="container">
         <Plot data={[{
                 type: 'bar',
-                x: this.state.coreIDs,
-            y: this.state.cpuActivity,
+                x: this.state.xValue,
+            y: this.state.yValue,
             }]}
               layout={{
                   xaxis: {
@@ -64,6 +86,10 @@ class Layout extends React.Component {
 }
 
 ReactDOM.render(
-  <Layout />,
+  <PercentagePlot
+      dataUrl={"/cluster/activity"}
+      nBars={12}
+      animationIncrements={10}
+    />,
   document.getElementById('root')
 );
