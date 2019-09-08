@@ -67,6 +67,13 @@ class PercentagePlot extends React.Component {
                 type: 'bar',
                 x: this.state.xValue,
             y: this.state.yValue,
+            marker : {
+                color : this.state.yValue.map((y) => y/100 ),
+                /* note: default colorscales in src/components/colorscale/scales.js */
+                colorscale: [[0, 'rgb(50,168,82)'],
+                             [0.6, 'rgb(50,168,82)'],
+                             [1, 'rgb(255,0,30)']]
+            }
             }]}
               layout={{
                   xaxis: {
