@@ -38,6 +38,7 @@ class Layout extends React.Component {
               nBars={this.state.nCores}
               animationIncrements={10}
               targetYValue={this.state.cpuActivity}
+              maxYValue={100}
             />
     );
   }
@@ -49,9 +50,9 @@ class DynamicUpdateBarPlot extends React.Component {
     this.state = {
       yValue: Array(props.nBars)
         .fill(0),
-      targetYValue: this.props.targetYValue,
+      targetYValue: props.targetYValue,
       easingStepSize: 5,
-      maxYValue: 100,
+      maxYValue: props.maxYValue,
       easingUpdateInterval: 100,
       xValue: [...Array(props.nBars)
         .keys()
