@@ -31,6 +31,10 @@ def dashboard():
 def results_html():
     return render_template("results.html")
 
+@app.route('/activity', methods=['GET'])
+def activity_html():
+    return render_template("activity.html")
+
 
 # Service routes
 
