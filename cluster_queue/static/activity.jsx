@@ -1,24 +1,63 @@
 const Plot = createPlotlyComponent(Plotly);
 
+class Layout extends React.Component {
+  constructor(props) {
+    super(props);
+
+    const cores = 12;
+
+    this.state = {
+      nCores: cores,
+      cpuActivity: Array(cores)
+        .fill(0),
+      dataUrl: props.dataUrl
+    };
+
+    setInterval(this.fetchActivity.bind(this), 5000);
+  }
+
+  // fetch best simulations from server and update in component state
+  fetchActivity() {
+    fetch(this.state.dataUrl)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          this.setState({
+            cpuActivity: result['cpu_usage'],
+          });
+        },
+        (error) => {
+          console.log("failed to load data from " + this.state.dataUrl);
+        }
+      );
+  }
+
+  render() {
+    return (
+      <DynamicUpdateBarPlot
+              nBars={this.state.nCores}
+              animationIncrements={10}
+              targetYValue={this.state.cpuActivity}
+            />
+    );
+  }
+}
+
 class DynamicUpdateBarPlot extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       yValue: Array(props.nBars)
         .fill(0),
-      targetYValue: Array(props.nBars)
-        .fill(0),
+      targetYValue: this.props.targetYValue,
       easingStepSize: 5,
-        maxYValue: 100, 
+      maxYValue: 100,
       easingUpdateInterval: 100,
       xValue: [...Array(props.nBars)
         .keys()
       ],
-      dataUrl: props.dataUrl
     };
 
-
-    setInterval(this.fetchActivity.bind(this), 5000);
     setInterval(this.updatePlotAnimation.bind(this), this.state
       .easingUpdateInterval);
   }
@@ -36,21 +75,12 @@ class DynamicUpdateBarPlot extends React.Component {
     });
   }
 
-  // fetch best simulations from server and update in component state
-  fetchActivity() {
-    fetch(this.state.dataUrl)
-      .then(res => res.json())
-      .then(
-        (result) => {
-          this.setState({
-            'targetYValue': result['cpu_usage'],
-          });
-
-        },
-        (error) => {
-          console.log("failed to load data from " + this.state.dataUrl);
-        }
-      );
+  componentDidUpdate(prevProps) {
+    if (this.props.targetYValue !== prevProps.targetYValue) {
+      this.setState({
+        targetYValue: this.props.targetYValue
+      });
+    }
   }
 
   render() {
@@ -86,10 +116,6 @@ class DynamicUpdateBarPlot extends React.Component {
 }
 
 ReactDOM.render(
-  <DynamicUpdateBarPlot
-      dataUrl={"/cluster/activity"}
-      nBars={12}
-      animationIncrements={10}
-    />,
+  <Layout dataUrl={"/cluster/activity"} />,
   document.getElementById('root')
 );
