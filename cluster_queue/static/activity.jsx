@@ -1,23 +1,35 @@
 const Plot = createPlotlyComponent(Plotly);
 
-class PercentagePlot extends React.Component {
+class DynamicUpdateBarPlot extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       yValue: Array(props.nBars)
         .fill(0),
-      currAnimationIncrementList: 0,
-      animationIncrements: props.animationIncrements,
+      targetYValue: Array(props.nBars)
+        .fill(0),
+      easingStepSize: 5,
+        maxYValue: 100, 
+      easingUpdateInterval: 100,
       xValue: [...Array(props.nBars)
         .keys()
       ],
       dataUrl: props.dataUrl
     };
+
+
+    setInterval(this.fetchActivity.bind(this), 5000);
+    setInterval(this.updatePlotAnimation.bind(this), this.state
+      .easingUpdateInterval);
   }
 
   updatePlotAnimation() {
+    /* Moves yValue closer to yValueTarget by up to easingStepSize. This is to make transitions smoother (by limiting the movement permitted for each "frame"). Note that this implementation does mean bars don't finish moving at the same time, but it is simpler to implement with an external data source */
     const yValue = this.state.yValue.map((val, index) => {
-      return val + this.state.currAnimationIncrementList[index];
+      const diff = this.state.targetYValue[index] - val;
+      const step = Math.sign(diff) * Math.min(this.state.easingStepSize,
+        Math.abs(diff));
+      return val + step;
     });
     this.setState({
       yValue: yValue
@@ -30,34 +42,15 @@ class PercentagePlot extends React.Component {
       .then(res => res.json())
       .then(
         (result) => {
-
-          const plotSteps = this.state.yValue.map((val, index) => {
-            return (result['cpu_usage'][index] - val) / this.state
-              .animationIncrements;
-          });
-
           this.setState({
-            'currAnimationIncrementList': plotSteps,
+            'targetYValue': result['cpu_usage'],
           });
 
-          for (var x = 0; x <= this.state.animationIncrements; x++) {
-            setTimeout(this.updatePlotAnimation.bind(this), x * this.state
-              .updateInterval);
-          }
         },
         (error) => {
           console.log("failed to load data from " + this.state.dataUrl);
         }
       );
-  }
-
-  fetchActivityPeriodic() {
-    this.fetchActivity();
-    setTimeout(this.fetchActivityPeriodic.bind(this), 1000);
-  }
-
-  componentDidMount() {
-    this.fetchActivityPeriodic();
   }
 
   render() {
@@ -68,7 +61,7 @@ class PercentagePlot extends React.Component {
                 x: this.state.xValue,
             y: this.state.yValue,
             marker : {
-                color : this.state.yValue.map((y) => y/100 ),
+                color : this.state.yValue.map((y) => y/this.state.maxYValue ),
                 /* note: default colorscales in src/components/colorscale/scales.js */
                 colorscale: [[0, 'rgb(50,168,82)'],
                              [0.75, 'rgb(50,168,82)'],
@@ -81,7 +74,7 @@ class PercentagePlot extends React.Component {
                       showticklabels : false,
                   },
                   yaxis: {
-                      range : [0, 100]
+                      range : [0, this.state.maxYValue]
                   },
                   width: '100%',
                   height: '100%',
@@ -93,7 +86,7 @@ class PercentagePlot extends React.Component {
 }
 
 ReactDOM.render(
-  <PercentagePlot
+  <DynamicUpdateBarPlot
       dataUrl={"/cluster/activity"}
       nBars={12}
       animationIncrements={10}
