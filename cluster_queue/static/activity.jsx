@@ -103,7 +103,7 @@ class SimulationList extends React.Component {
 
   render() {
     return this.state.simulations.map((sim) => {
-        return <SimulationView key={sim['id']} simulation={sim}/>;
+      return <SimulationView key={sim['id']} simulation={sim}/>;
     });
   }
 }
