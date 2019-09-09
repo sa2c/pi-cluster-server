@@ -285,15 +285,31 @@ class AnimatedBarPlot extends React.Component {
 class ClusterCore extends React.Component {
   constructor(props) {
     super(props);
+    const green = [55, 185, 55];
+    const red = [210, 61, 61];
+
     this.state = {
-      value: props.value
+      value: props.value,
+      colormap: Array(5)
+        .fill(green)
+        .concat(Array(5)
+          .fill(red)),
+      color: green,
     };
+  }
+
+  getPlotColor(val) {
+    /* returns the colour corresponding to this 10th of the interval in colormap */
+    var rgb = this.state.colormap[Math.ceil(val / 10) - 1];
+    const str = "rgb(" + rgb.join() + ")";
+    return str;
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.value !== prevProps.value) {
       this.setState({
-        value: this.props.value
+        value: this.props.value,
+        color: this.getPlotColor(this.props.value)
       });
     }
   }
@@ -304,7 +320,9 @@ class ClusterCore extends React.Component {
             {Math.round(this.state.value) + "%"}
         </div>
         <div className="core-off" style={{height: (100 - this.state.value)+"%"}} />
-        <div className="core-on" style={{height: this.state.value+"%"}} />
+        <div className="core-on" style={{height: this.state.value+"%",
+                                         background: this.state.color
+                                        }} />
       </div>
     );
   }
