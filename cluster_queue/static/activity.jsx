@@ -58,6 +58,7 @@ class Layout extends React.Component {
     return (
       <div id="layout">
         <div className="columns">
+          <h1 className="title is-2">Status</h1>
           <div className="column is-half">
             <AnimatedBarPlot
               nBars={this.state.nCores}
