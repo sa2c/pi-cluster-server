@@ -82,7 +82,6 @@ class TimeLinePlot extends React.Component {
       return {
         mode: 'lines',
         line: {
-          color: "red"
         },
         y: series,
       };
