@@ -10,6 +10,11 @@ class Layout extends React.Component {
       nCores: cores,
       cpuActivity: Array(cores)
         .fill(0),
+      cpuActivityHistory: Array(cores)
+        .fill(0)
+        .map((v) => {
+          return [v];
+        }),
       dataUrl: props.dataUrl,
       serverUpdateInterval: 5000,
     };
@@ -24,8 +29,15 @@ class Layout extends React.Component {
       .then(res => res.json())
       .then(
         (result) => {
+          const cpuHistory =
+            this.state.cpuActivityHistory.map((series, index) => {
+              const new_val = result['cpu_usage'][index];
+              return series.concat(new_val);
+            });
+
           this.setState({
             cpuActivity: result['cpu_usage'],
+            cpuActivityHistory: cpuHistory
           });
         },
         (error) => {
@@ -42,7 +54,7 @@ class Layout extends React.Component {
               animationIncrements={10}
               targetYValue={this.state.cpuActivity}
               maxYValue={100} />
-            <TimeLinePlot />
+        <TimeLinePlot yValues={this.state.cpuActivityHistory}/>
       </div>
     );
   }
@@ -52,25 +64,29 @@ class TimeLinePlot extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-        yValues: [
-            [5, 10, 5, 7, 8],
-            [10, 5, 7, 8, 2],
-            [5, 7, 8, 1, 8],
-        ],
-        maxYValue: 100
+      yValues: this.props.yValues,
+      maxYValue: 100
     };
   }
 
-  render() {
-      const data = this.state.yValues.map((series,index) => {
-          return {
-              mode : 'lines',
-              line : {
-                  color : "red"
-              },
-              y: series,
-          };
+  componentDidUpdate(prevProps) {
+    if (this.props.yValues !== prevProps.yValues) {
+      this.setState({
+        yValues: this.props.yValues
       });
+    }
+  }
+
+  render() {
+    const data = this.state.yValues.map((series, index) => {
+      return {
+        mode: 'lines',
+        line: {
+          color: "red"
+        },
+        y: series,
+      };
+    });
 
     return (
       <div className="container">
