@@ -15,6 +15,7 @@ class Layout extends React.Component {
         .map((v) => {
           return [v];
         }),
+      maxNumHistoryEntries: 20,
       dataUrl: props.dataUrl,
       serverUpdateInterval: 5000,
     };
@@ -31,8 +32,10 @@ class Layout extends React.Component {
         (result) => {
           const cpuHistory =
             this.state.cpuActivityHistory.map((series, index) => {
-              const new_val = result['cpu_usage'][index];
-              return series.concat(new_val);
+              const next_val = result['cpu_usage'][index];
+              const nmax = this.state.maxNumHistoryEntries;
+              return series.concat(next_val)
+                .slice(series.length - nmax + 1, series.length + 1);
             });
 
           this.setState({
@@ -94,6 +97,7 @@ class TimeLinePlot extends React.Component {
                         xaxis: {
                             title : 'Time',
                             showticklabels : false,
+                            range : [0, this.state.maxNumHistoryEntries]
                         },
                         yaxis: {
                             range : [0, this.state.maxYValue]
