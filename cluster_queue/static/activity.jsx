@@ -88,8 +88,7 @@ class TimeLinePlot extends React.Component {
     const data = this.state.yValues.map((series, index) => {
       return {
         mode: 'lines',
-        line: {
-        },
+        line: {},
         y: series,
       };
     });
