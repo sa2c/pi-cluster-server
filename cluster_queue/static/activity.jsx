@@ -19,7 +19,13 @@ class Layout extends React.Component {
       dataUrl: props.dataUrl,
       serverUpdateInterval: 5000,
       pending: [],
-      running: []
+      running: [],
+      coreMappings: [
+        [0, 1, 2, 3],
+        [4, 5, 6, 7],
+        [8, 9, 10, 11],
+        [12, 13, 14, 15]
+      ],
     };
 
     setInterval(this.fetchActivity.bind(this), this.state
@@ -55,18 +61,18 @@ class Layout extends React.Component {
   }
 
   render() {
+    const cpuActivity = this.state.coreMappings.map((rows) => {
+      return rows.map((core_id) => {
+        return this.state.cpuActivity[core_id];
+      });
+    });
+
     return (
       <div id="layout">
-        <div className="columns">
+        <div>
           <h1 className="title is-2">Status</h1>
-          <div className="column is-half">
-            <AnimatedBarPlot
-              nBars={this.state.nCores}
-              animationIncrements={10}
-              targetYValue={this.state.cpuActivity}
-              maxYValue={100} />
-          </div>
-          <div className="column is-half">
+          <ClusterSchematic values={cpuActivity} />
+          <div>
             <TimeLinePlot yValues={this.state.cpuActivityHistory}/>
           </div>
         </div>
@@ -183,6 +189,7 @@ class TimeLinePlot extends React.Component {
       <div className="container">
         <Plot data={data}
                     layout={{
+
                         xaxis: {
                             title : 'Time',
                             showticklabels : false,
@@ -335,6 +342,14 @@ class ClusterSchematic extends React.Component {
     });
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.values != prevProps.values) {
+      this.setState({
+        values: this.props.values,
+      });
+    }
+  }
+
   render() {
     return (
       <div className="cluster-schematic">
@@ -358,8 +373,7 @@ class ClusterSchematic extends React.Component {
   }
 }
 
-/* <Layout dataUrl={"/cluster/activity"} />, */
 ReactDOM.render(
-  <ClusterSchematic debug={true}/>,
+  <Layout dataUrl={"/cluster/activity"} />,
   document.getElementById('root')
 );
