@@ -42,10 +42,52 @@ class Layout extends React.Component {
               animationIncrements={10}
               targetYValue={this.state.cpuActivity}
               maxYValue={100} />
+            <TimeLinePlot />
       </div>
     );
   }
 }
+
+class TimeLinePlot extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+        yValues: [
+            [5, 10, 5, 7, 8],
+            [10, 5, 7, 8, 2],
+            [5, 7, 8, 1, 8],
+        ],
+        maxYValue: 100
+    };
+  }
+
+  render() {
+      const data = this.state.yValues.map((series,index) => {
+          return {
+              mode : 'lines',
+              line : {
+                  color : "red"
+              },
+              y: series,
+          };
+      });
+
+    return (
+      <div className="container">
+        <Plot data={data}
+                    layout={{
+                        xaxis: {
+                            title : 'Time',
+                            showticklabels : false,
+                        },
+                        yaxis: {
+                            range : [0, this.state.maxYValue]
+                        },
+                        width: '100%',
+                        height: '100%',
+                        title: 'CPU Vs Time'}}
+              />
+            </div>
     );
   }
 }
