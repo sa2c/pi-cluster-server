@@ -52,3 +52,51 @@ div.columns.simulation div.column.ranking h2 {
     padding-left: 10px;
 }
 
+.cluster-schematic {
+    border: 2px solid black;
+    width: 245px;
+    height: 285px;
+    background-color: #eaeaea;
+    margin: 10px;
+    border-radius: 10px;
+}
+
+.cluster-row {
+    clear: both;
+}
+
+.cluster-core {
+    position: relative;
+    margin: 5px;
+    float: left;
+    height: 60px;
+    width: 50px;
+    border: 1px solid black;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.core-on {
+    width: 100%;
+    background-color: #37b737;
+    border-top: 1px solid #2b642b;
+}
+
+.core-off {
+    width: 100%;
+    background-color: #e7ece5;
+}
+
+.percentage-text {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+    font-weight: bold;
+}

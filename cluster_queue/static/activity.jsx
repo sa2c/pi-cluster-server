@@ -274,7 +274,91 @@ class AnimatedBarPlot extends React.Component {
   }
 }
 
+class ClusterCore extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: props.value
+    };
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.value !== prevProps.value) {
+      this.setState({
+        value: this.props.value
+      });
+    }
+  }
+  render() {
+    return (
+      <div className="cluster-core">
+        <div className="percentage-text">
+            {Math.round(this.state.value) + "%"}
+        </div>
+        <div className="core-off" style={{height: (100 - this.state.value)+"%"}} />
+        <div className="core-on" style={{height: this.state.value+"%"}} />
+      </div>
+    );
+  }
+}
+
+class ClusterSchematic extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      values: [
+        /* list of columns */
+        [10, 30, 10, 50],
+        [11, 31, 11, 51],
+        [10, 30, 10, 50],
+        [10, 30, 10, 50],
+      ],
+      maxYValue: props.maxYValue,
+    };
+    if (this.props.debug) {
+      setInterval(this.applyRandomUpdates.bind(this), 1000);
+    }
+  }
+
+  applyRandomUpdates() {
+    /* for testing purposes, this applies random changes to the initial values */
+    var movement = 20;
+    var new_state = this.state.values.map((val) => {
+      return val.map((val) => {
+        val = val + (Math.random() - 0.5) * 2 * movement;
+        return Math.min(Math.max(val, 0), 98);
+      });
+    });
+    this.setState({
+      values: new_state
+    });
+  }
+
+  render() {
+    return (
+      <div className="cluster-schematic">
+      {
+          this.state.values.map((row, row_index) => {
+              return (
+                  <div key={row_index} className="cluster-row">
+                  {
+                      row.map((val, col_index) => {
+                          return (
+                              <ClusterCore key={(row_index + 1)*(col_index + 1)} value={val}/>
+                          );
+                      })
+                  }
+                  </div>
+              );
+          })
+      }
+    </div>
+    );
+  }
+}
+
+/* <Layout dataUrl={"/cluster/activity"} />, */
 ReactDOM.render(
-  <Layout dataUrl={"/cluster/activity"} />,
+  <ClusterSchematic debug={true}/>,
   document.getElementById('root')
 );
