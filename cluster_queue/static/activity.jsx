@@ -10,10 +10,12 @@ class Layout extends React.Component {
       nCores: cores,
       cpuActivity: Array(cores)
         .fill(0),
-      dataUrl: props.dataUrl
+      dataUrl: props.dataUrl,
+      serverUpdateInterval: 5000,
     };
 
-    setInterval(this.fetchActivity.bind(this), 5000);
+    setInterval(this.fetchActivity.bind(this), this.state
+      .serverUpdateInterval);
   }
 
   // fetch best simulations from server and update in component state
