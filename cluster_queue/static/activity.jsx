@@ -70,7 +70,6 @@ class Layout extends React.Component {
     return (
       <div id="layout">
         <div>
-          <h1 className="title is-2">Status</h1>
           <ClusterSchematic values={cpuActivity} />
           <div>
             <TimeLinePlot yValues={this.state.cpuActivityHistory}/>
@@ -316,6 +315,7 @@ class ClusterCore extends React.Component {
   render() {
     return (
       <div className="cluster-core">
+        <div className="progress-padding">
         <div className="percentage-text">
             {Math.round(this.state.value) + "%"}
         </div>
@@ -323,6 +323,7 @@ class ClusterCore extends React.Component {
         <div className="core-on" style={{height: this.state.value+"%",
                                          background: this.state.color
                                         }} />
+      </div>
       </div>
     );
   }
@@ -378,7 +379,10 @@ class ClusterSchematic extends React.Component {
                   {
                       row.map((val, col_index) => {
                           return (
-                              <ClusterCore key={(row_index + 1)*(col_index + 1)} value={val}/>
+                                <ClusterCore
+                                  key={(row_index + 1)*(col_index + 1)}
+                                  value={val}
+                                />
                           );
                       })
                   }

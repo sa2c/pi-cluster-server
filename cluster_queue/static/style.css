@@ -54,39 +54,50 @@ div.columns.simulation div.column.ranking h2 {
 
 .cluster-schematic {
     border: 2px solid black;
-    width: 245px;
-    height: 285px;
-    background-color: #eaeaea;
     margin: 10px;
-    border-radius: 10px;
+    border-radius: 3px;
+    width: 530px;
+    height: 728px;
 }
 
-.cluster-row {
+.cluster-schematic .cluster-row {
     clear: both;
 }
 
-.cluster-core {
+.cluster-schematic .cluster-core {
     position: relative;
-    margin: 5px;
+    margin: 15px;
     float: left;
-    height: 60px;
-    width: 50px;
-    border: 1px solid black;
+    overflow: hidden;
+    background-image: url("single-pi.jpg");
+    background-repeat: no-repeat;
+    padding: 39px;
+    height: 150px;
+    width: 100px;
+}
+
+.cluster-schematic .cluster-core .progress-padding {
+    width: 48px;
+    height: 69px;
+    position: absolute;
+    bottom: 19px;
+    right: 23px;
+    border: 1px solid #515151;
     border-radius: 5px;
     overflow: hidden;
 }
 
-.core-on {
+.cluster-schematic .cluster-core .progress-padding .core-on {
     width: 100%;
     border-top: 1px solid #494f49;
 }
 
-.core-off {
+.cluster-schematic .cluster-core .progress-padding .core-off {
     width: 100%;
     background-color: #e7ece5;
 }
 
-.percentage-text {
+.cluster-schematic .cluster-core .progress-padding .percentage-text {
     position: absolute;
     left: 0px;
     right: 0px;
