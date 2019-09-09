@@ -36,17 +36,21 @@ class Layout extends React.Component {
 
   render() {
     return (
-      <DynamicUpdateBarPlot
+      <div>
+        <AnimatedBarPlot
               nBars={this.state.nCores}
               animationIncrements={10}
               targetYValue={this.state.cpuActivity}
-              maxYValue={100}
-            />
+              maxYValue={100} />
+      </div>
+    );
+  }
+}
     );
   }
 }
 
-class DynamicUpdateBarPlot extends React.Component {
+class AnimatedBarPlot extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
