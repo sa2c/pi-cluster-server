@@ -51,16 +51,22 @@ class Layout extends React.Component {
 
   render() {
     return (
-      <div className="columns">
-        <div className="column is-half">
-        <AnimatedBarPlot
+      <div id="layout">
+        <div className="columns">
+          <div className="column is-half">
+            <AnimatedBarPlot
               nBars={this.state.nCores}
               animationIncrements={10}
               targetYValue={this.state.cpuActivity}
               maxYValue={100} />
+          </div>
+          <div className="column is-half">
+            <TimeLinePlot yValues={this.state.cpuActivityHistory}/>
+          </div>
         </div>
-        <div className="column is-half">
-          <TimeLinePlot yValues={this.state.cpuActivityHistory}/>
+        <div className="columns">
+          <h1>Waiting</h1>
+          <h1>Running</h1>
         </div>
       </div>
     );
