@@ -18,6 +18,8 @@ class Layout extends React.Component {
       maxNumHistoryEntries: 20,
       dataUrl: props.dataUrl,
       serverUpdateInterval: 5000,
+      pending: [],
+      running: []
     };
 
     setInterval(this.fetchActivity.bind(this), this.state
@@ -40,7 +42,10 @@ class Layout extends React.Component {
 
           this.setState({
             cpuActivity: result['cpu_usage'],
-            cpuActivityHistory: cpuHistory
+            cpuActivityHistory: cpuHistory,
+            pending: result['pending'],
+            running: result['running'],
+
           });
         },
         (error) => {
@@ -65,11 +70,85 @@ class Layout extends React.Component {
           </div>
         </div>
         <div className="columns">
-          <h1>Waiting</h1>
-          <h1>Running</h1>
+          <div className="column is-half">
+            <h1 className="title is-2">Waiting</h1>
+            <SimulationList simulations={this.state.pending}/>
+          </div>
+          <div className="column is-half">
+            <h1 className="title is-2">Running</h1>
+            <SimulationList simulations={this.state.running}/>
+          </div>
         </div>
       </div>
     );
+  }
+}
+
+class SimulationList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      simulations: this.props.simulations,
+    };
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.simulations !== prevProps.simulations) {
+      this.setState({
+        simulations: this.props.simulations,
+      });
+    }
+  }
+
+  render() {
+    return this.state.simulations.map((sim) => {
+        return <SimulationView key={sim['id']} simulation={sim}/>;
+    });
+  }
+}
+
+class SimulationView extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      simulation: this.props.simulation,
+    };
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.simulation !== prevProps.simulation) {
+      this.setState({
+        simulation: this.props.simulation,
+      });
+    }
+  }
+
+  render() {
+
+    const simulation = this.state.simulation;
+
+    if (simulation == undefined) {
+      return <div className="simulation-data"/>;
+    } else {
+      const sim_id = simulation['id'];
+
+      const image_url = "simulations/" + sim_id +
+        "/elmeroutput0001-velomagn.png";
+
+      const image_alt = "Simulation " + sim_id + " image";
+
+      return (
+        <div className="simulation-data" style={{width: "30%", float : "left" }}>
+            <p>
+              {simulation['name']}
+            </p>
+              <img src={image_url}
+                   alt={image_alt}
+                   width="100%" />
+
+            </div>
+      );
+    }
   }
 }
 
