@@ -100,8 +100,10 @@ class TimeLinePlot extends React.Component {
                             range : [0, this.state.maxNumHistoryEntries]
                         },
                         yaxis: {
+                            title : 'Percentage',
                             range : [0, this.state.maxYValue]
                         },
+                        showlegend: false,
                         width: '100%',
                         height: '100%',
                         title: 'CPU Vs Time'}}
@@ -172,6 +174,7 @@ class AnimatedBarPlot extends React.Component {
                       showticklabels : false,
                   },
                   yaxis: {
+                      title : 'Percentage',
                       range : [0, this.state.maxYValue]
                   },
                   width: '100%',
