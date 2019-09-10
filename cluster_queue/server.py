@@ -1,5 +1,6 @@
 from subprocess import check_output
 import numpy as np
+import time
 import datetime
 import calendar
 import os
@@ -21,15 +22,18 @@ app.config['WTF_CSRF_ENABLED'] = False
 def custom_static(filename):
     return send_from_directory('simulations', filename)
 
+
 # Root route (dashboard)
 @app.route('/', methods=['GET'])
 def dashboard():
     return render_template("dashboard.html")
 
+
 # HTML routes
 @app.route('/results', methods=['GET'])
 def results_html():
     return render_template("results.html")
+
 
 @app.route('/activity', methods=['GET'])
 def activity_html():
@@ -117,7 +121,25 @@ def get_activity():
 
         cpu_usage = np.array(cpu_usage)
 
-    return {'cpu_usage': cpu_usage.tolist()}
+    return {
+        'time': time.time(),
+        'cpu_usage': cpu_usage.tolist(),
+        'pending': [{
+            'id': 1,
+            'name': 'First Simulation'
+        }, {
+            'id' : 2,
+            'name' : 'Another Simulation'
+            
+        }],
+        'running': [{
+            'id': 3,
+            'name': 'Running Simulation'
+        },{
+            'id': 4,
+            'name': 'Running Simulation #2'
+        }]
+    }
 
 
 def run_filepath(index, filename):
