@@ -66,9 +66,17 @@ div.columns.simulation div.column.ranking h2 {
     border: 1px solid #0f5535;
     margin: 10px;
     border-radius: 3px;
-    width: 530px;
-    height: 728px;
     float: left;
+}
+
+.cluster-schematic canvas#cluster-schematic-canvas {
+    position: absolute;
+    z-index: -99
+}
+
+.cluster-schematic, .cluster-schematic canvas#cluster-schematic-canvas {
+    width: 600px;
+    height: 728px;
 }
 
 .cluster-schematic .cluster-row {
@@ -84,7 +92,7 @@ div.columns.simulation div.column.ranking h2 {
     background-repeat: no-repeat;
     padding: 50px;
     height: 150px;
-    width: 100px;
+    width: 115px;
 }
 
 .cluster-schematic .cluster-core .progress-padding {
@@ -92,9 +100,9 @@ div.columns.simulation div.column.ranking h2 {
     height: 69px;
     position: absolute;
     bottom: 19px;
-    right: 0px;
+    right: 12px;
     border: 1px solid #515151;
-    border-radius: 5px;
+    border-radius: 2px;
     overflow: hidden;
 }
 

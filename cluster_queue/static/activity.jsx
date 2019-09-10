@@ -366,6 +366,7 @@ class ClusterSchematic extends React.Component {
   render() {
     return (
       <div className="cluster-schematic">
+      <canvas id="cluster-schematic-canvas"/>
       {
           this.state.values.map((row, row_index) => {
               return (
