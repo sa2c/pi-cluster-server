@@ -69,21 +69,15 @@ class Layout extends React.Component {
 
     return (
       <div id="layout">
-        <div>
+        <div className="lhs-pane">
           <ClusterSchematic values={cpuActivity} />
-          <div>
-            <TimeLinePlot yValues={this.state.cpuActivityHistory}/>
-          </div>
         </div>
-        <div className="columns">
-          <div className="column is-half">
-            <h1 className="title is-2">Waiting</h1>
-            <SimulationList simulations={this.state.pending}/>
-          </div>
-          <div className="column is-half">
-            <h1 className="title is-2">Running</h1>
-            <SimulationList simulations={this.state.running}/>
-          </div>
+        <div className="rhs-pane">
+          <TimeLinePlot yValues={this.state.cpuActivityHistory}/>
+          <h1 className="title is-2">Waiting</h1>
+          <SimulationList simulations={this.state.pending}/>
+          <h1 className="title is-2">Running</h1>
+          <SimulationList simulations={this.state.running}/>
         </div>
       </div>
     );
@@ -199,8 +193,8 @@ class TimeLinePlot extends React.Component {
                             range : [0, this.state.maxYValue]
                         },
                         showlegend: false,
-                        width: '100%',
-                        height: '100%',
+                        width: '850px',
+                        height: '200px',
                         title: 'CPU Vs Time'}}
               />
             </div>
@@ -316,7 +310,7 @@ class ClusterCore extends React.Component {
     return (
       <div className="cluster-core">
         <div className="progress-padding">
-        <div className="percentage-text">
+        <div className="percentage-text rotate-text">
             {Math.round(this.state.value) + "%"}
         </div>
         <div className="core-off" style={{height: (100 - this.state.value)+"%"}} />

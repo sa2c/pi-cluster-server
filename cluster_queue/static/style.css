@@ -52,12 +52,23 @@ div.columns.simulation div.column.ranking h2 {
     padding-left: 10px;
 }
 
+/* Activity Window */
+.lhs-pane {
+    float: left;
+}
+
+.rhs-pane {
+    float: left;
+    width: 900px;
+}
+
 .cluster-schematic {
-    border: 2px solid black;
+    border: 1px solid #0f5535;
     margin: 10px;
     border-radius: 3px;
     width: 530px;
     height: 728px;
+    float: left;
 }
 
 .cluster-schematic .cluster-row {
@@ -71,17 +82,17 @@ div.columns.simulation div.column.ranking h2 {
     overflow: hidden;
     background-image: url("single-pi.jpg");
     background-repeat: no-repeat;
-    padding: 39px;
+    padding: 50px;
     height: 150px;
     width: 100px;
 }
 
 .cluster-schematic .cluster-core .progress-padding {
-    width: 48px;
+    width: 28px;
     height: 69px;
     position: absolute;
     bottom: 19px;
-    right: 23px;
+    right: 0px;
     border: 1px solid #515151;
     border-radius: 5px;
     overflow: hidden;
@@ -97,6 +108,12 @@ div.columns.simulation div.column.ranking h2 {
     background-color: #e7ece5;
 }
 
+.rotate-text
+{
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg); 
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3); //For IE support
+}
 .cluster-schematic .cluster-core .progress-padding .percentage-text {
     position: absolute;
     left: 0px;
