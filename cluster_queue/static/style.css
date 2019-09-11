@@ -65,6 +65,7 @@ div.columns.simulation div.column.ranking h2 {
 .cluster-schematic {
     border: 1px solid #0f5535;
     margin: 10px;
+    padding-top: 25px;
     border-radius: 3px;
     float: left;
 }
@@ -76,7 +77,7 @@ div.columns.simulation div.column.ranking h2 {
 
 .cluster-schematic, .cluster-schematic canvas#cluster-schematic-canvas {
     width: 600px;
-    height: 728px;
+    height: 800px;
 }
 
 .cluster-schematic .cluster-row {
