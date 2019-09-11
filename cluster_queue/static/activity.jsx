@@ -28,6 +28,10 @@ class Layout extends React.Component {
       ],
     };
 
+  }
+
+  componentDidMount() {
+    this.fetchActivity();
     setInterval(this.fetchActivity.bind(this), this.state
       .serverUpdateInterval);
   }
@@ -70,10 +74,10 @@ class Layout extends React.Component {
     return (
       <div id="layout">
         <div className="lhs-pane">
-          <ClusterSchematic values={cpuActivity} />
+          <ClusterSchematic cpu_activity={cpuActivity} />
         </div>
         <div className="rhs-pane">
-          <TimeLinePlot yValues={this.state.cpuActivityHistory}/>
+            <TimeLinePlot yValues={this.state.cpuActivityHistory} maxNumHistoryEntries={50} maxYValue={100}/>
           <h1 className="title is-2">Waiting</h1>
           <SimulationList simulations={this.state.pending}/>
           <h1 className="title is-2">Running</h1>
@@ -84,61 +88,28 @@ class Layout extends React.Component {
   }
 }
 
-class SimulationList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      simulations: this.props.simulations,
-    };
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.simulations !== prevProps.simulations) {
-      this.setState({
-        simulations: this.props.simulations,
-      });
-    }
-  }
-
-  render() {
-    return this.state.simulations.map((sim) => {
-      return <SimulationView key={sim['id']} simulation={sim}/>;
-    });
-  }
+function SimulationList(props) {
+  return props.simulations.map((sim) => {
+    return <SimulationView key={sim['id']} simulation={sim}/>;
+  });
 }
 
-class SimulationView extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      simulation: this.props.simulation,
-    };
-  }
+function SimulationView(props) {
 
-  componentDidUpdate(prevProps) {
-    if (this.props.simulation !== prevProps.simulation) {
-      this.setState({
-        simulation: this.props.simulation,
-      });
-    }
-  }
+  const simulation = props.simulation;
 
-  render() {
+  if (simulation == undefined) {
+    return <div className="simulation-data"/>;
+  } else {
+    const sim_id = simulation['id'];
 
-    const simulation = this.state.simulation;
+    const image_url = "simulations/" + sim_id +
+      "/elmeroutput0001-velomagn.png";
 
-    if (simulation == undefined) {
-      return <div className="simulation-data"/>;
-    } else {
-      const sim_id = simulation['id'];
+    const image_alt = "Simulation " + sim_id + " image";
 
-      const image_url = "simulations/" + sim_id +
-        "/elmeroutput0001-velomagn.png";
-
-      const image_alt = "Simulation " + sim_id + " image";
-
-      return (
-        <div className="simulation-data" style={{width: "30%", float : "left" }}>
+    return (
+      <div className="simulation-data" style={{width: "30%", float : "left" }}>
             <p>
               {simulation['name']}
             </p>
@@ -147,50 +118,32 @@ class SimulationView extends React.Component {
                    width="100%" />
 
             </div>
-      );
-    }
+    );
   }
 }
 
-class TimeLinePlot extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      yValues: this.props.yValues,
-      maxYValue: 100
+function TimeLinePlot(props) {
+  const data = props.yValues.map((series, index) => {
+    return {
+      mode: 'lines',
+      line: {},
+      y: series,
     };
-  }
+  });
 
-  componentDidUpdate(prevProps) {
-    if (this.props.yValues !== prevProps.yValues) {
-      this.setState({
-        yValues: this.props.yValues
-      });
-    }
-  }
-
-  render() {
-    const data = this.state.yValues.map((series, index) => {
-      return {
-        mode: 'lines',
-        line: {},
-        y: series,
-      };
-    });
-
-    return (
-      <div className="container">
+  return (
+    <div className="container">
         <Plot data={data}
                     layout={{
 
                         xaxis: {
                             title : 'Time',
                             showticklabels : false,
-                            range : [0, this.state.maxNumHistoryEntries]
+                            range : [0, props.maxNumHistoryEntries]
                         },
                         yaxis: {
                             title : 'Percentage',
-                            range : [0, this.state.maxYValue]
+                            range : [0, props.maxYValue]
                         },
                         showlegend: false,
                         width: '850px',
@@ -198,8 +151,7 @@ class TimeLinePlot extends React.Component {
                         title: 'CPU Vs Time'}}
               />
             </div>
-    );
-  }
+  );
 }
 
 class AnimatedBarPlot extends React.Component {
@@ -232,14 +184,6 @@ class AnimatedBarPlot extends React.Component {
     this.setState({
       yValue: yValue
     });
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.targetYValue !== prevProps.targetYValue) {
-      this.setState({
-        targetYValue: this.props.targetYValue
-      });
-    }
   }
 
   render() {
@@ -275,58 +219,23 @@ class AnimatedBarPlot extends React.Component {
   }
 }
 
-class PercentageGauge extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      value: props.value,
-    };
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.value !== prevProps.value) {
-      this.setState({
-        value: this.props.value,
-      });
-    }
-  }
-  render() {
-    return (
-      <div className="progress-gauge">
+function PercentageGauge(props) {
+  return (
+    <div className="progress-gauge">
         <span className="text">
-          {Math.round(this.state.value) + "%"}
+          {Math.round(props.value) + "%"}
         </span>
-        <div className = "mask" style = {{ width: (100 - this.state.value) + "%" }} />
+        <div className = "mask" style = {{ width: (100 - props.value) + "%" }} />
       </div>
-    );
-  }
+  );
 }
 
-class ClusterCore extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      value: props.value,
-    };
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.value !== prevProps.value) {
-      this.setState({
-        value: this.props.value,
-      });
-    }
-  }
-
-  render() {
-    return (
-      <div className="cluster-core">
-        <PercentageGauge value={this.state.value}/>
+function ClusterCore(props) {
+  return (
+    <div className="cluster-core">
+        <PercentageGauge value={props.value}/>
       </div>
-    );
-  }
+  );
 }
 
 class ClusterNetworkCanvas extends React.Component {
@@ -459,52 +368,12 @@ class ClusterNetworkCanvas extends React.Component {
 
 }
 
-class ClusterSchematic extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      values: [
-        /* list of columns */
-        [10, 30, 10, 50],
-        [11, 31, 11, 51],
-        [10, 30, 10, 50],
-        [10, 30, 10, 50],
-      ],
-      maxYValue: props.maxYValue,
-    };
-    if (this.props.debug) {
-      setInterval(this.applyRandomUpdates.bind(this), 1000);
-    }
-  }
-
-  applyRandomUpdates() {
-    /* for testing purposes, this applies random changes to the initial values */
-    var movement = 20;
-    var new_state = this.state.values.map((val) => {
-      return val.map((val) => {
-        val = val + (Math.random() - 0.5) * 2 * movement;
-        return Math.min(Math.max(val, 0), 98);
-      });
-    });
-    this.setState({
-      values: new_state
-    });
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.values != prevProps.values) {
-      this.setState({
-        values: this.props.values,
-      });
-    }
-  }
-
-  render() {
-    return (
-      <div className="cluster-schematic">
+function ClusterSchematic(props) {
+  return (
+    <div className="cluster-schematic">
       <ClusterNetworkCanvas />
       {
-          this.state.values.map((row, row_index) => {
+          props.cpu_activity.map((row, row_index) => {
               return (
                   <div key={row_index} className="cluster-row">
                   {
@@ -522,8 +391,7 @@ class ClusterSchematic extends React.Component {
           })
       }
     </div>
-    );
-  }
+  );
 }
 
 ReactDOM.render(
