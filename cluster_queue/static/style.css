@@ -109,7 +109,7 @@ div.columns.simulation div.column.ranking h2 {
     border: 2px solid #515151;
     border-radius: 15px;
 
-    background: linear-gradient(to left, #c0392b 0%, #f1c40f 50%, #1abc9c 100%);
+    background: linear-gradient(to right, #1abc9c 0%, #f1c40f 80%, #c0392b 90%, #c0392b 100%);
     display: flex;
     flex-direction: row-reverse;
     overflow: hidden;
