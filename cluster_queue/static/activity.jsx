@@ -335,10 +335,126 @@ class ClusterSchematic extends React.Component {
         [10, 30, 10, 50],
       ],
       maxYValue: props.maxYValue,
+      ctx: null,
+      dashOffset: 0
     };
     if (this.props.debug) {
       setInterval(this.applyRandomUpdates.bind(this), 1000);
     }
+  }
+
+  componentDidMount() {
+    const canvas = document.getElementById('cluster-schematic-canvas');
+    const ctx1 = canvas.getContext('2d');
+    const ctx2 = canvas.getContext('2d');
+    this.setState({
+      canvas: canvas,
+      ctx1: ctx1,
+      ctx2: ctx2
+    }, this.startDrawNetworkLines.bind(this));
+  }
+
+  startDrawNetworkLines() {
+    setInterval(this.drawNetworkLines.bind(this), 500);
+  }
+
+  drawNetworkLines() {
+    const gapLen = 275;
+    var dashOffset =
+      (Math.round((new Date()
+        .getTime() / 1000) * 10)) % gapLen;
+
+    var ctx = this.state.canvas.getContext('2d');
+
+    var cableStyles = {
+      "blue": [
+        [0, 0],
+        [0, 1],
+        [1, 0],
+        [1, 1],
+      ],
+      "orange": [
+        [0, 2],
+        [0, 3],
+        [1, 2],
+        [1, 3],
+      ],
+        "#DDDDDD" : [
+        [2, 0],
+        [2, 1],
+        [2, 2],
+        [2, 3],
+        [3, 0],
+        [3, 1],
+        [3, 2],
+        [3, 3],
+      ]
+    };
+
+    var packetStyles = {
+      "white": [
+        [0, 0],
+        [0, 1],
+        [0, 2],
+        [0, 3],
+        [1, 0],
+        [1, 1],
+        [1, 2],
+        [1, 3],
+        // [2, 0],
+        // [2, 1],
+        // [2, 2],
+        // [2, 3],
+        // [3, 0],
+        // [3, 1],
+        // [3, 2],
+        // [3, 3],
+      ]
+    };
+
+    this.doDrawNetworkLines(cableStyles, [0, 0], 4, 0, ctx);
+      this.doDrawNetworkLines(packetStyles, [5, 50, 5, 25, 5, 200], 3, dashOffset, ctx);
+  }
+
+  doDrawNetworkLines(styles, dashes, width, start_offset, ctx) {
+    ctx.lineWidth = width;
+    ctx.setLineDash(dashes);
+
+    Object.keys(styles)
+      .map((key) => {
+        ctx.beginPath();
+        ctx.strokeStyle = key;
+
+        styles[key].map((val) => {
+          const row = val[0];
+          const col = val[1];
+
+          this.drawSingleNetworkLine(row, col, start_offset, ctx);
+        });
+
+        ctx.stroke();
+
+      });
+
+  }
+
+  drawSingleNetworkLine(row, col, start_offset, ctx) {
+
+    const xNetwork = 88.5 + 145 * col;
+    const yNetwork = 19.5 + (165 * row);
+    const xWidth = 60 - 10 * row;
+    const yBottom = 655;
+    const yBottomOffset = [30, 20, 10, 0];
+    const xNetworkOffset = [0, -50, -80, -100];
+
+    ctx.moveTo(xNetwork, yNetwork + start_offset);
+    ctx.lineTo(xNetwork, yNetwork - 17);
+    ctx.lineTo(xNetwork + xWidth, yNetwork - 17);
+    ctx.lineTo(xNetwork + xWidth, yBottom + yBottomOffset[row]);
+    ctx.lineTo(xNetwork + xWidth + xNetworkOffset[row], yBottom +
+      yBottomOffset[
+        row]);
+    ctx.lineTo(xNetwork + xWidth + xNetworkOffset[row], yBottom + 35);
   }
 
   applyRandomUpdates() {
@@ -366,7 +482,7 @@ class ClusterSchematic extends React.Component {
   render() {
     return (
       <div className="cluster-schematic">
-      <canvas id="cluster-schematic-canvas"/>
+      <canvas id="cluster-schematic-canvas" width="600px" height="728px"/>
       {
           this.state.values.map((row, row_index) => {
               return (
