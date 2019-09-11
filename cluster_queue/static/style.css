@@ -96,7 +96,8 @@ div.columns.simulation div.column.ranking h2 {
 }
 
 .cluster-schematic .cluster-core .progress-gauge .mask {
-    background-color: white;
+    background-color: #afa8a2;
+    border-left: 1px solid #888484;
 }
 
 .cluster-schematic .cluster-core .progress-gauge {
