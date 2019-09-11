@@ -105,10 +105,10 @@ div.columns.simulation div.column.ranking h2 {
     bottom: 0px;
     right: 0px;
     width: 85px;
-    height: 30px;
+    height: 20px;
 
     border: 2px solid #515151;
-    border-radius: 15px;
+    border-radius: 8px;
 
     background: linear-gradient(to right, #1abc9c 0%, #f1c40f 80%, #c0392b 90%, #c0392b 100%);
     display: flex;
@@ -124,4 +124,5 @@ div.columns.simulation div.column.ranking h2 {
     align-content: center;
     text-align: center;
     font-weight: bold;
+    line-height: 16px;
 }
