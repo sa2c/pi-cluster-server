@@ -107,14 +107,16 @@ div.columns.simulation div.column.ranking h2 {
     overflow: hidden;
 }
 
-.cluster-schematic .cluster-core .progress-padding .core-on {
+.cluster-schematic .cluster-core .progress-padding .gradient {
     width: 100%;
+    height: 100%;
     border-top: 1px solid #494f49;
+    background: linear-gradient(to bottom, #c0392b 0%, #f1c40f 50%, #1abc9c 100%);
 }
 
-.cluster-schematic .cluster-core .progress-padding .core-off {
+.cluster-schematic .cluster-core .progress-padding .mask {
     width: 100%;
-    background-color: #e7ece5;
+    background-color: white;
 }
 
 .rotate-text
