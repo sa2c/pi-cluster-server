@@ -91,49 +91,35 @@ div.columns.simulation div.column.ranking h2 {
     overflow: hidden;
     background-image: url("single-pi.jpg");
     background-repeat: no-repeat;
-    padding: 50px;
     height: 150px;
     width: 115px;
 }
 
-.cluster-schematic .cluster-core .progress-padding {
-    width: 28px;
-    height: 69px;
-    position: absolute;
-    bottom: 19px;
-    right: 12px;
-    border: 1px solid #515151;
-    border-radius: 2px;
-    overflow: hidden;
-}
-
-.cluster-schematic .cluster-core .progress-padding .gradient {
-    width: 100%;
-    height: 100%;
-    border-top: 1px solid #494f49;
-    background: linear-gradient(to bottom, #c0392b 0%, #f1c40f 50%, #1abc9c 100%);
-}
-
-.cluster-schematic .cluster-core .progress-padding .mask {
-    width: 100%;
+.cluster-schematic .cluster-core .progress-gauge .mask {
     background-color: white;
 }
 
-.rotate-text
-{
-    -webkit-transform: rotate(-90deg);
-    -moz-transform: rotate(-90deg); 
-    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3); //For IE support
+.cluster-schematic .cluster-core .progress-gauge {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: 85px;
+    height: 30px;
+
+    border: 2px solid #515151;
+    border-radius: 15px;
+
+    background: linear-gradient(to left, #c0392b 0%, #f1c40f 50%, #1abc9c 100%);
+    display: flex;
+    flex-direction: row-reverse;
+    overflow: hidden;
 }
-.cluster-schematic .cluster-core .progress-padding .percentage-text {
+
+.cluster-schematic .cluster-core .progress-gauge span.text {
     position: absolute;
     left: 0px;
-    right: 0px;
-    height: 100%;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    height: 100%;
     align-content: center;
     text-align: center;
     font-weight: bold;

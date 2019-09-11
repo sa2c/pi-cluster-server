@@ -293,14 +293,12 @@ class PercentageGauge extends React.Component {
   }
   render() {
     return (
-      <div className="progress-padding">
-              <div className="percentage-text rotate-text">
-                {Math.round(this.state.value) + "%"}
-              </div>
-              <div className = "gradient" >
-                <div className = "mask" style = {{ height: (100 - this.state.value) + "%" }} />
-        </div>
-            </div>
+      <div className="progress-gauge">
+        <span className="text">
+          {Math.round(this.state.value) + "%"}
+        </span>
+        <div className = "mask" style = {{ width: (100 - this.state.value) + "%" }} />
+      </div>
     );
   }
 }
