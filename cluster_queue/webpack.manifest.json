@@ -1,7 +1,7 @@
 {
   "assets": {
-    "react/results.js": "static/results.js",
-    "react/activity.js": "static/activity.js"
+    "react/results.jsx": "static/results.js",
+    "react/activity.jsx": "static/activity.js"
   },
   "publicPath": "http://localhost:8080/static/"
 }
