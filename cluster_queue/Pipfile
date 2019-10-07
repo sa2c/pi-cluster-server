@@ -11,6 +11,7 @@ pytest = "*"
 sqlalchemy = "*"
 flask = "*"
 vtk = "*"
+flask-webpack = "*"
 
 [dev-packages]
 

@@ -129,3 +129,8 @@ Modify the following variables to match your system:
 | nslots | The number of (virtual) cores on each node. |
 | nodes_per_jobs | The number of nodes that will be reserved for each job. Note that nodes_per_jobs*nslots needs to be the square of an integer. |
 
+
+
+## Marks Notes
+Initialise the project: npm init (in cluster_server)
+git@github.com:SupercomputingWales/pi-cluster.git

@@ -1,0 +1,41 @@
+{
+  "name": "pi-server",
+  "version": "1.0.0",
+  "description": "Server for Raspberry pi cluster (Aero)",
+  "main": ".#webpack.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/preset-env": "^7.6.0",
+    "@babel/preset-react": "^7.0.0",
+    "css-loader": "^3.2.0",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "manifest-revision-webpack-plugin": "^0.4.1",
+    "style-loader": "^1.0.0",
+    "webpack": "^4.40.2",
+    "webpack-cli": "^3.3.8"
+  },
+  "scripts": {
+    "build": "webpack -p --progress --config webpack.config.js",
+    "dev-build": "webpack --progress -d --config webpack.config.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --progress -d --config webpack.config.js --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/SupercomputingWales/pi-cluster.git"
+  },
+  "keywords": [
+    "raspberry",
+    "pi",
+    "cluster"
+  ],
+  "author": "Swansea Academy of Advanced Computing",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SupercomputingWales/pi-cluster/issues"
+  },
+  "homepage": "https://github.com/SupercomputingWales/pi-cluster#readme"
+}

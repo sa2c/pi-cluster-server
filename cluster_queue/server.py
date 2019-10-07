@@ -12,9 +12,30 @@ import model
 import utils
 
 from flask import Flask, request, render_template, send_from_directory
+from werkzeug.serving import run_simple
 
-app = Flask(__name__)
-app.config['WTF_CSRF_ENABLED'] = False
+from flask_webpack import Webpack
+webpack = Webpack()
+
+
+def create_app():
+    app = Flask(__name__)
+    params = {
+        'WTF_CSRF_ENABLED': False,
+        'DEBUG': True,
+        'WEBPACK_MANIFEST_PATH': 'webpack.manifest.json'
+    }
+
+    app.config['WTF_CSRF_ENABLED'] = False
+
+    app.config.update(params)
+
+    webpack.init_app(app)
+
+    return app
+
+
+app = create_app()
 
 
 # Static routes for simulation data
@@ -122,20 +143,21 @@ def get_activity():
         cpu_usage = np.array(cpu_usage)
 
     return {
-        'time': time.time(),
-        'cpu_usage': cpu_usage.tolist(),
+        'time':
+        time.time(),
+        'cpu_usage':
+        cpu_usage.tolist(),
         'pending': [{
             'id': 1,
             'name': 'First Simulation'
         }, {
-            'id' : 2,
-            'name' : 'Another Simulation'
-            
+            'id': 2,
+            'name': 'Another Simulation'
         }],
         'running': [{
             'id': 3,
             'name': 'Running Simulation'
-        },{
+        }, {
             'id': 4,
             'name': 'Running Simulation #2'
         }]
@@ -154,4 +176,9 @@ def setup_cluster_inbox():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3524, threaded=True)
+    run_simple(hostname='0.0.0.0',
+               port=3524,
+               application=app,
+               use_reloader=True,
+               use_debugger=True,
+               threaded=True)
