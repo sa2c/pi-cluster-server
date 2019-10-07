@@ -1,39 +1,20 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Activity</title>
-    <!-- Bulma + font awesome -->
-    <link rel="stylesheet" href="static/bulma.0.7.5-min.css">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Results</title>
+        <!-- Bulma + font awesome -->
+        <link rel="stylesheet" href="static/bulma.0.7.5-min.css">
 
-    <!-- React -->
-    <script src="static/react.development.js"></script>
-    <script src="static/react-dom.development.js"></script>
-    <script src="static/babel.min.js"></script>
+        <!-- App style sheet -->
+        <link rel="stylesheet" href="static/style.css">
+    </head>
 
-    <!-- Plotly -->
-    <script crossorigin src="static/plotly-latest.min.js"></script>
-    <script crossorigin src="static/create-plotly-component.js"></script>
-
-    <!-- Bulma, React and plot.ly sources from:
-         https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css
-         https://use.fontawesome.com/releases/v5.3.1/js/all.js fontawesome-5.3.1.js
-         https://unpkg.com/react@16/umd/react.development.js
-         https://unpkg.com/react-dom@16/umd/react-dom.development.js
-         https://unpkg.com/@babel/standalone/babel.min.js
-         https://cdn.plot.ly/plotly-latest.min.js
-         https://unpkg.com/react-plotly.js@1.0.2/dist/create-plotly-component.js
-    -->
-
-    <!-- App style sheet -->
-    <link rel="stylesheet" href="static/style.css">
-</head>
-
-<body>
-    <div id="root"></div>
-    <script src="static/activity.jsx" type="text/babel">
-</body>
+    <body>
+        <div id="root-activity"></div>
+        <script src="static/webpack-activity.js" type="text/javascript" ></script>
+    </body>
 
 </html>

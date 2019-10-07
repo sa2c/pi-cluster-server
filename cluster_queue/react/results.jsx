@@ -1,3 +1,6 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+
 function MainPanel(props) {
   const img_src = "simulations/" + props.currentSimulation +
     "/elmeroutput0001-velomagn.png"
@@ -138,5 +141,5 @@ class Layout extends React.Component {
 
 ReactDOM.render(
   <Layout />,
-  document.getElementById('root')
+  document.getElementById('root-results')
 );
