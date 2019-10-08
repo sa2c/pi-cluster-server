@@ -107,9 +107,9 @@ class ClusterNetworkCanvas extends React.Component {
       (Math.round((new Date()
         .getTime() / 1000) * 10)) % gapLen;
 
-    this.doDrawNetworkLines(this.state.cableStyles, [0, 0], 4, 0);
-    this.doDrawNetworkLines(this.state.packetStyles, [5, 50, 5, 25, 5, 200],
-      3, dashOffset);
+    this.doDrawNetworkLines(this.state.cableStyles, [0, 0], 3, 0);
+    this.doDrawNetworkLines(this.state.packetStyles, [2, 50, 2, 25, 2, 200],
+      2, dashOffset);
   }
 
   doDrawNetworkLines(styles, dashes, width, start_offset) {
