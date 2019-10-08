@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import ClusterSchematic from './clusterschematic.jsx'
 
-import css from '../assets/styles/activity.css'
+import css from '../assets/styles/activity.sass'
 
 import Plot from 'react-plotly.js';
 

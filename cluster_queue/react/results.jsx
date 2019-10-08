@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import css from '../assets/styles/leaderboard.css'
+import css from '../assets/styles/leaderboard.sass'
 
 function MainPanel(props) {
   const img_src = "simulations/" + props.currentSimulation +

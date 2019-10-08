@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import css from '../assets/styles/cluster-schematic.css'
+import css from '../assets/styles/cluster-schematic.sass'
 
 function PercentageGauge(props) {
   return (
