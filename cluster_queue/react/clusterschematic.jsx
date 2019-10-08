@@ -48,7 +48,8 @@ class ClusterNetworkCanvas extends React.Component {
           [1, 1],
           [1, 2],
           [1, 3],
-        ]
+        ],
+        defaultNetworkCableColour: "#e37c60"
       }
     };
   }
@@ -62,6 +63,42 @@ class ClusterNetworkCanvas extends React.Component {
     }, () => {
       setInterval(this.drawNetworkLines.bind(this), 500);
     });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.activity !== prevProps.activity) {
+      const newState = this.props.activity.reduce((result, row, row_id) =>
+        row.reduce((
+          result, job, col_id) => {
+
+          // the cableStyles according to the cable colour
+          var colr = job['color'];
+          if (typeof colr == 'undefined') {
+            colr = this.state.defaultNetworkCableColour;
+          }
+          if (colr in result['cableStyles']) {
+            result['cableStyles'][colr].push([row_id, col_id]);
+          } else {
+            result['cableStyles'][colr] = [
+              [row_id, col_id]
+            ];
+          }
+          // if there is a job id, then there should be network traffic
+          if ('id' in job) {
+            result['packetStyles']['white'].push([row_id, col_id]);
+          }
+
+          return result
+        }, result), {
+          'cableStyles': {},
+          'packetStyles': {
+            'white': []
+          }
+        });
+
+      this.setState(newState);
+
+    }
   }
 
   drawNetworkLines() {
@@ -152,6 +189,34 @@ class ClusterSchematic extends React.Component {
         [8, 9, 10, 11],
         [12, 13, 14, 15]
       ],
+
+      avatar_colors: [
+        "#f26a44",
+        "#3f3d31",
+        "#d3ce3e",
+        "#2eaeb7",
+        "#fedb7d",
+        "#2eaeb7",
+        "#2eaeb7",
+        "#fedb7d",
+        "#d3ce3e",
+        "#2eaeb7",
+        "#fedb7d",
+        "#2eaeb7",
+        "#f26a44",
+        "#2eaeb7",
+        "#fffce9",
+        "#f26a44",
+        "#d3ce3e",
+        "#3f3d31",
+        "#d3ce3e",
+        "#d3ce3e",
+        "#fedb7d",
+        "#3f3d31",
+        "#fedb7d",
+        "#2eaeb7",
+        "#d3ce3e",
+      ],
     };
   }
 
@@ -172,10 +237,10 @@ class ClusterSchematic extends React.Component {
           values = {
             ...values,
             avatar: job['avatar'],
+            color: this.state.avatar_colors[job['avatar'] - 1],
             name: job['name'],
             id: job['id']
           };
-
         }
 
         return values;
@@ -184,7 +249,7 @@ class ClusterSchematic extends React.Component {
 
     return (
       <div className="cluster-schematic">
-      <ClusterNetworkCanvas />
+        <ClusterNetworkCanvas activity={ mappedActivity }/>
       {
           mappedActivity.map((row, row_index) => {
               return (
