@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 
 import ClusterSchematic from './clusterschematic.jsx'
 
+import css from '../assets/styles/activity.css'
+
 import Plot from 'react-plotly.js';
 
 class Layout extends React.Component {

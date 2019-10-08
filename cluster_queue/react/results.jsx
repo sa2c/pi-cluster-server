@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import css from '../assets/styles/leaderboard.css'
+
 function MainPanel(props) {
   const img_src = "simulations/" + props.currentSimulation +
     "/elmeroutput0001-velomagn.png"
