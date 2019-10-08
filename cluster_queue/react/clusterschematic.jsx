@@ -15,10 +15,13 @@ function PercentageGauge(props) {
 }
 
 function Avatar(props) {
-  const idx = props.whom ? props.whom : 0
-  return (
-    <img className="avatar-small" src={ "/static/avatars/"+ idx + ".png" } />
-  );
+  if (typeof props.whom == 'undefined') {
+    return null;
+  } else {
+    return (
+      <img className="avatar-small" src={ "/static/avatars/"+ props.whom + ".png" } />
+    );
+  }
 }
 
 function ClusterCore(props) {
