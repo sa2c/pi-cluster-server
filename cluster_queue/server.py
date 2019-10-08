@@ -149,17 +149,21 @@ def get_activity():
         cpu_usage.tolist(),
         'pending': [{
             'id': 1,
-            'name': 'First Simulation'
+            'name': 'Waiting Simulation'
         }, {
             'id': 2,
-            'name': 'Another Simulation'
+            'name': 'Another Waiting Simulation'
         }],
         'running': [{
             'id': 3,
-            'name': 'Running Simulation'
+            'name': 'Running Simulation',
+            'avatar': 1,
+            'cores': [0, 1, 2, 3]
         }, {
             'id': 4,
-            'name': 'Running Simulation #2'
+            'name': 'Running Simulation #2',
+            'avatar': 2,
+            'cores': [4, 5, 6, 7]
         }]
     }
 

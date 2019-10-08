@@ -15,16 +15,17 @@ function PercentageGauge(props) {
 }
 
 function Avatar(props) {
-    return (
-        <img className="avatar-small" src={ "/static/avatars/"+ props.whom + ".png" } />
-    );
+  const idx = props.whom ? props.whom : 0
+  return (
+    <img className="avatar-small" src={ "/static/avatars/"+ idx + ".png" } />
+  );
 }
 
 function ClusterCore(props) {
   return (
     <div className="cluster-core">
-          <Avatar whom={2}/>
-          <PercentageGauge value={props.value}/>
+          <Avatar whom={props.avatar}/>
+          <PercentageGauge value={props.cpu}/>
         </div>
   );
 }
@@ -159,21 +160,66 @@ class ClusterNetworkCanvas extends React.Component {
 
 }
 
-function ClusterSchematic(props) {
-  return (
-    <div className="cluster-schematic">
+class ClusterSchematic extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      // clusterLayout specifies how the cores are laid out in the cluster schematic
+      clusterLayout: [
+        [0, 1, 2, 3],
+        [4, 5, 6, 7],
+        [8, 9, 10, 11],
+        [12, 13, 14, 15]
+      ],
+    };
+  }
+
+  render() {
+    // map the cpu activity to each core
+    const mappedActivity = this.state.clusterLayout.map((rows) => {
+      return rows.map((core_id) => {
+        var values = {
+          cpu: this.props.cpuActivity[core_id],
+        };
+
+        // find the job running in this position (inefficient, but shouldn't matter)
+        var job = this.props.running.find((job) => job.cores
+          .includes(core_id))
+
+        // if a job is running, give the job some values
+        if (job) {
+          values = {
+            ...values,
+            avatar: job['avatar'],
+            name: job['name'],
+            id: job['id']
+          };
+
+        }
+
+        return values;
+      });
+    });
+
+    return (
+      <div className="cluster-schematic">
       <ClusterNetworkCanvas />
       {
-          props.cpu_activity.map((row, row_index) => {
+          mappedActivity.map((row, row_index) => {
               return (
                   <div key={row_index} className="cluster-row">
                   {
-                      row.map((val, col_index) => {
+                      row.map((pi, col_index) => {
                           return (
                                 <ClusterCore
                                   key={(row_index + 1)*(col_index + 1)}
-                                  value={val}
-                                />
+                                  cpu={pi['cpu']}
+                                    id={pi['id']}
+                                    name={pi['name']}
+                                    avatar={pi['avatar']}
+
+                              />
                           );
                       })
                   }
@@ -182,7 +228,8 @@ function ClusterSchematic(props) {
           })
       }
     </div>
-  );
+    );
+  }
 }
 
 export default ClusterSchematic;

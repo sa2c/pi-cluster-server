@@ -27,12 +27,6 @@ class Layout extends React.Component {
       serverUpdateInterval: 5000,
       pending: [],
       running: [],
-      coreMappings: [
-        [0, 1, 2, 3],
-        [4, 5, 6, 7],
-        [8, 9, 10, 11],
-        [12, 13, 14, 15]
-      ],
     };
 
   }
@@ -72,16 +66,10 @@ class Layout extends React.Component {
   }
 
   render() {
-    const cpuActivity = this.state.coreMappings.map((rows) => {
-      return rows.map((core_id) => {
-        return this.state.cpuActivity[core_id];
-      });
-    });
-
     return (
       <div id="layout">
         <div className="lhs-pane">
-          <ClusterSchematic cpu_activity={cpuActivity} />
+          <ClusterSchematic cpuActivity={this.state.cpuActivity} running={this.state.running} />
         </div>
         <div className="rhs-pane">
             <TimeLinePlot yValues={this.state.cpuActivityHistory} maxNumHistoryEntries={50} maxYValue={100}/>
