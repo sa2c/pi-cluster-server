@@ -14,9 +14,16 @@ function PercentageGauge(props) {
   );
 }
 
+function Avatar(props) {
+    return (
+        <img className="avatar-small" src={ "/static/avatars/"+ props.whom + ".png" } />
+    );
+}
+
 function ClusterCore(props) {
   return (
     <div className="cluster-core">
+          <Avatar whom={2}/>
           <PercentageGauge value={props.value}/>
         </div>
   );
