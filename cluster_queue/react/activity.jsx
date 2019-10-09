@@ -1,7 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import ClusterSchematic from './clusterschematic.jsx'
+import {
+  ClusterSchematic,
+  Avatar
+} from './clusterschematic.jsx'
 
 import css from '../assets/styles/activity.sass'
 
@@ -34,9 +37,9 @@ class Layout extends React.Component {
         "#d3ce3e",
         "#2eaeb7",
         "#fedb7d",
-        "#2earb7",
         "#2eaeb7",
         "#fedb7d",
+        "#3f3d31",
         "#d3ce3e",
         "#2eaeb7",
         "#fedb7d",
@@ -77,15 +80,19 @@ class Layout extends React.Component {
             info.cpuColourHistory.push(info.job.colour)
 
             // limit length to this.state.cpuHistoryMax
-            const start = info.cpuHistory.length - this.state.cpuHistoryMax;
+            const start = info.cpuHistory.length - this.state
+              .cpuHistoryMax;
             const end = info.cpuHistory.length;
-            if(start >= 0) {
-                info.cpuHistory = info.cpuHistory.slice(start, end);
-                info.cpuColourHistory = info.cpuColourHistory.slice(start, end);
+            if (start >= 0) {
+              info.cpuHistory = info.cpuHistory.slice(start, end);
+              info.cpuColourHistory = info.cpuColourHistory.slice(start,
+                end);
             }
 
             // set the default job attributes
-            info.job =  { colour : this.state.defaultAvatarColour };
+            info.job = {
+              colour: this.state.defaultAvatarColour
+            };
 
             // update current CPU value
             info.cpu = result.cpu_usage[index]
@@ -100,7 +107,8 @@ class Layout extends React.Component {
             job['cores'].forEach((core) => {
               newNodeInfo[core]['job'] = job;
               // set the (avatar) colour for this job
-              newNodeInfo[core]['job']['colour'] = this.state.avatarColours[job.avatar - 1];
+              newNodeInfo[core]['job']['colour'] = this.state
+                .avatarColours[job.avatar - 1];
             });
           });
 
@@ -120,15 +128,17 @@ class Layout extends React.Component {
   render() {
     return (
       <div id="layout">
-        <div className="lhs-pane">
-            <ClusterSchematic info={this.state.nodeInfo} />
-        </div>
-        <div className="rhs-pane">
-          <h1 className="title is-2">Waiting</h1>
-          <SimulationList simulations={this.state.pending}/>
-          <h1 className="title is-2">Running</h1>
-          <SimulationList simulations={this.state.running}/>
-        </div>
+          <div className="pane lhs">
+              <ClusterSchematic info={this.state.nodeInfo} />
+          </div>
+          <div className="pane rhs">
+              <h1 className="title has-text-centered">Running</h1>
+              <SimulationList simulations={this.state.running}/>
+          </div>
+          <div className="pane rhs">
+              <h1 className="title has-text-centered">Waiting</h1>
+              <SimulationList simulations={this.state.pending}/>
+          </div>
       </div>
     );
   }
@@ -145,24 +155,33 @@ function SimulationView(props) {
   const simulation = props.simulation;
 
   if (simulation == undefined) {
-    return <div className="simulation-data"/>;
+    return null;
   } else {
     const sim_id = simulation['id'];
 
     const image_url = "simulations/" + sim_id +
       "/elmeroutput0001-velomagn.png";
 
-    const image_alt = "Simulation " + sim_id + " image";
+    var progressBar = null;
 
+    if ('progress' in simulation) {
+      progressBar =
+        <div className="progress-indicator-container">
+                  <div className="progress-indicator" style={{width : simulation.progress + "%"}}/>
+          </div>
+    }
     return (
-      <div className="simulation-data" style={{width: "30%", float : "left" }}>
-            <p>
-              {simulation['name']}
-            </p>
-              <img src={image_url}
-                   alt={image_alt}
-                   width="100%" />
-
+      <div className="simulation-view">
+      <div className="simulation-heading">
+          <Avatar whom={simulation.avatar} />
+          <div className="right">
+              <div className="sim-title"> {simulation['name']} </div>
+              {progressBar}
+          </div>
+      </div>
+      <div className="simulation-data">
+          <img src={image_url} />
+      </div>
             </div>
     );
   }

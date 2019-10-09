@@ -207,7 +207,7 @@ class ClusterNetworkCanvas extends React.Component {
 
   render() {
     return (
-      <canvas id="cluster-schematic-canvas" width="625px" height="976px"/>
+      <canvas id="cluster-schematic-canvas" width="625px" height="950px"/>
     );
   }
 
@@ -271,4 +271,4 @@ class ClusterSchematic extends React.Component {
   }
 }
 
-export default ClusterSchematic;
+export { ClusterSchematic, Avatar };
