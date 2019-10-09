@@ -7,7 +7,7 @@ import css from '../assets/styles/cluster-schematic.sass'
 
 function PercentageGauge(props) {
   return (
-    <div className="progress-gauge">
+    <div className="progress-gauge vertical">
           <span className="text">
             {Math.round(props.value) + "%"}
           </span>
@@ -42,6 +42,9 @@ function ActivityPlot(props) {
             mode: 'lines',
             x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             y: [10, 20, 15, 30, 40, 50, 40, 70, 80, 80, 70],
+        line: {
+            color: 'rgb(128, 0, 60)',
+        }
         }]}
               layout={{
 
@@ -60,7 +63,7 @@ function ActivityPlot(props) {
                   paper_bgcolor:'rgba(0,0,0,0)',
                   plot_bgcolor:'rgba(0,0,0,0)',
                   width: 73,
-                  height: 37,
+                  height: 30,
                   margin: {
                       l: 0,
                       r: 0,

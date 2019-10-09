@@ -28,7 +28,8 @@
 
     .js-plotly-plot
       position: absolute
-      top: 170px
+      top: 157px
+      left: 4px
 
     .progress-gauge
       .mask
@@ -41,11 +42,17 @@
       width: 84px
       height: 10px
       border: 1px solid #515151
-      border-radius: 3px
+      border-radius: 2px
       background: linear-gradient(to right, #1abc9c 0%, #f1c40f 80%, #c0392b 90%, #c0392b 100%)
       display: flex
       flex-direction: row-reverse
       overflow: hidden
+
+      &.vertical
+        transform: rotate(-90deg)
+        left: 69px
+        top: 166px
+        width: 32px
 
       span.text
         display: none
