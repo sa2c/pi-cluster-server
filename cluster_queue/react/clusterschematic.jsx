@@ -62,8 +62,8 @@ function ActivityPlot(props) {
                       },
                       yaxis: {
                           showticklabels : false,
-                          tickvals : [25, 50, 75, 100],
-                          range : [0, 103],
+                          tickvals : [0, 100],
+                          range : [0, 105],
                       },
                   showlegend: false,
                   autosize: false,
