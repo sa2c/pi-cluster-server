@@ -28,23 +28,32 @@ function Avatar(props) {
 
 function ClusterCore(props) {
   return (
-    <div className="cluster-core" style={{borderColor: props.color}}>
+    <div className="cluster-core" style={{borderColor: props.colour}}>
           <Avatar whom={props.avatar}/>
           <PercentageGauge value={props.cpu}/>
-          <ActivityPlot/>
+          <ActivityPlot values={props.cpuHistory} colour={props.colour}/>
         </div>
   );
 }
 
 function ActivityPlot(props) {
+
+  // don't attempt to plot anything if there is not value to plot
+  if (typeof props.values == 'undefined') return null;
+
+  // zero-pad the activity when there are fewer than 10 points
+  const num_points = 10
+  const values = Array(num_points - props.values.length)
+    .fill(0)
+    .concat(props.values)
+
   return (
     <Plot data={[{
             type: 'bar',
-            x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-           // y: [10, 20, 15, 30, 40, 50, 40, 70, 80, 80, 70],
-            y: [10, 20, 15, 30, 40, 50, 40, 70, 80, 100, 100],
+            x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            y: values,
         marker: {
-            color: 'rgb(128, 0, 60)',
+            color: props.colour,
         }
         }]}
               layout={{
@@ -52,7 +61,7 @@ function ActivityPlot(props) {
                       xaxis: {
                           showticklabels : false,
                           tickvals : [5, 10],
-                          range : [0, 10.5]
+                          range : [1, 10.5]
                       },
                       yaxis: {
                           showticklabels : false,
@@ -98,23 +107,23 @@ class ClusterNetworkCanvas extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.activity !== prevProps.activity) {
-      const newState = this.props.activity.reduce((result, row, row_id) =>
+    if (this.props.info !== prevProps.info) {
+      const newState = this.props.info.reduce((result, row, row_id) =>
         row.reduce((
-          result, job, col_id) => {
+          result, info, col_id) => {
 
           // the cableStyles according to the cable colour
-          var colr = job['color'];
+          var colour = info.job.colour;
 
-          if (colr in result['cableStyles']) {
-            result['cableStyles'][colr].push([row_id, col_id]);
+          if (colour in result['cableStyles']) {
+            result['cableStyles'][colour].push([row_id, col_id]);
           } else {
-            result['cableStyles'][colr] = [
+            result['cableStyles'][colour] = [
               [row_id, col_id]
             ];
           }
-          // if there is a job id, then there should be network traffic
-          if ('id' in job) {
+          // if there is a info id, then there should be network traffic
+          if ('id' in info) {
             result['packetStyles']['white'].push([row_id, col_id]);
           }
 
@@ -219,83 +228,37 @@ class ClusterSchematic extends React.Component {
         [8, 9, 10, 11],
         [12, 13, 14, 15]
       ],
-      defaultColour: "#e3e3e3",
-      avatar_colors: [
-        "#f26a44",
-        "#3f3d31",
-        "#d3ce3e",
-        "#2eaeb7",
-        "#fedb7d",
-        "#2eaeb7",
-        "#2eaeb7",
-        "#fedb7d",
-        "#d3ce3e",
-        "#2eaeb7",
-        "#fedb7d",
-        "#2eaeb7",
-        "#f26a44",
-        "#2eaeb7",
-        "#fffce9",
-        "#f26a44",
-        "#d3ce3e",
-        "#3f3d31",
-        "#d3ce3e",
-        "#d3ce3e",
-        "#fedb7d",
-        "#3f3d31",
-        "#fedb7d",
-        "#2eaeb7",
-        "#d3ce3e",
-      ],
     };
   }
 
   render() {
     // map the cpu activity to each core
-    const mappedActivity = this.state.clusterLayout.map((rows) => {
+    const mappedInfo = this.state.clusterLayout.map((rows) => {
       return rows.map((core_id) => {
-        var values = {
-          cpu: this.props.cpuActivity[core_id],
-        };
-
-        // find the job running in this position (inefficient, but shouldn't matter)
-        var job = this.props.running.find((job) => job.cores
-          .includes(core_id))
-
-        // if a job is running, give the job some values
-        if (job) {
-          values = {
-            ...values,
-            avatar: job['avatar'],
-            color: this.state.avatar_colors[job['avatar'] - 1],
-            name: job['name'],
-            id: job['id']
-          };
-        } else {
-            values['color'] = this.state.defaultColour;
-        }
-
-        return values;
+        return this.props.info[core_id]
       });
     });
 
     return (
       <div className="cluster-schematic">
-        <ClusterNetworkCanvas activity={ mappedActivity }/>
+        <ClusterNetworkCanvas info={ mappedInfo }/>
       {
-          mappedActivity.map((row, row_index) => {
+          mappedInfo.map((row, row_index) => {
               return (
                   <div key={row_index} className="cluster-row">
                   {
-                      row.map((pi, col_index) => {
+                      row.map((node, col_index) => {
+                          const job = node.job;
+
                           return (
                                 <ClusterCore
                                   key={(row_index + 1)*(col_index + 1)}
-                                  cpu={pi['cpu']}
-                                  id={pi['id']}
-                                  name={pi['name']}
-                                  avatar={pi['avatar']}
-                                  color={pi['color']}
+                                  cpu={node['cpu']}
+                                  cpuHistory={node['cpuHistory']}
+                                  id={job['id']}
+                                  name={job['name']}
+                                  avatar={job['avatar']}
+                                  colour={job['colour']}
 
                               />
                           );

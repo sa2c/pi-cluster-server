@@ -140,7 +140,7 @@ def get_activity():
             float(cpu_usage_meas.split(' ')[1]) for cpu_usage_meas in cpu_usage
         ]
 
-        cpu_usage = np.array(cpu_usage)
+    cpu_usage = np.array(cpu_usage, dtype=np.int64)
 
     return {
         'time':

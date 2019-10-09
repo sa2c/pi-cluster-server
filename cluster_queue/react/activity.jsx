@@ -9,22 +9,51 @@ class Layout extends React.Component {
   constructor(props) {
     super(props);
 
-    const cores = 12;
+    const cores = 16;
 
     this.state = {
-      nCores: cores,
-      cpuActivity: Array(cores)
-        .fill(0),
-      cpuActivityHistory: Array(cores)
+      nodeInfo: Array(cores)
         .fill(0)
         .map((v) => {
-          return [v];
+          return {
+            job: {},
+            cpu: 0,
+            cpuHistory: []
+          };
         }),
-      maxNumHistoryEntries: 20,
+      cpuHistoryMax: 10,
       dataUrl: props.dataUrl,
       serverUpdateInterval: 5000,
       pending: [],
       running: [],
+      defaultAvatarColour: "#e3e3e3",
+      avatarColours: [
+        "#f26a44",
+        "#3f3d31",
+        "#d3ce3e",
+        "#2eaeb7",
+        "#fedb7d",
+        "#2earb7",
+        "#2eaeb7",
+        "#fedb7d",
+        "#d3ce3e",
+        "#2eaeb7",
+        "#fedb7d",
+        "#2eaeb7",
+        "#f26a44",
+        "#2eaeb7",
+        "#fffce9",
+        "#f26a44",
+        "#d3ce3e",
+        "#3f3d31",
+        "#d3ce3e",
+        "#d3ce3e",
+        "#fedb7d",
+        "#3f3d31",
+        "#fedb7d",
+        "#2eaeb7",
+        "#d3ce3e",
+      ],
     };
 
   }
@@ -41,17 +70,38 @@ class Layout extends React.Component {
       .then(res => res.json())
       .then(
         (result) => {
-          const cpuHistory =
-            this.state.cpuActivityHistory.map((series, index) => {
-              const next_val = result['cpu_usage'][index];
-              const nmax = this.state.maxNumHistoryEntries;
-              return series.concat(next_val)
-                .slice(series.length - nmax + 1, series.length + 1);
+          var newNodeInfo = this.state.nodeInfo.map((info, index) => {
+            // add previous value of CPU to cpuHistory
+            info['cpuHistory'].push(info['cpu'])
+
+            // limit length to this.state.cpuHistoryMax
+            const start = info.cpuHistory.length - this.state
+              .cpuHistoryMax;
+            const end = info.cpuHistory.length;
+            info.cpuHistory = info.cpuHistory.slice(start, end);
+
+            // set the default job attributes
+            info['job'] =  { colour : this.state.defaultAvatarColour };
+
+            // update current CPU value
+            info['cpu'] = result['cpu_usage'][index]
+
+            return info;
+          });
+
+          // duplicate job info on each core
+          // data is duplicated to simplify logic, but
+          // preferrably should be treated as immutable
+          result.running.forEach((job) => {
+            job['cores'].forEach((core) => {
+              newNodeInfo[core]['job'] = job;
+              // set the (avatar) colour for this job
+              newNodeInfo[core]['job']['colour'] = this.state.avatarColours[job.avatar - 1];
             });
+          });
 
           this.setState({
-            cpuActivity: result['cpu_usage'],
-            cpuActivityHistory: cpuHistory,
+            nodeInfo: newNodeInfo,
             pending: result['pending'],
             running: result['running'],
 
@@ -67,7 +117,7 @@ class Layout extends React.Component {
     return (
       <div id="layout">
         <div className="lhs-pane">
-          <ClusterSchematic cpuActivity={this.state.cpuActivity} running={this.state.running} />
+            <ClusterSchematic info={this.state.nodeInfo} />
         </div>
         <div className="rhs-pane">
           <h1 className="title is-2">Waiting</h1>
