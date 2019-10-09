@@ -28,7 +28,7 @@ function Avatar(props) {
 
 function ClusterCore(props) {
   return (
-    <div className="cluster-core">
+    <div className="cluster-core" style={{borderColor: props.color}}>
           <Avatar whom={props.avatar}/>
           <PercentageGauge value={props.cpu}/>
           <ActivityPlot/>
@@ -293,9 +293,10 @@ class ClusterSchematic extends React.Component {
                                 <ClusterCore
                                   key={(row_index + 1)*(col_index + 1)}
                                   cpu={pi['cpu']}
-                                    id={pi['id']}
-                                    name={pi['name']}
-                                    avatar={pi['avatar']}
+                                  id={pi['id']}
+                                  name={pi['name']}
+                                  avatar={pi['avatar']}
+                                  color={pi['color']}
 
                               />
                           );
