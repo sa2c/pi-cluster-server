@@ -25,7 +25,7 @@ class Layout extends React.Component {
             cpuColourHistory: []
           };
         }),
-      cpuHistoryMax: 20,
+      cpuHistoryMax: 50,
       dataUrl: props.dataUrl,
       serverUpdateInterval: 50,
       pending: [],

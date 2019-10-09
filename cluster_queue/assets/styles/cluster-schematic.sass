@@ -5,7 +5,7 @@
     position: absolute
     z-index: -99
 
-  width: 625px
+  width: 725px
   height: 950px
 
   .cluster-row
@@ -17,15 +17,18 @@
     float: left
     background-image: url("cluster-schematic-pi.jpg")
     background-repeat: no-repeat
-    height: 200px
-    width: 102px
+    background-position: 12px 12px
+    height: 208px
+    width: 125px
     border: 2px solid
-    border-radius: 10px
+    border-radius: 6px
+    overflow: hidden
 
     .js-plotly-plot
       position: absolute
-      top: 157px
-      left: 4px
+      top: 172px
+      left: 0px
+      border-top: 2px solid black
 
     .progress-gauge
       .mask
@@ -43,6 +46,7 @@
       display: flex
       flex-direction: row-reverse
       overflow: hidden
+      display: none
 
       &.vertical
         transform: rotate(-90deg)
@@ -62,11 +66,10 @@
         line-height: 16px
 
 .avatar-small
-  border-radius: 24px
-  width: 37px
+  border-radius: 54px
+  width: 54px
   position: absolute
-  left: -2px
-  top: 110px
+  left: -9px
+  top: -9px
   border: 1px solid black
-  box-shadow: 3px 4px 6px #2d2a2a
-
+  box-shadow: 3px 4px 6px #aaa4a4

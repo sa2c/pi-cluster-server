@@ -5,17 +5,6 @@ import Plot from 'react-plotly.js';
 
 import css from '../assets/styles/cluster-schematic.sass'
 
-function PercentageGauge(props) {
-  return (
-    <div className="progress-gauge vertical">
-          <span className="text">
-            {Math.round(props.value) + "%"}
-          </span>
-          <div className = "mask" style = {{ width: (100 - props.value) + "%" }} />
-        </div>
-  );
-}
-
 function Avatar(props) {
   if (typeof props.whom == 'undefined') {
     return null;
@@ -30,7 +19,6 @@ function ClusterCore(props) {
   return (
     <div className="cluster-core" style={{borderColor: props.colour}}>
           <Avatar whom={props.avatar}/>
-          <PercentageGauge value={props.cpu}/>
           <ActivityPlot values={props.cpuHistory} colours={props.cpuColourHistory}/>
         </div>
   );
@@ -43,9 +31,12 @@ function ActivityPlot(props) {
 
     const N = props.values.length;
     const x = Array.from(Array(N), (e,i) => i+1)
+    const curr_colour = props.colours[props.colours.length - 1]
 
   return (
-    <Plot data={[{
+    <Plot
+    style={{borderColor: curr_colour}}
+        data={[{
             type: 'bar',
             x: x,
             y: props.values,
@@ -53,23 +44,24 @@ function ActivityPlot(props) {
             color: props.colours,
         }
         }]}
+    config={{staticPlot:true}}
               layout={{
 
                       xaxis: {
                           showticklabels : false,
-                          tickvals : [5, 10],
+                          tickvals : [],
                           range : [1, N + 0.5]
                       },
                       yaxis: {
                           showticklabels : false,
-                          tickvals : [0, 100],
+                          tickvals : [],
                           range : [0, 105],
                       },
                   showlegend: false,
                   autosize: false,
                   paper_bgcolor:'rgba(0,0,0,0)',
                   plot_bgcolor:'rgba(0,0,0,0)',
-                  width: 73,
+                  width: 121,
                   height: 30,
                   bargap: 0,
                   margin: {
@@ -181,19 +173,16 @@ class ClusterNetworkCanvas extends React.Component {
 
   drawSingleNetworkLine(row, col, start_offset, ctx) {
 
-    const xNetwork = 98.5 + 150 * col;
-    const yNetwork = 27.5 + (223 * row);
-    const xWidth = 60 - 10 * row;
-    const yBottom = 900;
+    const xNetwork = 148.5 + 170.5 * col;
+    const yNetwork = 50.5 + (230 * row);
+    const xWidth = 33 - 7 * row;
+    const yBottom = 1000;
     const yBottomOffset = [30, 20, 10, 0];
     const xNetworkOffset = [0, -50, -80, -100];
-    const heightFirstSegment = 12;
     const r = 5;
 
-    ctx.moveTo(xNetwork, yNetwork + start_offset);
-    ctx.arc(xNetwork + r, yNetwork - heightFirstSegment, r, Math.PI, 1.5 *
-      Math.PI);
-    ctx.arc(xNetwork + xWidth - r, yNetwork - heightFirstSegment, r, 1.5 *
+    ctx.moveTo(xNetwork, yNetwork - r);
+    ctx.arc(xNetwork + xWidth- r, yNetwork, r, 1.5 *
       Math.PI, 2 * Math.PI);
     if (xNetworkOffset[row] != 0) {
       ctx.arc(xNetwork + xWidth - r, yBottom + yBottomOffset[row] - r, r, 0,
@@ -207,7 +196,7 @@ class ClusterNetworkCanvas extends React.Component {
 
   render() {
     return (
-      <canvas id="cluster-schematic-canvas" width="625px" height="950px"/>
+      <canvas id="cluster-schematic-canvas" width="695px" height="950px"/>
     );
   }
 
