@@ -83,7 +83,7 @@ class ClusterNetworkCanvas extends React.Component {
     this.state = {
       cableStyles: {},
       packetStyles: {},
-        defaultNetworkCableColour: "#e3e3e3"
+      defaultNetworkCableColour: "#e3e3e3"
     };
   }
 
