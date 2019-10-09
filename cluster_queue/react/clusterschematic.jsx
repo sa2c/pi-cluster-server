@@ -83,7 +83,6 @@ class ClusterNetworkCanvas extends React.Component {
     this.state = {
       cableStyles: {},
       packetStyles: {},
-      defaultNetworkCableColour: "#e3e3e3"
     };
   }
 
@@ -106,9 +105,7 @@ class ClusterNetworkCanvas extends React.Component {
 
           // the cableStyles according to the cable colour
           var colr = job['color'];
-          if (typeof colr == 'undefined') {
-            colr = this.state.defaultNetworkCableColour;
-          }
+
           if (colr in result['cableStyles']) {
             result['cableStyles'][colr].push([row_id, col_id]);
           } else {
@@ -222,7 +219,7 @@ class ClusterSchematic extends React.Component {
         [8, 9, 10, 11],
         [12, 13, 14, 15]
       ],
-
+      defaultColour: "#e3e3e3",
       avatar_colors: [
         "#f26a44",
         "#3f3d31",
@@ -274,6 +271,8 @@ class ClusterSchematic extends React.Component {
             name: job['name'],
             id: job['id']
           };
+        } else {
+            values['color'] = this.state.defaultColour;
         }
 
         return values;
