@@ -39,10 +39,11 @@ function ClusterCore(props) {
 function ActivityPlot(props) {
   return (
     <Plot data={[{
-            mode: 'lines',
+            type: 'bar',
             x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            y: [10, 20, 15, 30, 40, 50, 40, 70, 80, 80, 70],
-        line: {
+           // y: [10, 20, 15, 30, 40, 50, 40, 70, 80, 80, 70],
+            y: [10, 20, 15, 30, 40, 50, 40, 70, 80, 100, 100],
+        marker: {
             color: 'rgb(128, 0, 60)',
         }
         }]}
@@ -64,6 +65,7 @@ function ActivityPlot(props) {
                   plot_bgcolor:'rgba(0,0,0,0)',
                   width: 73,
                   height: 30,
+                  bargap: 0,
                   margin: {
                       l: 0,
                       r: 0,
@@ -176,10 +178,10 @@ class ClusterNetworkCanvas extends React.Component {
 
   drawSingleNetworkLine(row, col, start_offset, ctx) {
 
-    const xNetwork = 94.5 + 145 * col;
-    const yNetwork = 19.5 + (210.5 * row);
+    const xNetwork = 98.5 + 150 * col;
+    const yNetwork = 27.5 + (223 * row);
     const xWidth = 60 - 10 * row;
-    const yBottom = 860;
+    const yBottom = 900;
     const yBottomOffset = [30, 20, 10, 0];
     const xNetworkOffset = [0, -50, -80, -100];
     const heightFirstSegment = 12;
@@ -202,7 +204,7 @@ class ClusterNetworkCanvas extends React.Component {
 
   render() {
     return (
-      <canvas id="cluster-schematic-canvas" width="600px" height="976px"/>
+      <canvas id="cluster-schematic-canvas" width="625px" height="976px"/>
     );
   }
 

@@ -1,30 +1,29 @@
 .cluster-schematic
   border: 1px solid #0f5535
   margin: 10px
-  padding-top: 25px
   border-radius: 3px
   float: left
 
   canvas#cluster-schematic-canvas
     position: absolute
     z-index: -99
-    width: 600px
-    height: 976px
 
-  width: 600px
+  width: 625px
   height: 976px
 
   .cluster-row
     clear: both
+    margin-left: 15px
+    margin-top: 18px
 
   .cluster-core
     position: relative
-    margin: 15px
+    margin: 5px
     float: left
     background-image: url("cluster-schematic-pi.jpg")
     background-repeat: no-repeat
-    height: 180px
-    width: 115px
+    height: 213px
+    width: 139px
 
     .js-plotly-plot
       position: absolute
@@ -51,8 +50,8 @@
       &.vertical
         transform: rotate(-90deg)
         left: 69px
-        top: 166px
-        width: 32px
+        top: 167.5px
+        width: 30px
 
       span.text
         display: none
@@ -67,11 +66,10 @@
 
 .avatar-small
   border-radius: 24px
-  width: 51px
+  width: 37px
   position: absolute
-  right: 10px
-  top: 78px
+  left: -2px
+  top: 110px
   border: 1px solid black
   box-shadow: 3px 4px 6px #2d2a2a
-  opacity: 0.84
 
