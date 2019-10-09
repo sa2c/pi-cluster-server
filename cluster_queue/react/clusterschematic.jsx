@@ -38,19 +38,8 @@ class ClusterNetworkCanvas extends React.Component {
     super(props);
     this.state = {
       cableStyles: {},
-      packetStyles: {
-        "white": [
-          [0, 0],
-          [0, 1],
-          [0, 2],
-          [0, 3],
-          [1, 0],
-          [1, 1],
-          [1, 2],
-          [1, 3],
-        ],
-        defaultNetworkCableColour: "#e37c60"
-      }
+      packetStyles: {},
+      defaultNetworkCableColour: "#e37c60"
     };
   }
 
