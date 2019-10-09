@@ -135,9 +135,9 @@ class ClusterNetworkCanvas extends React.Component {
   drawSingleNetworkLine(row, col, start_offset, ctx) {
 
     const xNetwork = 94.5 + 145 * col;
-    const yNetwork = 19.5 + (165 * row);
+    const yNetwork = 19.5 + (210.5 * row);
     const xWidth = 60 - 10 * row;
-    const yBottom = 655;
+    const yBottom = 860;
     const yBottomOffset = [30, 20, 10, 0];
     const xNetworkOffset = [0, -50, -80, -100];
     const heightFirstSegment = 12;
@@ -160,7 +160,7 @@ class ClusterNetworkCanvas extends React.Component {
 
   render() {
     return (
-      <canvas id="cluster-schematic-canvas" width="600px" height="728px"/>
+      <canvas id="cluster-schematic-canvas" width="600px" height="976px"/>
     );
   }
 
