@@ -5,8 +5,6 @@ import ClusterSchematic from './clusterschematic.jsx'
 
 import css from '../assets/styles/activity.sass'
 
-import Plot from 'react-plotly.js';
-
 class Layout extends React.Component {
   constructor(props) {
     super(props);
@@ -72,7 +70,6 @@ class Layout extends React.Component {
           <ClusterSchematic cpuActivity={this.state.cpuActivity} running={this.state.running} />
         </div>
         <div className="rhs-pane">
-            <TimeLinePlot yValues={this.state.cpuActivityHistory} maxNumHistoryEntries={50} maxYValue={100}/>
           <h1 className="title is-2">Waiting</h1>
           <SimulationList simulations={this.state.pending}/>
           <h1 className="title is-2">Running</h1>
@@ -116,104 +113,6 @@ function SimulationView(props) {
     );
   }
 }
-
-function TimeLinePlot(props) {
-  const data = props.yValues.map((series, index) => {
-    return {
-      mode: 'lines',
-      line: {},
-      y: series,
-    };
-  });
-
-  return (
-    <div className="container">
-        <Plot data={data}
-                    layout={{
-
-                        xaxis: {
-                            title : 'Time',
-                            showticklabels : false,
-                            range : [0, props.maxNumHistoryEntries]
-                        },
-                        yaxis: {
-                            title : 'Percentage',
-                            range : [0, props.maxYValue]
-                        },
-                        showlegend: false,
-                        width: '850px',
-                        height: '200px',
-                        title: 'CPU Vs Time'}}
-              />
-            </div>
-  );
-}
-
-class AnimatedBarPlot extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      yValue: Array(props.nBars)
-        .fill(0),
-      targetYValue: props.targetYValue,
-      easingStepSize: 5,
-      maxYValue: props.maxYValue,
-      easingUpdateInterval: 100,
-      xValue: [...Array(props.nBars)
-        .keys()
-      ],
-    };
-
-    setInterval(this.updatePlotAnimation.bind(this), this.state
-      .easingUpdateInterval);
-  }
-
-  updatePlotAnimation() {
-    /* Moves yValue closer to yValueTarget by up to easingStepSize. This is to make transitions smoother (by limiting the movement permitted for each "frame"). Note that this implementation does mean bars don't finish moving at the same time, but it is simpler to implement with an external data source */
-    const yValue = this.state.yValue.map((val, index) => {
-      const diff = this.state.targetYValue[index] - val;
-      const step = Math.sign(diff) * Math.min(this.state.easingStepSize,
-        Math.abs(diff));
-      return val + step;
-    });
-    this.setState({
-      yValue: yValue
-    });
-  }
-
-  render() {
-    return (
-      <div className="container">
-        <Plot data={[{
-                type: 'bar',
-                x: this.state.xValue,
-            y: this.state.yValue,
-            marker : {
-                color : this.state.yValue.map((y) => y/this.state.maxYValue ),
-                /* note: default colorscales in src/components/colorscale/scales.js */
-                colorscale: [[0, 'rgb(50,168,82)'],
-                             [0.75, 'rgb(50,168,82)'],
-                             [1, 'rgb(255,0,30)']]
-            }
-            }]}
-              layout={{
-                  xaxis: {
-                      title : '',
-                      showticklabels : false,
-                  },
-                  yaxis: {
-                      title : 'Percentage',
-                      range : [0, this.state.maxYValue]
-                  },
-                  width: '100%',
-                  height: '100%',
-                  title: 'CPU Usage'}}
-        />
-      </div>
-    );
-  }
-}
-
 
 ReactDOM.render(
   <Layout dataUrl={"/cluster/activity"} />,
