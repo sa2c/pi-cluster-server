@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import Plot from 'react-plotly.js';
+
 import css from '../assets/styles/cluster-schematic.sass'
 
 function PercentageGauge(props) {
@@ -29,7 +31,44 @@ function ClusterCore(props) {
     <div className="cluster-core">
           <Avatar whom={props.avatar}/>
           <PercentageGauge value={props.cpu}/>
+          <ActivityPlot/>
         </div>
+  );
+}
+
+function ActivityPlot(props) {
+  return (
+    <Plot data={[{
+            mode: 'lines',
+            x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            y: [10, 20, 15, 30, 40, 50, 40, 70, 80, 80, 70],
+        }]}
+              layout={{
+
+                      xaxis: {
+                          showticklabels : false,
+                          tickvals : [5, 10],
+                          range : [0, 10.5]
+                      },
+                      yaxis: {
+                          showticklabels : false,
+                          tickvals : [25, 50, 75, 100],
+                          range : [0, 103],
+                      },
+                  showlegend: false,
+                  autosize: false,
+                  paper_bgcolor:'rgba(0,0,0,0)',
+                  plot_bgcolor:'rgba(0,0,0,0)',
+                  width: 73,
+                  height: 37,
+                  margin: {
+                      l: 0,
+                      r: 0,
+                      b: 0,
+                      t: 0,
+                      pad: 10
+                  },
+              }} />
   );
 }
 
