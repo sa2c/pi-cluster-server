@@ -31,7 +31,7 @@ function ClusterCore(props) {
     <div className="cluster-core" style={{borderColor: props.colour}}>
           <Avatar whom={props.avatar}/>
           <PercentageGauge value={props.cpu}/>
-          <ActivityPlot values={props.cpuHistory} colour={props.colour}/>
+          <ActivityPlot values={props.cpuHistory} colours={props.cpuColourHistory}/>
         </div>
   );
 }
@@ -41,19 +41,16 @@ function ActivityPlot(props) {
   // don't attempt to plot anything if there is not value to plot
   if (typeof props.values == 'undefined') return null;
 
-  // zero-pad the activity when there are fewer than 10 points
-  const num_points = 10
-  const values = Array(num_points - props.values.length)
-    .fill(0)
-    .concat(props.values)
+    const N = props.values.length;
+    const x = Array.from(Array(N), (e,i) => i+1)
 
   return (
     <Plot data={[{
             type: 'bar',
-            x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            y: values,
+            x: x,
+            y: props.values,
         marker: {
-            color: props.colour,
+            color: props.colours,
         }
         }]}
               layout={{
@@ -61,7 +58,7 @@ function ActivityPlot(props) {
                       xaxis: {
                           showticklabels : false,
                           tickvals : [5, 10],
-                          range : [1, 10.5]
+                          range : [1, N + 0.5]
                       },
                       yaxis: {
                           showticklabels : false,
@@ -255,6 +252,7 @@ class ClusterSchematic extends React.Component {
                                   key={(row_index + 1)*(col_index + 1)}
                                   cpu={node['cpu']}
                                   cpuHistory={node['cpuHistory']}
+                                  cpuColourHistory={node['cpuColourHistory']}
                                   id={job['id']}
                                   name={job['name']}
                                   avatar={job['avatar']}

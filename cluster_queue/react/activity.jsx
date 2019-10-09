@@ -18,12 +18,13 @@ class Layout extends React.Component {
           return {
             job: {},
             cpu: 0,
-            cpuHistory: []
+            cpuHistory: [],
+            cpuColourHistory: []
           };
         }),
-      cpuHistoryMax: 10,
+      cpuHistoryMax: 20,
       dataUrl: props.dataUrl,
-      serverUpdateInterval: 5000,
+      serverUpdateInterval: 50,
       pending: [],
       running: [],
       defaultAvatarColour: "#e3e3e3",
@@ -72,19 +73,22 @@ class Layout extends React.Component {
         (result) => {
           var newNodeInfo = this.state.nodeInfo.map((info, index) => {
             // add previous value of CPU to cpuHistory
-            info['cpuHistory'].push(info['cpu'])
+            info.cpuHistory.push(info.cpu)
+            info.cpuColourHistory.push(info.job.colour)
 
             // limit length to this.state.cpuHistoryMax
-            const start = info.cpuHistory.length - this.state
-              .cpuHistoryMax;
+            const start = info.cpuHistory.length - this.state.cpuHistoryMax;
             const end = info.cpuHistory.length;
-            info.cpuHistory = info.cpuHistory.slice(start, end);
+            if(start >= 0) {
+                info.cpuHistory = info.cpuHistory.slice(start, end);
+                info.cpuColourHistory = info.cpuColourHistory.slice(start, end);
+            }
 
             // set the default job attributes
-            info['job'] =  { colour : this.state.defaultAvatarColour };
+            info.job =  { colour : this.state.defaultAvatarColour };
 
             // update current CPU value
-            info['cpu'] = result['cpu_usage'][index]
+            info.cpu = result.cpu_usage[index]
 
             return info;
           });
