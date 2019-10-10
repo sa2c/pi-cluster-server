@@ -1,10 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import {
-  ClusterSchematic,
-  Avatar
-} from './clusterschematic.jsx'
+import { Avatar, ClusterSchematic } from './clusterschematic.jsx'
+import { SimulationList } from './simulationlist.jsx'
 
 import css from '../assets/styles/activity.sass'
 
@@ -134,56 +132,6 @@ class Layout extends React.Component {
           <SimulationList simulations={this.state.running} title="Running"/>
           <SimulationList simulations={this.state.pending} title="Waiting"/>
       </div>
-    );
-  }
-}
-
-function SimulationList(props) {
-    const simulations = props.simulations.map((sim) => {
-        return <SimulationView key={sim['id']} simulation={sim}/>;
-    });
-    return (
-        <div className="pane rhs">
-            <h1 className="title has-text-centered">{ props.title }</h1>
-            {simulations}
-        </div>
-    )
-
-}
-
-function SimulationView(props) {
-
-  const simulation = props.simulation;
-
-  if (simulation == undefined) {
-    return null;
-  } else {
-    const sim_id = simulation['id'];
-
-    const image_url = "simulations/" + sim_id +
-      "/elmeroutput0001-velomagn.png";
-
-    var progressBar = null;
-
-    if ('progress' in simulation) {
-      progressBar =
-        <div className="progress-indicator-container">
-                  <div className="progress-indicator" style={{width : simulation.progress + "%"}}/>
-          </div>
-    }
-    return (
-      <div className="simulation-view">
-      <div className="simulation-heading">
-          <Avatar whom={simulation.avatar} />
-          <div className="right">
-              <div className="sim-title"> {simulation['name']} </div>
-              {progressBar}
-          </div>
-      </div>
-      <div className="simulation-data">
-          <img src={image_url} />
-      </div>
-            </div>
     );
   }
 }

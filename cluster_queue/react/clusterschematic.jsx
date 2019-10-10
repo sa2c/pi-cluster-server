@@ -2,18 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Plot from 'react-plotly.js';
+import { Avatar } from './avatar.jsx'
 
 import css from '../assets/styles/cluster-schematic.sass'
-
-function Avatar(props) {
-  if (typeof props.whom == 'undefined') {
-    return null;
-  } else {
-    return (
-      <img className="avatar-small" src={ "/static/avatars/"+ props.whom + ".png" } />
-    );
-  }
-}
 
 function ClusterCore(props) {
   return (
@@ -253,4 +244,4 @@ class ClusterSchematic extends React.Component {
   }
 }
 
-export { ClusterSchematic, Avatar };
+export { ClusterSchematic };

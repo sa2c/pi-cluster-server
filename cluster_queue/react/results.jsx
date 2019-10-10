@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import { SimulationList } from './simulationlist.jsx'
+
 import css from '../assets/styles/leaderboard.sass'
 
 function MainPanel(props) {
@@ -12,57 +14,6 @@ function MainPanel(props) {
          src={img_src}
          alt="Simulation Main View"
          width="100%" />
-  );
-}
-
-function SimulationList(props) {
-  return (
-    props.simulations.map((simulation, rank) => {
-
-      const sim_id = simulation['id'];
-
-      const image_url = "simulations/" + sim_id +
-        "/elmeroutput0001-velomagn.png";
-
-      const image_alt = "Simulation " + sim_id + " image";
-
-      const additionalMainClasses =
-        props.currentSimulation == sim_id ? " selected" : "";
-
-      const additionalRankingClasses = props.showIndex ? "" : " hidden";
-
-      return (
-        <div className={"columns simulation" + additionalMainClasses}
-                     key={rank}
-                     id={"rank" + (sim_id + 1)}
-                     onClick={ () => props.onClick(sim_id) }>
-
-            <div
-              className={"ranking column is-one-fifth" + additionalRankingClasses}
-            >
-            <h2>
-              { rank + 1 }
-            </h2>
-          </div>
-
-          <div className="simulation-data">
-
-            <img src={image_url}
-                 alt={image_alt}
-                 width="100%" />
-
-            <div className="simulation-info">
-              <p>
-                {simulation['name']}
-              </p>
-              <p>
-                drag: {simulation['drag'].toFixed(2)}
-              </p>
-            </div>
-          </div>
-          </div>
-      );
-    })
   );
 }
 
