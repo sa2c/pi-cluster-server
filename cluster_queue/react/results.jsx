@@ -27,17 +27,17 @@ function SimulationViewer(props) {
       );
   } else {
     const sim = props.currentSimulation
-    const img_src = "simulations/" + sim.id + "/elmeroutput0001-velomagn.png"
+
+    const img_rgb = "simulations/" + sim.id + "/rgb_with_contour.png"
+    const img_depth = "simulations/" + sim.id + "/depth.png"
 
     const colour = sim.colour
 
     return (
       <div className="simulation-viewer"
         style={{color: colour}}>
-        <img id="result-main-image"
-          src={img_src}
-          alt="Simulation Main View"
-                   width="100%" />
+        <img id="result-rgb-image" src={img_rgb} alt="RGB image" />
+        <img id="result-depth-image" src={img_depth} alt="RGB image" />
           </div>
     );
   }
