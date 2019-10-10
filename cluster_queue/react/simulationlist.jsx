@@ -9,7 +9,12 @@ import css from '../assets/styles/simulation-list.sass'
 
 function SimulationList(props) {
   const simulations = props.simulations.map((sim, index) => {
-    var isCurrent = sim.id == props.currentSimulation.id
+
+   // set isCurrent
+   var isCurrent = false
+   if(typeof props.currentSimulation !== 'undefined') {
+       isCurrent = sim.id == props.currentSimulation.id
+   }
 
     return <SimulationView key={sim['id']}
                                simulation={sim}
