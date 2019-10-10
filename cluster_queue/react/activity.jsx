@@ -129,8 +129,8 @@ class Layout extends React.Component {
           <div className="pane lhs">
               <ClusterSchematic info={this.state.nodeInfo} />
           </div>
-          <SimulationList simulations={this.state.running} title="Running"/>
-          <SimulationList simulations={this.state.pending} title="Waiting"/>
+          <SimulationList simulations={this.state.running} title="Running" percentageKey='progress'/>
+          <SimulationList simulations={this.state.pending} title="Waiting" percentageKey='progress'/>
       </div>
     );
   }

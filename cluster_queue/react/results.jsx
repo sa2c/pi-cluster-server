@@ -70,17 +70,32 @@ class Layout extends React.Component {
   }
 
   render() {
+      const dragValues = new Set(this.state.bestSimulations.concat(this.state.recentSimulations).map((sim) => sim.drag))
+      const maxDrag = Math.max(...dragValues)
+
+      const best = this.state.bestSimulations.map((sim) => {
+          const update = {'fractional-drag' : sim['drag']/maxDrag }
+          return { ...sim, ...update}
+      });
+
+      const recent = this.state.recentSimulations.map((sim) => {
+          const update = {'fractional-drag' : sim['drag']/maxDrag }
+          return { ...sim, ...update}
+      });
+
     return (
       <div className="root">
                   <SimulationList title="Fastest"
                                   showIndex={ true }
-                                  simulations={ this.state.bestSimulations }
+                                  percentageKey='fractional-drag'
+                                  simulations={ best }
                                   currentSimulation={this.state.currentSimulation}
                                   onClick={ this.simulationChoiceHandler.bind(this) }/>
                   <MainPanel currentSimulation={this.state.currentSimulation}/>
                   <SimulationList title="Latest"
                                   showIndex={ false }
-                                  simulations={ this.state.recentSimulations }
+                                  percentageKey='fractional-drag'
+                                  simulations={ recent }
                                   currentSimulation={this.state.currentSimulation}
                                   onClick={ this.simulationChoiceHandler.bind(this) }/>
                 </div>
