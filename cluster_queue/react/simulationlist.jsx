@@ -80,8 +80,8 @@ function SimulationView(props) {
                     </div>
                 </div>
                 <div className="simulation-data">
-                    <img className="simulation-capture" src={rgb_url} />
-                    <img className="simulation-capture" src={depth_url} />
+                    <img className="simulation-capture left" src={rgb_url} />
+                    <img className="simulation-capture right" src={depth_url} />
                 </div>
             </div>
     );
