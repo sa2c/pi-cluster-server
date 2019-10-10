@@ -68,7 +68,6 @@ class Layout extends React.Component {
 
           // duplicate job info on each core
           // data is duplicated to simplify logic, but
-          // preferrably should be treated as immutable
           result.running.forEach((job) => {
             job['cores'].forEach((core) => {
               newNodeInfo[core]['job'] = job;
@@ -76,16 +75,15 @@ class Layout extends React.Component {
           });
 
           // colour the jobs using the colourJob function
-          newNodeInfo = newNodeInfo.map((info) => {
-              info.job = colourJob(info.job);
-              return info
-          });
-          console.log(newNodeInfo);
+          // once again, duplication simplifies logic
+          // (i.e. when dealing with empty jobs in newNodeInfo)
+          const running = result.running.map((job) => colourJob(job))
+          const pending = result.pending.map((job) => colourJob(job))
 
           this.setState({
             nodeInfo: newNodeInfo,
-            pending: result['pending'],
-            running: result['running'],
+            pending: pending,
+            running: running,
 
           });
         },
