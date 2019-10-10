@@ -164,13 +164,6 @@ class ClusterNetworkCanvas extends React.Component {
 
   }
 
-  drawCorner(ctx, x, y, r, quartile) {
-    const startAngle = (quartile - 1) / 2;
-
-    ctx.arc(x, y, r, startAngle * Math.PI, (startAngle + 0.5) * Math
-      .PI);
-  }
-
   drawSingleNetworkLine(row, col, start_offset, ctx) {
 
     const xNetwork = 148.5 + 170.5 * col;
