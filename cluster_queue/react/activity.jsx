@@ -131,23 +131,24 @@ class Layout extends React.Component {
           <div className="pane lhs">
               <ClusterSchematic info={this.state.nodeInfo} />
           </div>
-          <div className="pane rhs">
-              <h1 className="title has-text-centered">Running</h1>
-              <SimulationList simulations={this.state.running}/>
-          </div>
-          <div className="pane rhs">
-              <h1 className="title has-text-centered">Waiting</h1>
-              <SimulationList simulations={this.state.pending}/>
-          </div>
+          <SimulationList simulations={this.state.running} title="Running"/>
+          <SimulationList simulations={this.state.pending} title="Waiting"/>
       </div>
     );
   }
 }
 
 function SimulationList(props) {
-  return props.simulations.map((sim) => {
-    return <SimulationView key={sim['id']} simulation={sim}/>;
-  });
+    const simulations = props.simulations.map((sim) => {
+        return <SimulationView key={sim['id']} simulation={sim}/>;
+    });
+    return (
+        <div className="pane rhs">
+            <h1 className="title has-text-centered">{ props.title }</h1>
+            {simulations}
+        </div>
+    )
+
 }
 
 function SimulationView(props) {
