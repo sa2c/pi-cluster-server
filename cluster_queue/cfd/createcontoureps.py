@@ -1,5 +1,4 @@
 #ioff()
-
 import sys
 import os
 import matplotlib
@@ -30,15 +29,15 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
     numpoints = int(listtemp[1])
     print("numpoints=", numpoints)
     # Point coordinates
-    coords = np.zeros((numpoints,3), dtype=float)
+    coords = np.zeros((numpoints, 3), dtype=float)
     for ii in range(numpoints):
         line = vtkfile.readline()
         #print("Line {}: {}".format(ii, line.strip()))
         listtemp = " ".join(line.split())
         listtemp = listtemp.split(" ")
-        coords[ii,0] = float(listtemp[0])
-        coords[ii,1] = float(listtemp[1])
-        coords[ii,2] = float(listtemp[2])
+        coords[ii, 0] = float(listtemp[0])
+        coords[ii, 1] = float(listtemp[1])
+        coords[ii, 2] = float(listtemp[2])
 
     # Elements(Cells)
     line = vtkfile.readline()
@@ -47,15 +46,15 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
     numcells = int(listtemp[1])
 
     # Elements connectivity
-    elems = np.zeros((numcells,3), dtype=int)
+    elems = np.zeros((numcells, 3), dtype=int)
     for ii in range(numcells):
         line = vtkfile.readline()
         #print("Line {}: {}".format(ii, line.strip()))
         listtemp = " ".join(line.split())
         listtemp = listtemp.split(" ")
-        elems[ii,0] = int(listtemp[1])
-        elems[ii,1] = int(listtemp[2])
-        elems[ii,2] = int(listtemp[3])
+        elems[ii, 0] = int(listtemp[1])
+        elems[ii, 1] = int(listtemp[2])
+        elems[ii, 2] = int(listtemp[3])
 
     # CELL_TYPES
     line = vtkfile.readline()
@@ -65,7 +64,7 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
     for ii in range(iii):
         line = vtkfile.readline()
 
-    if(nprocs > 1):
+    if (nprocs > 1):
         # CELL DATA - coloring
         line = vtkfile.readline()
         line = vtkfile.readline()
@@ -79,34 +78,35 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
     line = vtkfile.readline()
 
     # Pressure
-    pressure = np.zeros((numpoints,1), dtype=float)
+    pressure = np.zeros((numpoints, 1), dtype=float)
     for ii in range(numpoints):
         line = vtkfile.readline()
         #print("Line {}: {}".format(ii, line.strip()))
         listtemp = " ".join(line.split())
         listtemp = listtemp.split(" ")
-        pressure[ii,0] = float(listtemp[0])
+        pressure[ii, 0] = float(listtemp[0])
 
     # Velocity
     line = vtkfile.readline()
 
-    velocity = np.zeros((numpoints,3), dtype=float)
-    velocity_magn = np.zeros((numpoints,1), dtype=float)
+    velocity = np.zeros((numpoints, 3), dtype=float)
+    velocity_magn = np.zeros((numpoints, 1), dtype=float)
     for ii in range(numpoints):
         line = vtkfile.readline()
         #print("Line {}: {}".format(ii, line.strip()))
         listtemp = " ".join(line.split())
         listtemp = listtemp.split(" ")
-        velocity[ii,0] = float(listtemp[0])
-        velocity[ii,1] = float(listtemp[1])
-        velocity[ii,2] = float(listtemp[2])
-        velocity_magn[ii,0] = np.abs(velocity[ii,0]*velocity[ii,0]+velocity[ii,1]*velocity[ii,1])
+        velocity[ii, 0] = float(listtemp[0])
+        velocity[ii, 1] = float(listtemp[1])
+        velocity[ii, 2] = float(listtemp[2])
+        velocity_magn[ii, 0] = np.abs(velocity[ii, 0] * velocity[ii, 0] +
+                                      velocity[ii, 1] * velocity[ii, 1])
 
     vtkfile.close()
 
-    if(compute_bound == True):
-        velo_magn_max = np.max(velocity_magn[:,0])
-    VV=np.linspace(0.0, velo_magn_max, 20)
+    if (compute_bound == True):
+        velo_magn_max = np.max(velocity_magn[:, 0])
+    VV = np.linspace(0.0, velo_magn_max, 20)
 
     # generate images
 
@@ -116,35 +116,56 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
     contourplots = True
     vectorplots = True
 
-    if(contourplots == True):
+    if (contourplots == True):
         # https://matplotlib.org/gallery/misc/agg_buffer_to_array.html
         fig1 = plt.figure(1)
         ax1 = fig1.add_subplot(111)
-        ax1.triplot(coords[:,0], coords[:,1], elems, color='black', linewidth=0.2)
-        mappable = ax1.tricontourf(coords[:,0], coords[:,1], elems, velocity_magn[:,0], VV, cmap="rainbow", extend='both')
+        ax1.triplot(coords[:, 0],
+                    coords[:, 1],
+                    elems,
+                    color='black',
+                    linewidth=0.2)
+        mappable = ax1.tricontourf(coords[:, 0],
+                                   coords[:, 1],
+                                   elems,
+                                   velocity_magn[:, 0],
+                                   VV,
+                                   cmap="rainbow",
+                                   extend='both')
         plt.colorbar(mappable)
         ax1.axis('off')
         ax1.axes.set_aspect(1.0)
         fig1.canvas.draw()
 
-        outfile = fname_data[0]+"-velomagn.png"
+        outfile = fname_data[0] + "-velomagn.png"
         fig1.savefig(outfile, dpi=200)
         plt.close()
 
-    if(vectorplots == True):
+    if (vectorplots == True):
         # Quiver plot
         fig2 = plt.figure(2)
         ax2 = fig2.add_subplot(111)
-        ax2.quiver(coords[:,0], coords[:,1], velocity[:,0], velocity[:,1], angles='xy', scale_units='xy')
-        ax2.triplot(coords[:,0], coords[:,1], elems, color='black', linewidth=0.2)
+        ax2.quiver(coords[:, 0],
+                   coords[:, 1],
+                   velocity[:, 0],
+                   velocity[:, 1],
+                   angles='xy',
+                   scale_units='xy')
+        ax2.triplot(coords[:, 0],
+                    coords[:, 1],
+                    elems,
+                    color='black',
+                    linewidth=0.2)
         ax2.axes.set_aspect(1.0)
         ax2.axis('off')
         #plt.show()
-        outfile = fname_data[0]+"-quiver.png"
+        outfile = fname_data[0] + "-quiver.png"
         fig2.savefig(outfile, dpi=200)
         plt.close()
 
     return
+
+
 ######################################################
 
 # Generates the images for all the time steps requested
@@ -165,4 +186,3 @@ def generate_images_vtk(sim_id, nprocs, num_timesteps):
     return
 ##################################################
 ##################################################
-
