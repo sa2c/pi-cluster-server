@@ -1,5 +1,7 @@
 import pickle
 import numpy as np
+import os
+import model
 from PIL import Image
 
 
@@ -7,16 +9,19 @@ def save_simulation(sim):
     """
     Save the images from a simulation. This is intended to be called before starting a simulation
     """
+
+    simdir = model.run_directory(sim['id'])
+
     # Save rgb image
-    #filename = f'simulations/{sim["id"]}/rgb.png'
-    #save_image(sim['rgb'], filename)
+    # filename = f'{simdir}/rgb.png'
+    # save_image(sim['rgb'], filename)
 
     # Save rgb image with contour
-    filename = f'simulations/{sim["id"]}/rgb_with_contour.png'
+    filename = f'{simdir}/rgb_with_contour.png'
     save_image(sim['rgb_with_contour'], filename)
 
     # Save depth image
-    filename = f'simulations/{sim["id"]}/depth.png'
+    filename = f'{simdir}/depth.png'
     save_image(sim['depth'], filename)
 
 
