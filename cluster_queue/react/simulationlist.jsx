@@ -65,6 +65,7 @@ function SimulationView(props) {
     } else {
       simulation_name = 'Simulation'
     }
+    simulation_name = simulation_name + " (" + simulation.id + ")"
 
     // Add index to title if showIndex is true
     if (props.showIndex) {
