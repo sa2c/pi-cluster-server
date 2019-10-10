@@ -66,7 +66,7 @@ function SimulationView(props) {
       simulation_name = '#' + props.index + ' ' + simulation_name
     }
 
-    const outlineColour = simulation['colour']
+    const outlineColour = props.isCurrent ? simulation['colour'] : ""
 
     return (
       <div className={"simulation-view" + (props.isCurrent ? " selected" : "")}

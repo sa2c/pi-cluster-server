@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import { colourJob } from './receivesimulations.jsx'
+
 import {
   SimulationList
 } from './simulationlist.jsx'
@@ -39,7 +41,8 @@ class Layout extends React.Component {
       .then(
         (result) => {
           var state = {};
-          state[target] = result;
+          const jobs =  result.map((job) => colourJob(job))
+          state[target] = jobs;
 
           this.setState(state);
         },
