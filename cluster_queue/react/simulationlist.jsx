@@ -7,12 +7,15 @@ import css from '../assets/styles/simulation-list.sass'
 
 function SimulationList(props) {
     const simulations = props.simulations.map((sim, index) => {
+        var isCurrent = sim['id'] == props.currentSimulation
+
         return <SimulationView key={sim['id']}
                                simulation={sim}
                                showIndex={props.showIndex}
                                index={index + 1}
                                percentageKey={props.percentageKey}
-                               isCurrent={sim['id'] == props.currentSimulation}/>;
+                               isCurrent={isCurrent}
+                               clickHandler={props.clickHandler}/>;
 
     });
     return (
@@ -61,7 +64,8 @@ function SimulationView(props) {
         }
 
         return (
-            <div className={"simulation-view" + (props.isCurrent ? " selected" : "")}>
+            <div className={"simulation-view" + (props.isCurrent ? " selected" : "")}
+            onClick={() => props.clickHandler(simulation['id'])}>
                 <div className="simulation-heading">
                     <Avatar whom={simulation.avatar} />
                     <div className="right">
