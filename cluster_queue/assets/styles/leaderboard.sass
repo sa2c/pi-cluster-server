@@ -1,3 +1,15 @@
+.simulation-viewer
+  width: 800px
+  float: left
+  box-shadow: 5px 5px 5px #ccc
+  border: 1px solid black
+  border-radius: 10px
+  overflow: hidden
+
+.simulation-pane.pane
+  float: left
+  width: 333px
+
 div
   &#leaderboard.column
     padding: 0px
@@ -26,25 +38,6 @@ div
   border: 2px solid #d54141
   div.column.ranking
     border-right: 1px solid
-
-#leaderboard
-  .simulation:not(.selected)
-    border-color: #d54141
-
-    div.column.ranking
-      background-color: #fcc
-      border-color: #d54141
-
-#recent-simulations
-  .simulation:not(.selected)
-    border-color: #15acd7
-
-.simulation.selected
-  border-color: #46ca0e
-
-  div.column.ranking
-    background-color: #9aec78
-    border-right: 1px solid #46ca0e
 
 div.columns.simulation
   div.column.ranking

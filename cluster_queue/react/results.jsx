@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { SimulationList } from './simulationlist.jsx'
+import {
+  SimulationList
+} from './simulationlist.jsx'
 
 import css from '../assets/styles/leaderboard.sass'
 
@@ -10,10 +12,12 @@ function MainPanel(props) {
     "/elmeroutput0001-velomagn.png"
 
   return (
-    <img id="result-main-image"
-         src={img_src}
-         alt="Simulation Main View"
-         width="100%" />
+      <div className="simulation-viewer">
+        <img id="result-main-image"
+           src={img_src}
+           alt="Simulation Main View"
+           width="100%" />
+      </div>
   );
 }
 
@@ -67,27 +71,19 @@ class Layout extends React.Component {
 
   render() {
     return (
-      <div className="container">
-              <div className="columns">
-                <div className="column is-two-thirds is-vertical-centre">
-                  <MainPanel currentSimulation={this.state.currentSimulation}/>
-                </div>
-                <div id="leaderboard" className="column is-scroll">
+      <div className="root">
                   <SimulationList title="Fastest"
                                   showIndex={ true }
                                   simulations={ this.state.bestSimulations }
                                   currentSimulation={this.state.currentSimulation}
                                   onClick={ this.simulationChoiceHandler.bind(this) }/>
-                </div>
-                <div id="recent-simulations" className="column is-scroll">
+                  <MainPanel currentSimulation={this.state.currentSimulation}/>
                   <SimulationList title="Latest"
                                   showIndex={ false }
                                   simulations={ this.state.recentSimulations }
                                   currentSimulation={this.state.currentSimulation}
                                   onClick={ this.simulationChoiceHandler.bind(this) }/>
                 </div>
-              </div>
-            </div>
     );
   }
 }
