@@ -73,14 +73,14 @@ class Layout extends React.Component {
                   <MainPanel currentSimulation={this.state.currentSimulation}/>
                 </div>
                 <div id="leaderboard" className="column is-scroll">
-                  <SimulationList title="Leaderboard"
+                  <SimulationList title="Fastest"
                                   showIndex={ true }
                                   simulations={ this.state.bestSimulations }
                                   currentSimulation={this.state.currentSimulation}
                                   onClick={ this.simulationChoiceHandler.bind(this) }/>
                 </div>
                 <div id="recent-simulations" className="column is-scroll">
-                  <SimulationList title="Recent"
+                  <SimulationList title="Latest"
                                   showIndex={ false }
                                   simulations={ this.state.recentSimulations }
                                   currentSimulation={this.state.currentSimulation}
