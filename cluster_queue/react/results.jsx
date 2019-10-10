@@ -89,14 +89,14 @@ class Layout extends React.Component {
                                   showIndex={ true }
                                   percentageKey='fractional-drag'
                                   simulations={ best }
-                                  currentSimulation={this.state.currentSimulation}
+                                  currentIndex={this.state.currentSimulation}
                                   onClick={ this.simulationChoiceHandler.bind(this) }/>
                   <MainPanel currentSimulation={this.state.currentSimulation}/>
                   <SimulationList title="Latest"
                                   showIndex={ false }
                                   percentageKey='fractional-drag'
                                   simulations={ recent }
-                                  currentSimulation={this.state.currentSimulation}
+                                  currentIndex={this.state.currentSimulation}
                                   onClick={ this.simulationChoiceHandler.bind(this) }/>
                 </div>
     );
