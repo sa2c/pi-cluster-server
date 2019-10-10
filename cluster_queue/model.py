@@ -144,6 +144,7 @@ def run_simulation(sim_id, hostfilename):
                                          hostfile=hostfilename,
                                          output=outfile)
 
+    print(f"RUNNING SIMULATION: {command}")
     process = subprocess.Popen(command, shell=True)
 
     return process
