@@ -28,8 +28,13 @@ function SimulationViewer(props) {
   } else {
     const sim = props.currentSimulation
 
-    const img_rgb = "simulations/" + sim.id + "/rgb_with_contour.png"
-    const img_depth = "simulations/" + sim.id + "/depth.png"
+    const dir = "simulations/" + sim.id + "/"
+    const img_rgb = dir + "rgb_with_contour.png"
+    const img_depth = dir + "depth.png"
+    const img_res1 = dir + "elmeroutput0010-quiver.png"
+    const img_res2 = dir + "elmeroutput0010-velomagn.png"
+    const img_res3 = dir + "depth.png"
+    const img_res4 = dir + "depth.png"
 
     const colour = sim.colour
 
@@ -38,7 +43,11 @@ function SimulationViewer(props) {
         style={{color: colour}}>
         <img id="result-rgb-image" src={img_rgb} alt="RGB image" />
         <img id="result-depth-image" src={img_depth} alt="RGB image" />
-          </div>
+        <img id="result-result-1-image" src={img_res1} alt="RGB image" />
+        <img id="result-results-2-image" src={img_res2} alt="RGB image" />
+        <img id="result-result-3-image" src={img_res3} alt="RGB image" />
+        <img id="result-result-4-image" src={img_res4} alt="RGB image" />
+      </div>
     );
   }
 }
