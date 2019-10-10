@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { colourJob } from './receivesimulations.jsx'
+import {
+  colourJob
+} from './receivesimulations.jsx'
 
 import {
   SimulationList
@@ -9,18 +11,36 @@ import {
 
 import css from '../assets/styles/leaderboard.sass'
 
-function MainPanel(props) {
-  const img_src = "simulations/" + props.currentSimulation +
-    "/elmeroutput0001-velomagn.png"
+function SimulationViewer(props) {
+    console.log(typeof props.currentSimulation)
+  if (typeof props.currentSimulation == 'undefined') {
+    return null;
+  } else if (typeof props.currentSimulation == 'number') {
+      // simulation is initially set to a number as a placeholder
+      // quite an ugly hack, but it avoid undefined values everywhere
+      return (
+          <div className="simulation-viewer">
+              <div className="placeholder">
+                  Please select a simulation to view
+              </div>
+          </div>
+      );
+  } else {
+    const sim = props.currentSimulation
+    const img_src = "simulations/" + sim.id + "/elmeroutput0001-velomagn.png"
 
-  return (
-      <div className="simulation-viewer">
+    const colour = sim.colour
+
+    return (
+      <div className="simulation-viewer"
+        style={{color: colour}}>
         <img id="result-main-image"
-           src={img_src}
-           alt="Simulation Main View"
-           width="100%" />
-      </div>
-  );
+          src={img_src}
+          alt="Simulation Main View"
+                   width="100%" />
+          </div>
+    );
+  }
 }
 
 class Layout extends React.Component {
@@ -41,7 +61,7 @@ class Layout extends React.Component {
       .then(
         (result) => {
           var state = {};
-          const jobs =  result.map((job) => colourJob(job))
+          const jobs = result.map((job) => colourJob(job))
           state[target] = jobs;
 
           this.setState(state);
@@ -66,25 +86,37 @@ class Layout extends React.Component {
     this.fetchRecentSimulations();
   }
 
-  simulationChoiceHandler(sim_id) {
+  simulationChoiceHandler(sim) {
     this.setState({
-      currentSimulation: sim_id
+      currentSimulation: sim
     });
   }
 
   render() {
-      const dragValues = new Set(this.state.bestSimulations.concat(this.state.recentSimulations).map((sim) => sim.drag))
-      const maxDrag = Math.max(...dragValues)
+    const dragValues = new Set(this.state.bestSimulations.concat(this.state
+        .recentSimulations)
+      .map((sim) => sim.drag))
+    const maxDrag = Math.max(...dragValues)
 
-      const best = this.state.bestSimulations.map((sim) => {
-          const update = {'fractional-drag' : sim['drag']/maxDrag }
-          return { ...sim, ...update}
-      });
+    const best = this.state.bestSimulations.map((sim) => {
+      const update = {
+        'fractional-drag': sim['drag'] / maxDrag
+      }
+      return {
+        ...sim,
+        ...update
+      }
+    });
 
-      const recent = this.state.recentSimulations.map((sim) => {
-          const update = {'fractional-drag' : sim['drag']/maxDrag }
-          return { ...sim, ...update}
-      });
+    const recent = this.state.recentSimulations.map((sim) => {
+      const update = {
+        'fractional-drag': sim['drag'] / maxDrag
+      }
+      return {
+        ...sim,
+        ...update
+      }
+    });
 
     return (
       <div className="root">
@@ -94,7 +126,7 @@ class Layout extends React.Component {
                                   simulations={ best }
                                   currentSimulation={this.state.currentSimulation}
                                   clickHandler={ this.simulationChoiceHandler.bind(this) }/>
-                  <MainPanel currentSimulation={this.state.currentSimulation}/>
+                  <SimulationViewer currentSimulation={this.state.currentSimulation}/>
                   <SimulationList title="Latest"
                                   showIndex={ false }
                                   percentageKey='fractional-drag'

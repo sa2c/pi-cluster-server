@@ -9,7 +9,7 @@ import css from '../assets/styles/simulation-list.sass'
 
 function SimulationList(props) {
   const simulations = props.simulations.map((sim, index) => {
-    var isCurrent = sim['id'] == props.currentSimulation
+    var isCurrent = sim.id == props.currentSimulation.id
 
     return <SimulationView key={sim['id']}
                                simulation={sim}
@@ -70,7 +70,7 @@ function SimulationView(props) {
 
     return (
       <div className={"simulation-view" + (props.isCurrent ? " selected" : "")}
-            onClick={() => props.clickHandler(simulation['id'])}
+            onClick={() => props.clickHandler(simulation)}
             style={{ "color" : outlineColour}} >
         <div className="simulation-heading">
                     <Avatar whom={simulation.avatar} />
