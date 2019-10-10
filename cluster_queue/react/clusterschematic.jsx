@@ -61,7 +61,7 @@ function ActivityPlot(props) {
                   autosize: false,
                   paper_bgcolor:'rgba(0,0,0,0)',
                   plot_bgcolor:'rgba(0,0,0,0)',
-                  width: 121,
+                  width: 111,
                   height: 30,
                   bargap: 0,
                   margin: {
