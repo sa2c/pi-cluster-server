@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 
 import { Avatar, ClusterSchematic } from './clusterschematic.jsx'
 import { SimulationList } from './simulationlist.jsx'
+import { colourJob } from './receivesimulations.jsx'
 
 import css from '../assets/styles/activity.sass'
 
@@ -28,34 +29,6 @@ class Layout extends React.Component {
       serverUpdateInterval: 50,
       pending: [],
       running: [],
-      defaultAvatarColour: "#e3e3e3",
-      avatarColours: [
-        "#f26a44",
-        "#3f3d31",
-        "#d3ce3e",
-        "#2eaeb7",
-        "#fedb7d",
-        "#2eaeb7",
-        "#fedb7d",
-        "#3f3d31",
-        "#d3ce3e",
-        "#2eaeb7",
-        "#fedb7d",
-        "#2eaeb7",
-        "#f26a44",
-        "#2eaeb7",
-        "#fffce9",
-        "#f26a44",
-        "#d3ce3e",
-        "#3f3d31",
-        "#d3ce3e",
-        "#d3ce3e",
-        "#fedb7d",
-        "#3f3d31",
-        "#fedb7d",
-        "#2eaeb7",
-        "#d3ce3e",
-      ],
     };
 
   }
@@ -87,11 +60,6 @@ class Layout extends React.Component {
                 end);
             }
 
-            // set the default job attributes
-            info.job = {
-              colour: this.state.defaultAvatarColour
-            };
-
             // update current CPU value
             info.cpu = result.cpu_usage[index]
 
@@ -104,11 +72,15 @@ class Layout extends React.Component {
           result.running.forEach((job) => {
             job['cores'].forEach((core) => {
               newNodeInfo[core]['job'] = job;
-              // set the (avatar) colour for this job
-              newNodeInfo[core]['job']['colour'] = this.state
-                .avatarColours[job.avatar - 1];
             });
           });
+
+          // colour the jobs using the colourJob function
+          newNodeInfo = newNodeInfo.map((info) => {
+              info.job = colourJob(info.job);
+              return info
+          });
+          console.log(newNodeInfo);
 
           this.setState({
             nodeInfo: newNodeInfo,
