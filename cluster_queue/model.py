@@ -7,6 +7,7 @@ import utils
 import settings
 import os
 import subprocess
+import random
 
 engine = create_engine('sqlite:///db.sql', echo=True)
 
@@ -15,7 +16,7 @@ metadata = MetaData()
 
 simulations = Table('runs', metadata, Column('id', Integer, primary_key=True),
                     Column('name', String), Column('email', String),
-                    Column('rgb', PickleType),
+                    Column('avatar', Integer), Column('rgb', PickleType),
                     Column('rgb_with_contour', PickleType),
                     Column('depth', PickleType),
                     Column('background', PickleType),
@@ -25,10 +26,15 @@ simulations = Table('runs', metadata, Column('id', Integer, primary_key=True),
 metadata.create_all(engine)
 
 
+def choose_avatar():
+    return int(random.random() * 25) + 1
+
+
 def create_simulation(simulation):
     insert = simulations.insert().values(
         name=simulation['name'],
         email=simulation['email'],
+        avatar=choose_avatar(),
         rgb=simulation['rgb'],
         rgb_with_contour=simulation['rgb_with_contour'],
         depth=simulation['depth'],
@@ -161,17 +167,20 @@ def highest_drag_simulations_sorted(num_sims):
     "fetches all the simulations and orders them by value of drag"
 
     sql = select([
-        simulations.c.id, simulations.c.name, simulations.c.drag
+        simulations.c.id, simulations.c.name, simulations.c.drag,
+        simulations.c.avatar
     ]).where(simulations.c.status == status_codes.SIMULATION_STARTED).order_by(
         desc(simulations.c.drag))
 
     return _select_num_sims_by_sql(sql, num_sims)
 
+
 def recent_simulations(num_sims):
     "fetches the num_sims simulations with the highest ID"
 
     sql = select([
-        simulations.c.id, simulations.c.name, simulations.c.drag
+        simulations.c.id, simulations.c.name, simulations.c.drag,
+        simulations.c.avatar
     ]).where(simulations.c.status == status_codes.SIMULATION_STARTED).order_by(
         desc(simulations.c.id))
 
@@ -184,7 +193,8 @@ def _select_num_sims_by_sql(sql, num_sims):
     sorted_sims = [{
         'id': row['id'],
         'name': row['name'],
-        'drag': row['drag']
+        'drag': row['drag'],
+        'avatar': row['avatar'],
     } for row in results]
 
     if len(sorted_sims) >= num_sims:
