@@ -4,13 +4,12 @@ import os
 # Cluster queue settings                                             #
 ######################################################################
 
-IPs = [ "127.0.0.1", "127.0.0.1", "127.0.0.1" ]
+IPs = ["127.0.0.1", "127.0.0.1", "127.0.0.1"]
 nnodes = len(IPs)
 
 cores_per_node = 4
 
 nodes_per_job = 1
-
 
 cluster_path = '/home/mark/code/picluster/cluster_queue'
 
@@ -18,7 +17,7 @@ devel = True
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
 
-cfdcommand = "python " + root_dir + "/cfd/runcfd.py {id} {ncores} {hostfile} >> {output}"
+cfdcommand = "python " + root_dir + "/cfd/runcfd.py {id} {ncores} {hostfile} 2>&1 >> {output}"
 
 ######################################################################
 # CFD settings                                                       #
