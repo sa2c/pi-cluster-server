@@ -6,6 +6,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import model
+import postplotting as post
+from matplotlib_to_image import fig2img
 
 
 def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
@@ -168,21 +170,63 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
 
 ######################################################
 
-# Generates the images for all the time steps requested
-#
+
+# save a gif from a list of PIL images
+def save_gif(filename, images):
+    print(f"writing image: {filename}")
+    images[0].save(filename,
+                   save_all=True,
+                   append_images=images[1:],
+                   duration=500,
+                   loop=0)
+
+
+# Generates the images for all the time steps requested #
 def generate_images_vtk(sim_id, nprocs, num_timesteps):
+    rgb = None
 
-    fname_temp="elmeroutput"
-    global velo_magn_max
+    fig = plt.figure()
 
-    for fnum in range(num_timesteps):
-        vtkfilename = model.run_directory(sim_id) + "/" + fname_temp + str(fnum+1).zfill(4) + ".vtk"
-        print(vtkfilename)
-        if(os.path.isfile(vtkfilename) == True):
-            generate_velocityvectorplots_from_vtk(vtkfilename, (fnum == 0), nprocs)
-        else:
-            print("{} file does not exist".format(vtkfilename))
+    simdir = model.run_directory(sim_id) + '/'
+
+    images_left = [
+        generate_single_vtk_plot(fig, i, sim_id, nprocs, False, True, False,
+                                 rgb) for i in range(1, 11)
+    ]
+    save_gif(simdir + 'left.gif', images_left)
+
+    images_right = [
+        generate_single_vtk_plot(fig, i, sim_id, nprocs, True, False, True,
+                                 rgb) for i in range(1, 11)
+    ]
+    save_gif(simdir + 'right.gif', images_right)
+
+    simdir = model.run_directory(sim_id) + "/"
 
     return
+
+
+def generate_single_vtk_plot(fig,
+                             index,
+                             sim_id,
+                             nprocs,
+                             dotri,
+                             dovector,
+                             docontour,
+                             image=None,
+                             velocity_magn=None):
+
+    vtk_filename = model.run_directory(
+        sim_id) + "/" + f'elmeroutput{index:04}.vtk'
+
+    if (os.path.isfile(vtk_filename) == True):
+        post.vtk_to_plot(fig.canvas, vtk_filename, nprocs, dotri, dovector,
+                         docontour, image, velocity_magn)
+        im = fig2img(fig)
+        return im
+    else:
+        print("{} file does not exist".format(vtkfilename))
+
+
 ##################################################
 ##################################################
