@@ -7,9 +7,12 @@ import css from '../assets/styles/simulation-list.sass'
 
 function SimulationList(props) {
     const simulations = props.simulations.map((sim, index) => {
-        var isCurrent = index == props.currentIndex
-
-        return <SimulationView key={sim['id']} simulation={sim} showIndex={props.showIndex} index={index + 1} percentageKey={props.percentageKey} current={isCurrent}/>;
+        return <SimulationView key={sim['id']}
+                               simulation={sim}
+                               showIndex={props.showIndex}
+                               index={index + 1}
+                               percentageKey={props.percentageKey}
+                               isCurrent={sim['id'] == props.currentSimulation}/>;
 
     });
     return (
