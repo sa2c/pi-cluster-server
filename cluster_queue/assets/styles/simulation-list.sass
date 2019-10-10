@@ -26,7 +26,7 @@ body, button, input, select, textarea
 
   .simulation-view
     width: 310px
-    height: 160px
+    height: 181px
     position: relative
     overflow: hidden
     margin: 10px
@@ -36,8 +36,16 @@ body, button, input, select, textarea
     z-index: -3
 
     .simulation-data
-      img
-        height: 100px
+      img.simulation-capture
+        height: 107px
+        margin: 10px
+        border: 1px solid #686767
+        &.left
+          border-radius: 5px 0px 0px 5px
+          margin-right: 0px
+        &.right
+          border-radius: 0px 5px 5px 0px
+          margin-left: 0px
 
     .simulation-heading
       height: 51px
