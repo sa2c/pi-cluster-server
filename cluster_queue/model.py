@@ -8,6 +8,7 @@ import settings
 import os
 import subprocess
 import random
+import save_simulation
 
 engine = create_engine('sqlite:///db.sql', echo=True)
 
@@ -44,7 +45,13 @@ def create_simulation(simulation):
 
     result = engine.execute(insert)
 
-    return result.lastrowid
+    rowid = result.lastrowid
+
+    # row id required by save_simulation to determine file location
+    simulation['id'] = rowid
+    save_simulation.save_simulation(simulation)
+
+    return rowid
 
 
 def all_simulations():
