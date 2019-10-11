@@ -17,29 +17,32 @@ ips_in_slot = []
 for slot in range(nslots):
     my_nodes = set([])
     for ip in range(nodes_per_job):
-	    node = nodes.pop()
-	    my_nodes.add(node)
+        node = nodes.pop()
+        my_nodes.add(node)
     ips_in_slot.append(my_nodes)
 
 free_slots = set(range(nslots))
 
+
 def reserve_nodes():
-	return free_slots.pop()
+    return free_slots.pop()
 
-def write_hostfile( nodes, id ):
 
-    hostfilename=f'{model.run_directory(id)}/hostfile'
+def write_hostfile(nodes, id):
+
+    hostfilename = f'{model.run_directory(id)}/hostfile'
 
     with open(hostfilename, "w") as f:
         for node in nodes:
             ip = IPs[node]
-            line = "{} slots={}\n".format(ip,cores_per_node)
+            line = "{} slots={}\n".format(ip, cores_per_node)
             f.write(line)
     return hostfilename
 
 
 def slots_available():
-    return( len(free_slots) )
+    return (len(free_slots))
+
 
 def create_file(filename):
     open(filename, 'a').close()
@@ -52,15 +55,16 @@ def check_ping():
             create_file("signal_out/pong")
             os.remove("signal/ping")
 
+
 def run_simulation(sim_id, my_slot=None):
     print("Starting", sim_id)
 
-    if my_slot==None :
+    if my_slot == None:
         my_slot = reserve_nodes()
 
     my_nodes = ips_in_slot[my_slot]
 
-    hostfilename = write_hostfile( my_nodes, sim_id )
+    hostfilename = write_hostfile(my_nodes, sim_id)
 
     process = model.run_simulation(sim_id, hostfilename)
 
@@ -76,7 +80,7 @@ def restart_slot(runs, slot):
         if run_slot == slot:
             runs.remove(run)
             process.kill()
-            process, slot = run_cfd( signal, slot )
+            process, slot = run_cfd(signal, slot)
             runs += [(process, signal, slot)]
 
     return []
@@ -96,7 +100,7 @@ def run_queue():
             check_ping()
 
             # Run waiting simulations
-            pending = model.waiting_simulations()
+            pending = model.queued_simulations()
             runs = []
 
             for simulation in pending:
@@ -124,14 +128,10 @@ def run_queue():
             signals = os.listdir('signal_out')
             for signal in signals:
                 if "start" in signal:
-                    os.remove('signal_out/'+signal)
+                    os.remove('signal_out/' + signal)
 
             break
 
 
-
-
-
 if __name__ == '__main__':
     run_queue()
-
