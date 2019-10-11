@@ -201,8 +201,6 @@ def generate_images_vtk(sim_id, nprocs, num_timesteps):
     ]
     save_gif(simdir + 'right.gif', images_right)
 
-    simdir = model.run_directory(sim_id) + "/"
-
     return
 
 
