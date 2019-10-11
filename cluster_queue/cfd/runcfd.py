@@ -29,6 +29,7 @@ from cfdpi_step5 import *
 from createcontoureps import *
 import computedrag
 import model
+import json
 
 # Read the project name and other flags from the command line arguments
 #
@@ -47,6 +48,9 @@ if len(sys.argv) > 2:
 if len(sys.argv) > 3:
     hostfile = sys.argv[3]
 
+# Keep track of timings for each step
+timing = {'elapsed': [], 'steps': []}
+
 print("Starting Step 1 (Model Outline  -->  CFD Mesh)")
 print("###################################################################\n")
 #
@@ -54,7 +58,11 @@ print("###################################################################\n")
 #
 #################################################
 
+start = time.time()
 generate_mesh_from_outline(sim_id, nprocs)
+end = time.time()
+timing['elapsed'].append(end - start)
+timing['steps'].append('Step 1: Read the outline and generate the mesh')
 
 print("Step 1 completed successfully\n\n")
 print("Starting Step 2 (CFD Mesh  -->  CFD Results)")
@@ -64,7 +72,12 @@ print("###################################################################\n")
 #
 ##########################################################
 
+start = time.time()
 run_cfd_simulation(sim_id, hostfile, nprocs)
+end = time.time()
+timing['elapsed'].append(end - start)
+timing['steps'].append(
+    'Step 2: Run Elmer with the mesh file generated in Step 1')
 
 print("Step 2 completed successfully\n\n")
 print("Starting Step 3 (CFD Results  -->  VTK files)")
@@ -74,7 +87,11 @@ print("###################################################################\n")
 #
 #####################################################
 
+start = time.time()
 generate_vtk_files(sim_id, nprocs)
+end = time.time()
+timing['elapsed'].append(end - start)
+timing['steps'].append('Step 3: Create .vtk files from Elmer output')
 
 print("Step 3 completed successfully\n\n")
 print("Starting Step 4 (VTK files  -->  Images)")
@@ -86,7 +103,12 @@ print("###################################################################\n")
 
 num_timesteps = 10
 
+start = time.time()
 generate_images_vtk(sim_id, nprocs, num_timesteps)
+end = time.time()
+timing['elapsed'].append(end - start)
+timing['steps'].append(
+    'Step 4: Process .vtk files and generate images for visualisation ')
 
 print("Step 4 completed successfully\n\n")
 print("Starting Step 5 (Compute drag)")
@@ -96,10 +118,17 @@ print("###################################################################\n")
 #
 ##################################################################
 
+start = time.time()
 drag = computedrag.compute_drag(sim_id, nprocs, num_timesteps)
 
 model.set_drag(sim_id, drag)
-
+end = time.time()
+timing['elapsed'].append(end - start)
+timing['steps'].append('Step 5: Compute drag from simulation output')
 
 print("Hurrayyyyy! The program is executed successfully.")
 print("\nYou can now display the images\n")
+
+elapsed_time_file = model.run_directory(sim_id) + '/elapsed.json'
+with open(elapsed_time_file, 'w') as outfile:
+    json.dump(timing, outfile)
