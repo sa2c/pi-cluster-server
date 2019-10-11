@@ -148,7 +148,8 @@ def compute_drag(sim_id, nprocs, num_timesteps):
     count = 0
 
     for fnum in range(num_timesteps):
-        vtkfilename = sim_dir + "/" + fname_temp + str(fnum + 1).zfill(4) + ".vtk"
+        vtkfilename = sim_dir + "/" + fname_temp + str(fnum +
+                                                       1).zfill(4) + ".vtk"
         print(vtkfilename)
 
         if (os.path.isfile(vtkfilename) == True):
