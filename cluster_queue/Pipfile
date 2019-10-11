@@ -12,6 +12,7 @@ sqlalchemy = "*"
 flask = "*"
 vtk = "*"
 flask-webpack = "*"
+cv2 = "*"
 
 [dev-packages]
 
