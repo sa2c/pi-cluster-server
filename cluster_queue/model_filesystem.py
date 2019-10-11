@@ -4,7 +4,6 @@ import utils
 import settings
 import os
 import subprocess
-import random
 import pickle
 from PIL import Image
 import glob
@@ -84,7 +83,7 @@ def pickle_save(data, filename):
 
     os.rename(filename_tmp, filename)
 
-    return sim
+    return data
 
 
 def pickle_load(filename):
@@ -105,18 +104,15 @@ def save_data_as_image(data, filename):
 
 
 ######################################
-## Temporary mocks
+## Utils
 ######################################
 
 
 def generate_sim_id():
-    import random
-    return clean_sim_id(random.random() * 1000)
+    current_ids = simulation_id_list()
+    next_id = np.max(ids) + 1
 
-
-######################################
-## Utils
-######################################
+    return next_id
 
 
 def simulation_id_list():
