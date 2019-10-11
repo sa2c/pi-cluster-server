@@ -17,7 +17,7 @@ devel = True
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
 
-cfdcommand = "python " + root_dir + "/cfd/runcfd.py {id} {ncores} {hostfile} 2>&1 >> {output}"
+cfdcommand = "python " + root_dir + "/cfd/runcfd.py {id} {ncores} {hostfile} 2>{output}.err >> {output}"
 
 ######################################################################
 # CFD settings                                                       #

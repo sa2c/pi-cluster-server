@@ -150,8 +150,8 @@ def all_drags():
 
     notNone = [i for i in range(len(drags)) if drags[i] is not None]
 
-    ids = ids[notNone]
-    drags = drags[notNone]
+    ids = ids[notNone].astype(np.int32)
+    drags = drags[notNone].astype(np.int32)
 
     return (drags, ids)
 
@@ -219,8 +219,9 @@ def get_simulation(sim_id):
         return None
 
 
-def write_outline(filename, outline):
+def write_outline(sim_id, outline):
     "Takes an outline as an array and saves it to file outline file"
+    filename = outline_coords_file(sim_id)
     outline = np.array(outline)
     flipped_outline = np.copy(outline.reshape((-1, 2)))
     flipped_outline[:, 1:] = 480 - flipped_outline[:, 1:]
