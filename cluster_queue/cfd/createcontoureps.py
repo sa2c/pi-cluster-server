@@ -217,6 +217,8 @@ def generate_single_vtk_plot(fig,
     vtk_filename = model.run_directory(
         sim_id) + "/" + f'elmeroutput{index:04}.vtk'
 
+    fig.clear()
+
     if (os.path.isfile(vtk_filename) == True):
         post.vtk_to_plot(fig.canvas, vtk_filename, nprocs, dotri, dovector,
                          docontour, image, velocity_magn)
