@@ -171,7 +171,7 @@ def run_simulation(sim_id, hostfilename):
                                          hostfile=hostfilename,
                                          output=outfile)
 
-    print(f"RUNNING SIMULATION: {command}")
+    print(f"RUNNING SIMULATION #{sim_id}: {command}")
     process = subprocess.Popen(command, shell=True)
 
     return process
