@@ -183,7 +183,10 @@ def save_gif(filename, images):
 
 # Generates the images for all the time steps requested #
 def generate_images_vtk(sim_id, nprocs, num_timesteps):
-    rgb = None
+    sim = model.get_simulation(sim_id)
+
+    if sim is not None:
+        rgb = sim['rgb']
 
     fig = plt.figure()
 

@@ -192,7 +192,8 @@ def vtk_to_plot(canvas, vtk_filename, nprocs, dotri,dovector,docontour,image,\
         velocity_magn=None):
 
     if image is not None:
-        image = invert_color_order(image)
+        image = np.array(image, dtype=np.float32) / 255
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     coords, elems, velocity = vtkfile_to_numpy(vtk_filename, nprocs)
     return plot(canvas, coords, elems, velocity, dotri, dovector, docontour,
