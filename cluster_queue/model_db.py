@@ -8,7 +8,7 @@ import settings
 import os
 import subprocess
 import random
-import save_simulation
+from PIL import Image
 
 engine = create_engine('sqlite:///db.sql', echo=True)
 
@@ -25,6 +25,33 @@ simulations = Table('runs', metadata, Column('id', Integer, primary_key=True),
                     Column('status', Integer))
 
 metadata.create_all(engine)
+
+
+def save_simulation(sim):
+    """
+    Save the images from a simulation. This is intended to be called before starting a simulation
+    """
+
+    simdir = model.run_directory(sim['id'])
+
+    # Save rgb image with contour
+    filename = f'{simdir}/rgb_with_contour.png'
+    save_image(sim['rgb_with_contour'], filename)
+
+    # Save depth image
+    filename = f'{simdir}/depth.png'
+    save_image(sim['depth'], filename)
+
+
+def save_image(img, filename):
+    """
+    Save the image given by an BGR numpy array as an image in a given location
+    """
+    rgb = np.uint8(img)
+    rgb = rgb[:, :, ::-1]
+    i = Image.fromarray(rgb)
+
+    i.save(filename)
 
 
 def choose_avatar():
@@ -49,7 +76,7 @@ def create_simulation(simulation):
 
     # row id required by save_simulation to determine file location
     simulation['id'] = rowid
-    save_simulation.save_simulation(simulation)
+    save_simulation(simulation)
 
     return rowid
 
