@@ -92,10 +92,24 @@ def kill_slot(slot):
         process = subprocess.run(command, shell=True)
 
 
+class SlotPrinter:
+    def __init__(self):
+        self.__prev_slots = None
+
+    def print(self, slots):
+        if not self.__prev_slots == slots:
+            print("Open Slots: ", slots)
+
+        self.__prev_slots = slots
+
+
+slot_printer = SlotPrinter()
+
+
 def run_queue():
     while True:
         try:
-            print("Open slots:", free_slots)
+            slot_printer.print(free_slots)
 
             check_ping()
 
@@ -106,6 +120,7 @@ def run_queue():
             for simulation in pending:
                 if slots_available():
                     runs += run_simulation(simulation)
+                    slot_printer.print(free_slots)
 
             # Remove finished simulations
             for run in runs:
