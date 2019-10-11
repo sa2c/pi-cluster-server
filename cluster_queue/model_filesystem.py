@@ -34,7 +34,7 @@ def sim_datafile(simulation_id):
 
 
 def run_directory(index):
-    directory = f'{simulation_store_directory()}/{index}'.format(index=index)
+    directory = f'{simulation_store_directory()}/{index}'
 
     utils.ensure_exists(directory)
 
@@ -195,7 +195,7 @@ def all_simulations():
 
 
 def queued_simulations():
-    return valid_simulations(filter(is_sim_queued, simulation_id_list()))
+    return filter(is_sim_queued, simulation_id_list())
 
 
 def get_simulation(sim_id):
@@ -230,13 +230,13 @@ def run_simulation(sim_id, hostfilename):
 
     simulation = get_simulation(sim_id)
 
-    write_outline(sim_filepath('outline-coords.dat'), simulation['contour'])
+    write_outline(outline_coords_file(sim_id), simulation['contour'])
 
     command = settings.cfdcommand.format(id=sim_id,
                                          ncores=settings.nodes_per_job *
                                          settings.cores_per_node,
                                          hostfile=hostfilename,
-                                         output=sim_filepath('output'))
+                                         output=sim_filepath(sim_id, 'output'))
 
     print(f"RUNNING SIMULATION: {command}")
     set_started(sim_id)
@@ -246,7 +246,7 @@ def run_simulation(sim_id, hostfilename):
 
 
 def outline_coords_file(sim_id):
-    return sim_filepath('outline-coords.dat')
+    return sim_filepath(sim_id, 'outline-coords.dat')
 
 
 def highest_drag_simulations_sorted(num_sims=10):
