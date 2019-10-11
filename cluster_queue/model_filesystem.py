@@ -110,7 +110,11 @@ def save_data_as_image(data, filename):
 
 def generate_sim_id():
     current_ids = simulation_id_list()
-    next_id = np.max(current_ids) + 1
+
+    if len(current_ids) == 0:
+        next_id = 1
+    else:
+        next_id = np.max(current_ids) + 1
 
     return next_id
 
