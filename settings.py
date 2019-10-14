@@ -1,5 +1,16 @@
 import os
 
+def fetch_environ(var, val):
+    """
+    Test is environment variable flag is set to a specific value.
+    Otherwise return False (if not set or set to another value).
+    Value should be a string, and case is ignored.
+    """
+    if var in os.environ and os.environ[var].upper() == val.upper():
+        return True
+    else:
+        return False
+
 ######################################################################
 # Cluster queue settings                                             #
 ######################################################################
@@ -13,7 +24,10 @@ nodes_per_job = 1
 
 cluster_path = '/home/mark/code/picluster/cluster_queue'
 
-devel = False
+devel = fetch_environ('devel', 'True')
+
+if devel:
+    print('** WARNING: Running in development mode **')
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
 
