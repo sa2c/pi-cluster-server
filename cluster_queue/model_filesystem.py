@@ -203,10 +203,22 @@ def valid_simulations(id_list):
 def all_simulations():
     return valid_simulations(simulation_id_list())
 
+def get_ip_info(sim_id):
+    hostfilename = sim_filepath(sim['id'], 'hostfile')
+    with open(hostfilename) as f:
+        ips = [ line.split(" ")[0] for line in f.readlines() ]
+
+    return ips
+
+def add_hostname_info(sim):
+    sim['cores'] = get_ip_info(sim['id'])
+    return sim
 
 def queued_simulations():
-    return filter(is_sim_queued, simulation_id_list())
+    return [ s for s in simulation_id_list() if is_sim_queued(s) ]
 
+def running_simulations():
+    return [ s for s in simulation_id_list() if is_sim_running(s) ]
 
 def get_simulation(sim_id):
     """
