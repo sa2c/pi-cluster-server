@@ -43,9 +43,9 @@ base_path = os.path.dirname(os.path.realpath(__file__))
 poly_fname = "simulation.poly"
 
 # Configuration files
-elmer_sif_file = f"{root_dir}/cfd/config.sif"
+elmer_sif_file = '{root_dir}/cfd/config.sif'.format(root_dir=root_dir)
 
 # Executables
-triangle_exe = f"{root_dir}/cfd/triangle-lib/triangle"
-elmer_postprocess_serial_exe = f"{root_dir}/cfd/elmerpostprocessserial"
-elmer_postprocess_parallel_exe = f"{root_dir}/cfd/elmerpostprocessparallel"
+triangle_exe = '{root_dir}/cfd/triangle-lib/triangle'.format(root_dir=root_dir)
+elmer_postprocess_serial_exe = '{root_dir}/cfd/elmerpostprocessserial'.format(root_dir=root_dir)
+elmer_postprocess_parallel_exe = '"{root_dir}/cfd/elmerpostprocessparallel'.format(root_dir=root_dir)

@@ -64,7 +64,7 @@ def generate_polyline_from_outline(sim_id, domain_area):
 
     # Create and write the .poly file to be used for generating the mesh
 
-    poly_fname = f"{model.run_directory(sim_id)}/simulation.poly"
+    poly_fname = '{run_dir}/simulation.poly'.format(run_dir=model.run_directory(sim_id))
 
     poly_file = open(poly_fname, "w")
 
@@ -136,7 +136,7 @@ def generate_mesh_from_outline(sim_id, nprocs):
     mesh_size = mesh_size.lstrip('.')
 
     #cmd = "./triangle-lib/triangle -pq32.0 -a0.05" + str(mesh_size) + " " + project_name
-    cmd = f'cd {project_dir} && {settings.triangle_exe} -pq32.0 -a2000 simulation'
+    cmd = 'cd {project_dir} && {exe} -pq32.0 -a2000 simulation'.format(project_dir=project_dir, exe=settings.triangle_exe)
     print(cmd)
     os.system(cmd)
 
@@ -145,10 +145,10 @@ def generate_mesh_from_outline(sim_id, nprocs):
     ###################################
 
     if(nprocs == 1):
-      cmd=f" cd {project_dir} && ElmerGrid 11 2 simulation.1"
+      cmd=" cd {project_dir} && ElmerGrid 11 2 simulation.1".format(project_dir=project_dir)
     else:
       nn = np.ceil(np.sqrt(nprocs))
-      cmd=f"cd {project_dir} && ElmerGrid 11 2 simulation.1 -partition " + str(nn) + " " + str(nn) + " " + str(nn)
+      cmd="cd " + project_dir + " && ElmerGrid 11 2 simulation.1 -partition " + str(nn) + " " + str(nn) + " " + str(nn)
     print(cmd)
     os.system(cmd)
 

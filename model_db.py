@@ -35,11 +35,11 @@ def save_simulation(sim):
     simdir = model.run_directory(sim['id'])
 
     # Save rgb image with contour
-    filename = f'{simdir}/rgb_with_contour.png'
+    filename = '{simdir}/rgb_with_contour.png'.format(simdir=simdir)
     save_image(sim['rgb_with_contour'], filename)
 
     # Save depth image
-    filename = f'{simdir}/depth.png'
+    filename = '{simdir}/depth.png'.format(simdir=simdir)
     save_image(sim['depth'], filename)
 
 
@@ -159,11 +159,11 @@ def run_simulation(sim_id, hostfilename):
 
     utils.ensure_exists(run_dir)
 
-    outline_coords = f'{run_dir}/outline-coords.dat'
+    outline_coords = '{run_dir}/outline-coords.dat'.format(run_dir=run_dir)
 
     write_outline(outline_coords, simulation['contour'])
 
-    outfile = f'{run_dir}/output'
+    outfile = '{run_dir}/output'.format(run_dir=run_dir)
 
     command = settings.cfdcommand.format(id=sim_id,
                                          ncores=settings.nodes_per_job *
@@ -171,7 +171,7 @@ def run_simulation(sim_id, hostfilename):
                                          hostfile=hostfilename,
                                          output=outfile)
 
-    print(f"RUNNING SIMULATION #{sim_id}: {command}")
+    print(f'RUNNING SIMULATION #{sim_id}: {command}'.format(sim_id=sim_id, command=command)
     process = subprocess.Popen(command, shell=True)
 
     return process
@@ -187,7 +187,7 @@ def set_drag(sim_id, drag):
 
 
 def run_directory(index):
-    directory = f'{settings.root_dir}/simulations/{index}'.format(index=index)
+    directory = '{root}/simulations/{index}'.format(root=settings.root_dir,index=index)
 
     utils.ensure_exists(directory)
 

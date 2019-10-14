@@ -173,7 +173,7 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
 
 # save a gif from a list of PIL images
 def save_gif(filename, images):
-    print(f"writing image: {filename}")
+    print('writing image: {fname}'.format(fname=fname)
     images[0].save(filename,
                    save_all=True,
                    append_images=images[1:],
@@ -218,7 +218,7 @@ def generate_single_vtk_plot(fig,
                              velocity_magn=None):
 
     vtk_filename = model.run_directory(
-        sim_id) + "/" + f'elmeroutput{index:04}.vtk'
+        sim_id) + "/" + 'elmeroutput{index:04}.vtk'.format(index=index)
 
     fig.clear()
 

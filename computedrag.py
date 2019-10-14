@@ -153,14 +153,14 @@ def compute_drag(sim_id, nprocs, num_timesteps):
         print(vtkfilename)
 
         if (os.path.isfile(vtkfilename) == True):
-            fname_poly = f'{sim_dir}/simulation.poly'
+            fname_poly = '{sim_dir}/simulation.poly'.format(sim_dir=sim_dir)
             drag = compute_drag_from_vtk(fname_poly, vtkfilename, nprocs)
             drag = -drag
             drag_list[fnum] = drag
             dragfile.write("%04d \t %12.6f \n" % ((fnum + 1), drag))
             count = count + 1
         else:
-            print(f'File {vtkfilename} not found')
+            print('File {vtkfilename} not found'.format(vtkfilename=vtkfilename))
 
     if count > 0:
         plt.figure(1)
@@ -171,7 +171,7 @@ def compute_drag(sim_id, nprocs, num_timesteps):
         plt.xlabel("Time step")
         plt.ylabel("Drag force")
 
-        outfile = f"{sim_dir}/dragforce.png"
+        outfile = '{sim_dir}/dragforce.png'.format(sim_dir=sim_dir)
 
         plt.savefig(outfile, dpi=200)
         plt.close()

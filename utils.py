@@ -7,4 +7,4 @@ def ensure_exists(directory):
         try:
             os.makedirs(directory)
         except OSError as e:
-            print(f'directory creation failed: {directory}')
+            print('directory creation failed: {directory}'.format(directory=directory))

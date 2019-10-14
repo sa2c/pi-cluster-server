@@ -35,7 +35,7 @@ def sim_datafile(simulation_id):
 
 
 def run_directory(index):
-    directory = f'{simulation_store_directory()}/{index}'
+    directory = '{sim_dir}/{index}'.format(sim_dir=simulation_store_directory(), index=index)
 
     utils.ensure_exists(directory)
 
@@ -43,7 +43,7 @@ def run_directory(index):
 
 
 def simulation_store_directory():
-    directory = f'{settings.root_dir}/simulations'
+    directory = '{root_dir}/simulations'.format(root_dir=settings.root_dir)
 
     utils.ensure_exists(directory)
 
@@ -126,7 +126,7 @@ def simulation_id_list():
     sim_store = simulation_store_directory()
     return [
         clean_sim_id(os.path.basename(i))
-        for i in glob.glob(f'{sim_store}/[0-9]*')
+        for i in glob.glob('{sim_store}/[0-9]*'.format(sim_store=sim_store))
     ]
 
 def is_sim_running(sim_id):
@@ -263,7 +263,7 @@ def run_simulation(sim_id, hostfilename):
                                          hostfile=hostfilename,
                                          output=sim_filepath(sim_id, 'output'))
 
-    print(f"RUNNING SIMULATION: {command}")
+    print('RUNNING SIMULATION: {command}'.format(command=command))
     set_started(sim_id)
     process = subprocess.Popen(command, shell=True)
 

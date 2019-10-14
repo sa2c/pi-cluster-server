@@ -94,7 +94,7 @@ def get_run_completion_percentage(sim_id):
     if not os.path.exists(directory):
         percentage = 0
     else:
-        fname = f'{directory}/output'
+        fname = '{directory}/output'.format(directory=directory)
 
         output = check_output(["grep", "MAIN:  Time", fname]).decode('utf-8')
 
