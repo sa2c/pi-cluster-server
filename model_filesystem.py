@@ -71,20 +71,22 @@ def set_started(sim_id):
 ######################################
 
 
-def pickle_save(data, filename):
+def pickle_save(sim):
     """
     Pickles data to a given filename. Note, it writes using a temporary file to
     avoid that file is read before finished writing.
     """
 
+    filename = sim_datafile(sim['id'])
+
     filename_tmp = filename + 'tmp'
 
     with open(filename_tmp, 'wb') as f:
-        pickle.dump(data, f)
+        pickle.dump(sim, f)
 
     os.rename(filename_tmp, filename)
 
-    return data
+    return sim
 
 
 def pickle_load(filename):
@@ -182,7 +184,7 @@ def create_simulation(sim):
     sim_id = generate_sim_id()
     sim['id'] = sim_id
 
-    pickle_save(sim, sim_datafile(sim_id))
+    pickle_save(sim)
 
     save_data_as_image(sim['rgb_with_contour'],
                        sim_filepath(sim_id, 'rgb_with_contour.png'))
