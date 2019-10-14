@@ -127,6 +127,15 @@ def most_recent_simulations(nsims):
     return json.dumps(simulations)
 
 
+def sims_filtered_keys(ids, keys):
+    sims = [model.get_simulation(sid) for sid in ids]
+
+    filtered = [{key: val
+                 for key, val in sim.items() if key in keys} for sim in sims]
+
+    return filtered
+
+
 @app.route('/cluster/activity', methods=['GET'])
 def get_activity():
 
@@ -142,30 +151,21 @@ def get_activity():
 
     cpu_usage = np.array(cpu_usage, dtype=np.int64)
 
-    return {
-        'time':
-        time.time(),
-        'cpu_usage':
-        cpu_usage.tolist(),
-        'pending': [{
-            'id': 1,
-            'name': 'Waiting Simulation'
-        }, {
-            'id': 2,
-            'name': 'Another Waiting Simulation'
-        }],
-        'running': [{
-            'id': 3,
-            'name': 'Running Simulation',
-            'avatar': 1,
-            'cores': [0, 1, 2, 3]
-        }, {
-            'id': 4,
-            'name': 'Running Simulation #2',
-            'avatar': 2,
-            'cores': [4, 5, 6, 7]
-        }]
+    filter_keys = ['id', 'name', 'avatar', 'cores']
+
+    pending = sims_filtered_keys(model.queued_simulations(), filter_keys)
+    running = sims_filtered_keys(model.running_simulations(), filter_keys)
+
+    running  = [ model.add_hostname_info(s) for s in running ]
+
+    response = {
+        'time': time.time(),
+        'cpu_usage': cpu_usage.tolist(),
+        'pending': pending,
+        'running': running
     }
+
+    return response
 
 
 def run_filepath(index, filename):
