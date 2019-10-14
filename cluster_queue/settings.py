@@ -13,7 +13,7 @@ nodes_per_job = 1
 
 cluster_path = '/home/mark/code/picluster/cluster_queue'
 
-devel = True
+devel = False
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
 
