@@ -1,9 +1,6 @@
 import numpy as np
 import kinectlib.kinectlib as kinect
-from images_to_pdf.pdfgen import PDFPrinter
 import simulation_proxy
-from display.matplotlib_widget import PlotCanvas
-from postplotting import vtk_to_plot
 import matplotlib.pyplot as plt
 
 from settings import nmeasurements
@@ -85,7 +82,7 @@ class Controller(object):
 
     def get_simulation(self, index):
         return simulation_proxy.load_simulation(index)
-    
+
     def get_simulation_name(self, index):
         return simulation_proxy.load_simulation_name(index)
 
@@ -94,44 +91,3 @@ class Controller(object):
 
     def restart_slot(self, slot):
         return simulation_proxy.restart_slot(slot)
-
-    def print_running_jobs(self):
-        signals = simulation_proxy.get_signals()
-        starts = []
-        ends = []
-        for signal in signals:
-            index, signal_type, _ = simulation_proxy.get_signal_info(signal)
-            if signal_type == 'start':
-                starts += [index]
-            if signal_type == 'end':
-                ends += [index]
-        for index in starts:
-            if index not in ends:
-                print(
-                    index,
-                    self.get_simulation_name(index),
-                    self.get_completion_percentage(index)
-                )
-
-
-
-    def print_simulation(self, index, send_to_printer = True):
-        simulation = simulation_proxy.load_simulation(index)
-        rgb = simulation['rgb']
-        depth = simulation['depth']
-        rgb = simulation['rgb_with_contour']
-
-        a = PlotCanvas()
-        vtk_filename = simulation_proxy.run_filepath(index, 'elmeroutput0010.vtk')
-        vtk_to_plot(a, vtk_filename, 16, True, False, True, None)
-        data = np.fromstring(a.tostring_rgb(), dtype=np.uint8, sep='')
-        data = data.reshape(a.get_width_height()[::-1] + (3, ))
-
-        a = PlotCanvas()
-        vtk_to_plot(a, vtk_filename, 16, True,False,True,None)
-
-        filename = str(index)+'.pdf'
-
-        generator = PDFPrinter(filename, rgb, depth, data, data,
-                                simulation['name'], simulation['drag'])
-        generator.run(send_to_printer = send_to_printer)

@@ -6,9 +6,7 @@ import kinectlib.kinectlib as kinect
 from display.pyside_dynamic import loadUiWidget
 from display.video_capture import QVideoWidget
 from display.detail_form import DetailForm
-from display.leaderboard import LeaderboardWidget
 from display.color_calibration import ColorCalibration
-from display.simulation_selector import SimulationSelector
 import simulation_proxy
 
 
@@ -23,7 +21,7 @@ class ControlWindow(QMainWindow):
 
         self.ui = loadUiWidget(
             'control_panel.ui',
-            customWidgets=[QVideoWidget, SimulationSelector])
+            customWidgets=[QVideoWidget])
         self.setCentralWidget(self.ui)
 
         # connect signals

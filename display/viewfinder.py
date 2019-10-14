@@ -1,13 +1,9 @@
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-import cv2, sys, time, os
-import numpy as np
+import sys
 from display.video_capture import VideoCaptureThread, QVideoWidget
 from display.pyside_dynamic import loadUiWidget
-from display.activity_monitor import ActivityPlotter
-from display.matplotlib_widget import PlotCanvas
-from postplotting import vtk_to_plot
 
 
 class ViewfinderWindow(QMainWindow):
