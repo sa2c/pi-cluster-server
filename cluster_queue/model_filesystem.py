@@ -8,8 +8,9 @@ import pickle
 from PIL import Image
 import glob
 
-STATUS_CREATED = 'created'
-STATUS_STARTED = 'started'
+STATUS_CREATED = 'status.created'
+STATUS_STARTED = 'status.started'
+STATUS_FINISHED = 'status.finished'
 
 
 def choose_avatar():
@@ -126,6 +127,11 @@ def simulation_id_list():
         for i in glob.glob(f'{sim_store}/[0-9]*')
     ]
 
+def is_sim_running(sim_id):
+    sim_id = clean_sim_id(sim_id)
+
+    return check_status(
+        sim_id, STATUS_STARTED) and not check_status(sim_id, STATUS_FINISHED)
 
 def is_sim_queued(sim_id):
     sim_id = clean_sim_id(sim_id)
