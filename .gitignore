@@ -1,5 +1,6 @@
 *.pyc
 simulations
+node_modules
 static
 inbox
 signal_in
