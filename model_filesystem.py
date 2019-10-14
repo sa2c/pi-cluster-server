@@ -206,7 +206,7 @@ def all_simulations():
     return valid_simulations(simulation_id_list())
 
 def get_ip_info(sim_id):
-    hostfilename = sim_filepath(sim['id'], 'hostfile')
+    hostfilename = sim_filepath(sim_id, 'hostfile')
     with open(hostfilename) as f:
         ips = [ line.split(" ")[0] for line in f.readlines() ]
 
