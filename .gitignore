@@ -1,5 +1,6 @@
 *.pyc
 simulations
+static
 inbox
 signal_in
 signal_out
