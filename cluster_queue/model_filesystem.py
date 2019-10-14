@@ -115,7 +115,7 @@ def generate_sim_id():
     if len(current_ids) == 0:
         next_id = 1
     else:
-        next_id = np.max(current_ids) + 1
+        next_id = int(np.max(current_ids) + 1)
 
     return next_id
 
