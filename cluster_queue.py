@@ -1,3 +1,4 @@
+#!/usr/bin/env python3.7
 import os, sys
 import subprocess
 import time
