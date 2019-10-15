@@ -173,7 +173,7 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
 
 # save a gif from a list of PIL images
 def save_gif(filename, images):
-    print('writing image: {fname}'.format(fname=fname)
+    print('writing image: {fname}'.format(fname=fname))
     images[0].save(filename,
                    save_all=True,
                    append_images=images[1:],
