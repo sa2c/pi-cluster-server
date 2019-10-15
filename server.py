@@ -1,5 +1,4 @@
 #!/usr/bin/env python3.7
-from subprocess import check_output
 import numpy as np
 import time
 import datetime
@@ -140,17 +139,17 @@ def sims_filtered_keys(ids, keys):
 @app.route('/cluster/activity', methods=['GET'])
 def get_activity():
 
-    if settings.devel:
-        cpu_usage = np.random.rand(16) * 100
-    else:
-        output = check_output(["bash", "cpuloadinfo.sh"]).decode('utf-8')
+    # Added safety layer to ensure that cpuinfo.txt isn't written to whilst being read
+    # Note that this could still fail if activity called again before the request completes
+    with open("cpuinfo.txt", "r") as f:
+        output = f.readlines()
 
-        cpu_usage = output.split('\n')[1:-1]
-        cpu_usage = [
-            float(cpu_usage_meas.split(' ')[1]) for cpu_usage_meas in cpu_usage
-        ]
+    lines = [ l[:-1].split(' ') for l in output ]
 
-    cpu_usage = np.array(cpu_usage, dtype=np.int64)
+    cpu_usage = {
+           info[0] : float(info[1]) for info in lines
+    }
+
 
     filter_keys = ['id', 'name', 'avatar', 'cores']
 
@@ -161,7 +160,7 @@ def get_activity():
 
     response = {
         'time': time.time(),
-        'cpu_usage': cpu_usage.tolist(),
+        'cpu_usage': cpu_usage,
         'pending': pending,
         'running': running
     }

@@ -15,4 +15,5 @@ hostfile_*
 *.vtk
 *.npy
 **/cfd/run155*
-cluster_queue/cpu_load_data_dir
+cpu_load_data_dir
+cpuinfo.txt

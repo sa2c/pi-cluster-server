@@ -45,9 +45,12 @@ done
 wait
 
 # computing averages
-echo '#ip cpu_usage' 
+OUTFILE=cpuinfo.txt
+> ${OUTFILE}.tmp
+echo
 for ip in ${IPs[*]}
 do
-	echo $ip $(awk '{a+=100.0-$'$COLUMN'}END{print a/NR}'  $(out_ip_name $ip)) 
+	echo $ip $(awk '{a+=100.0-$'$COLUMN'}END{print a/NR}'  $(out_ip_name $ip))  >> ${OUTFILE}.tmp
 done
 
+mv ${OUTFILE}.tmp ${OUTFILE}
