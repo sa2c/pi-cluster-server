@@ -49,14 +49,6 @@ def create_file(filename):
     open(filename, 'a').close()
 
 
-def check_ping():
-    signals = os.listdir('signal_in')
-    for signal in signals:
-        if signal == "ping":
-            create_file("signal_out/pong")
-            os.remove("signal/ping")
-
-
 def run_simulation(sim_id, my_slot=None):
     print("Starting", sim_id)
 
@@ -111,8 +103,6 @@ def run_queue():
     while True:
         try:
             slot_printer.print(free_slots)
-
-            check_ping()
 
             # Run waiting simulations
             pending = model.queued_simulations()
