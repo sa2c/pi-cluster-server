@@ -15,7 +15,7 @@ def fetch_environ(var, val):
 # HTTP server settings
 ######################################################################
 
-port = 3333
+port = 3524
 
 devel = fetch_environ('devel', 'True')
 
