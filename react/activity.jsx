@@ -92,6 +92,7 @@ class Layout extends React.Component {
 
               const job = colourJob(job_map[node_id]);
 
+              info.job = job;
               info.cpuHistory.push(result.cpu_usage[node_id]);
               info.cpuColourHistory.push(job.colour);
 
