@@ -34,12 +34,14 @@ const avatarColours = [
 
 function colourJob(job) {
     if(typeof job == 'undefined') {
-        job = {}
-    }
-
-    return {
-        ...job,
-        ...{ colour: avatarColours[job.avatar - 1] }
+        return {
+            colour: defaultAvatarColour
+        };
+    } else {
+        return {
+            ...job,
+            ...{ colour: avatarColours[job.avatar - 1] }
+        };
     }
 }
 

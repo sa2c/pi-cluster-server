@@ -2,7 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Plot from 'react-plotly.js';
-import { Avatar } from './avatar.jsx'
+import {
+  Avatar
+} from './avatar.jsx'
 
 import css from '../assets/styles/cluster-schematic.sass'
 
@@ -20,9 +22,9 @@ function ActivityPlot(props) {
   // don't attempt to plot anything if there is not value to plot
   if (typeof props.values == 'undefined') return null;
 
-    const N = props.values.length;
-    const x = Array.from(Array(N), (e,i) => i+1)
-    const curr_colour = props.colours[props.colours.length - 1]
+  const N = props.values.length;
+  const x = Array.from(Array(N), (e, i) => i + 1)
+  const curr_colour = props.colours[props.colours.length - 1]
 
   return (
     <Plot
@@ -166,7 +168,7 @@ class ClusterNetworkCanvas extends React.Component {
     const r = 5;
 
     ctx.moveTo(xNetwork, yNetwork - r);
-    ctx.arc(xNetwork + xWidth- r, yNetwork, r, 1.5 *
+    ctx.arc(xNetwork + xWidth - r, yNetwork, r, 1.5 *
       Math.PI, 2 * Math.PI);
     if (xNetworkOffset[row] != 0) {
       ctx.arc(xNetwork + xWidth - r, yBottom + yBottomOffset[row] - r, r, 0,
@@ -186,34 +188,12 @@ class ClusterNetworkCanvas extends React.Component {
 
 }
 
-class ClusterSchematic extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      // clusterLayout specifies how the cores are laid out in the cluster schematic
-      clusterLayout: [
-        [0, 1, 2, 3],
-        [4, 5, 6, 7],
-        [8, 9, 10, 11],
-        [12, 13, 14, 15]
-      ],
-    };
-  }
-
-  render() {
-    // map the cpu activity to each core
-    const mappedInfo = this.state.clusterLayout.map((rows) => {
-      return rows.map((core_id) => {
-        return this.props.info[core_id]
-      });
-    });
-
-    return (
-      <div className="cluster-schematic">
-        <ClusterNetworkCanvas info={ mappedInfo }/>
+function ClusterSchematic(props) {
+  return (
+    <div className="cluster-schematic">
+        <ClusterNetworkCanvas info={props.info}/>
       {
-          mappedInfo.map((row, row_index) => {
+          props.info.map((row, row_index) => {
               return (
                   <div key={row_index} className="cluster-row">
                   {
@@ -223,7 +203,6 @@ class ClusterSchematic extends React.Component {
                           return (
                                 <ClusterCore
                                   key={(row_index + 1)*(col_index + 1)}
-                                  cpu={node['cpu']}
                                   cpuHistory={node['cpuHistory']}
                                   cpuColourHistory={node['cpuColourHistory']}
                                   id={job['id']}
@@ -240,8 +219,9 @@ class ClusterSchematic extends React.Component {
           })
       }
     </div>
-    );
-  }
+  );
 }
 
-export { ClusterSchematic };
+export {
+  ClusterSchematic
+};
