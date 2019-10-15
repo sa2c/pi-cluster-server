@@ -12,6 +12,17 @@ def fetch_environ(var, val):
         return False
 
 ######################################################################
+# HTTP server settings
+######################################################################
+
+port = 3333
+
+devel = fetch_environ('devel', 'True')
+
+if devel:
+    print('** WARNING: Running in development mode **')
+
+######################################################################
 # Cluster queue settings                                             #
 ######################################################################
 
@@ -23,11 +34,6 @@ cores_per_node = 4
 nodes_per_job = 1
 
 cluster_path = '/home/mark/code/picluster/cluster_queue'
-
-devel = fetch_environ('devel', 'True')
-
-if devel:
-    print('** WARNING: Running in development mode **')
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
 

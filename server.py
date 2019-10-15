@@ -181,7 +181,7 @@ def setup_cluster_inbox():
 
 if __name__ == '__main__':
     run_simple(hostname='0.0.0.0',
-               port=3524,
+               port=settings.port,
                application=app,
                use_reloader=True,
                use_debugger=True,
