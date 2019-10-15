@@ -12,6 +12,8 @@ import model
 import utils
 
 from flask import Flask, request, render_template, send_from_directory
+from flask_cors import CORS
+
 from werkzeug.serving import run_simple
 
 from flask_webpack import Webpack
@@ -20,6 +22,7 @@ webpack = Webpack()
 
 def create_app():
     app = Flask(__name__)
+
     params = {
         'WTF_CSRF_ENABLED': False,
         'DEBUG': True,
@@ -36,6 +39,9 @@ def create_app():
 
 
 app = create_app()
+
+# Enable cross-site scripting
+CORS(app)
 
 
 # Static routes for simulation data
