@@ -73,7 +73,9 @@ class Layout extends React.Component {
 
   // fetch best simulations from server and update in component state
   fetchActivity() {
-    fetch(this.state.dataUrl)
+    fetch(this.state.dataUrl, {
+        mode: 'cors'
+      })
       .then(res => res.json())
       .then(
         (result) => {
