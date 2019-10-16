@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 ##################################################################
 #
 # Complete wrapper for running CFD jobs on Pi
