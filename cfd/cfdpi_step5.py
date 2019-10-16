@@ -20,6 +20,7 @@ def generate_vtk_files(sim_id, nprocs):
         cmd = 'cd {project_dir} && '.format(project_dir=project_dir) + \
               settings.elmer_postprocess_parallel_exe + \
               " " + fname_elems + " " + fname_field + " " + str(nprocs)
+    print("Running: " + cmd)
 
     os.system(cmd)
 
