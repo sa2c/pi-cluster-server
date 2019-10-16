@@ -137,8 +137,13 @@ def generate_mesh_from_outline(sim_id, nprocs):
 
     #cmd = "./triangle-lib/triangle -pq32.0 -a0.05" + str(mesh_size) + " " + project_name
     cmd = 'cd {project_dir} && {exe} -pq32.0 -a2000 simulation'.format(project_dir=project_dir, exe=settings.triangle_exe)
-    print(cmd)
-    os.system(cmd)
+    print('Running: ' + cmd)
+    exit_code = os.system(cmd)
+
+    if exit_code > 1:
+        print("Error running {exe}".format(exe=settings.triangle_exe))
+        print("Please make sure you've built the triangle binary")
+        exit(1)
 
     # generate the mesh using ElmerGrid
     # also partition it if nprocs > 1
