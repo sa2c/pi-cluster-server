@@ -66,6 +66,8 @@ def check_status(sim_id, status):
 def set_started(sim_id):
     touch_file(sim_id, STATUS_STARTED)
 
+def set_finished(sim_id):
+    touch_file(sim_id, STATUS_FINISHED)
 
 ######################################
 ## Pickle and save/load utils
@@ -267,6 +269,7 @@ def run_simulation(sim_id, hostfilename):
     print('RUNNING SIMULATION: {command}'.format(command=command))
     set_started(sim_id)
     process = subprocess.Popen(command, shell=True)
+    set_finished(sim_id)
 
     return process
 
