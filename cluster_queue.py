@@ -31,7 +31,7 @@ def reserve_nodes():
 
 def write_hostfile(nodes, id):
 
-    hostfilename = f'{model.run_directory(id)}/hostfile'
+    hostfilename = '{run_dir}/hostfile'.format(run_dir=model.run_directory(id))
 
     with open(hostfilename, "w") as f:
         for node in nodes:
