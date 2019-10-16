@@ -231,7 +231,7 @@ def generate_single_vtk_plot(fig,
         im = fig2img(fig)
         return im
     else:
-        print("{} file does not exist".format(vtkfilename))
+        print("{} file does not exist".format(vtk_filename))
 
 
 ##################################################
