@@ -173,12 +173,15 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
 
 # save a gif from a list of PIL images
 def save_gif(filename, images):
-    print('writing image: {fname}'.format(fname=fname))
-    images[0].save(filename,
-                   save_all=True,
-                   append_images=images[1:],
-                   duration=500,
-                   loop=0)
+    if images[0] is None:
+        print("NO image to write to {filename} (image is None)".format(filename=filename))
+    else:
+        print('writing image: {filename}'.format(filename=filename))
+        images[0].save(filename,
+                       save_all=True,
+                       append_images=images[1:],
+                       duration=500,
+                       loop=0)
 
 
 # Generates the images for all the time steps requested #
