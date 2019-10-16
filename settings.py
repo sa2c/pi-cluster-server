@@ -54,4 +54,4 @@ elmer_sif_file = '{root_dir}/cfd/config.sif'.format(root_dir=root_dir)
 # Executables
 triangle_exe = '{root_dir}/cfd/triangle-lib/triangle'.format(root_dir=root_dir)
 elmer_postprocess_serial_exe = '{root_dir}/cfd/elmerpostprocessserial'.format(root_dir=root_dir)
-elmer_postprocess_parallel_exe = '"{root_dir}/cfd/elmerpostprocessparallel'.format(root_dir=root_dir)
+elmer_postprocess_parallel_exe = '{root_dir}/cfd/elmerpostprocessparallel'.format(root_dir=root_dir)
