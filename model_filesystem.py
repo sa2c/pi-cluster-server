@@ -258,7 +258,7 @@ def run_simulation(sim_id, hostfilename):
 
     simulation = get_simulation(sim_id)
 
-    write_outline(outline_coords_file(sim_id), simulation['contour'])
+    write_outline(sim_id, simulation['contour'])
 
     command = settings.cfdcommand.format(id=sim_id,
                                          ncores=settings.nodes_per_job *
