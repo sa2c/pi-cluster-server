@@ -37,7 +37,7 @@ cluster_path = '/home/mark/code/picluster/cluster_queue'
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
 
-cfdcommand = "python " + root_dir + "/cfd/runcfd.py {id} {ncores} {hostfile} 2>{output}.err >> {output}"
+cfdcommand = "python3 " + root_dir + "/cfd/runcfd.py {id} {ncores} {hostfile} 2>{output}.err >> {output}"
 
 ######################################################################
 # CFD settings                                                       #
