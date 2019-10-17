@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib.figure import Figure
 import matplotlib
 import matplotlib.pyplot as plt
-import cv2, sys
+import sys
 
 
 def vtkfile_to_numpy(filename, nprocs):
@@ -180,9 +180,9 @@ def plot(canvas,
         im_x, im_y, _ = subject_image.shape
         _, dxpx, _ = np.array(fig.canvas.renderer._renderer).shape
         dypx = int((im_y / im_x) * dxpx)
-        subject_layer = cv2.warpAffine(subject_image, M, (dxpx, dypx))
+        #subject_layer = cv2.warpAffine(subject_image, M, (dxpx, dypx))
 
-        ax.imshow(subject_layer)
+        #ax.imshow(subject_layer)
 
     fig.canvas.draw()
     return np.array(fig.canvas.renderer._renderer)
@@ -193,7 +193,7 @@ def vtk_to_plot(canvas, vtk_filename, nprocs, dotri,dovector,docontour,image,\
 
     if image is not None:
         image = np.array(image, dtype=np.float32) / 255
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        #image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     coords, elems, velocity = vtkfile_to_numpy(vtk_filename, nprocs)
     return plot(canvas, coords, elems, velocity, dotri, dovector, docontour,
