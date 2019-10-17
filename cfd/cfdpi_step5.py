@@ -22,8 +22,11 @@ def generate_vtk_files(sim_id, nprocs):
               " " + fname_elems + " " + fname_field + " " + str(nprocs)
     print("Running: " + cmd)
 
-    os.system(cmd)
+    exit_code = os.system(cmd)
 
+    if exit_code != 0:
+        print("Error running Elmer command :\n {cmd}".format(cmd=cmd))
+        exit(1)
     return
 
 

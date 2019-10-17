@@ -125,15 +125,15 @@ def generate_polyline_from_outline(sim_id, domain_area):
 def generate_mesh_from_outline(sim_id, nprocs):
     print("generate_mesh_from_outline")
 
-    domain_area=1.0
+    domain_area = 1.0
     generate_polyline_from_outline(sim_id, domain_area)
 
-    project_dir=model.run_directory(sim_id)
+    project_dir = model.run_directory(sim_id)
 
     # generate the mesh with "triangle" library
     ###########################################
 
-    mesh_size = domain_area/10.0
+    mesh_size = domain_area / 10.0
     print("domain_area = %12.6f \n" % domain_area)
     print("mesh_size   = %12.6f \n" % mesh_size)
 
@@ -142,11 +142,12 @@ def generate_mesh_from_outline(sim_id, nprocs):
     mesh_size = mesh_size.lstrip('.')
 
     #cmd = "./triangle-lib/triangle -pq32.0 -a0.05" + str(mesh_size) + " " + project_name
-    cmd = 'cd {project_dir} && {exe} -pq32.0 -a2000 simulation'.format(project_dir=project_dir, exe=settings.triangle_exe)
+    cmd = 'cd {project_dir} && {exe} -pq32.0 -a2000 simulation'.format(
+        project_dir=project_dir, exe=settings.triangle_exe)
     print('Running: ' + cmd)
     exit_code = os.system(cmd)
 
-    if exit_code > 1:
+    if exit_code != 0:
         print("Error running {exe}".format(exe=settings.triangle_exe))
         print("Please make sure you've built the triangle binary")
         exit(1)
@@ -155,20 +156,23 @@ def generate_mesh_from_outline(sim_id, nprocs):
     # also partition it if nprocs > 1
     ###################################
 
-    if(nprocs == 1):
-      cmd=" cd {project_dir} && ElmerGrid 11 2 simulation.1".format(project_dir=project_dir)
+    if (nprocs == 1):
+        cmd = " cd {project_dir} && ElmerGrid 11 2 simulation.1".format(
+            project_dir=project_dir)
     else:
-      nn = np.ceil(np.sqrt(nprocs))
-      cmd="cd " + project_dir + " && ElmerGrid 11 2 simulation.1 -partition " + str(nn) + " " + str(nn) + " " + str(nn)
-    print(cmd)
-    os.system(cmd)
+        nn = int(np.ceil(np.sqrt(nprocs)))
+        cmd = "cd " + project_dir + " && ElmerGrid 11 2 simulation.1 -partition " + str(
+            nn) + " " + str(nn) + " 1"
 
+    print("Running: " + cmd)
+
+    exit_code = os.system(cmd)
+
+    if exit_code != 0:
+        print("Error occured whilst running ElmerGrid: {cmd}".format(cmd=cmd))
+        exit(1)
     return
+
+
 ##################################################
 ##################################################
-
-
-
-
-
-
