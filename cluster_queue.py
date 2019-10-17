@@ -130,12 +130,6 @@ def run_queue():
                 print(run_slot)
                 process.kill()
 
-            print("Removing start signals")
-            signals = os.listdir('signal_out')
-            for signal in signals:
-                if "start" in signal:
-                    os.remove('signal_out/' + signal)
-
             break
 
 
