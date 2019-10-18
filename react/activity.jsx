@@ -48,7 +48,7 @@ class Layout extends React.Component {
   }
 
   componentDidMount() {
-    window.addEventListener('load', this.startFetchActivity.bind(this));
+    window.addEventListener('load', this.scheduleNextUpdate.bind(this));
   }
 
   buildJobMap(jobs) {
@@ -65,14 +65,13 @@ class Layout extends React.Component {
   }
 
   // start periodic poll of the cluster
-  startFetchActivity() {
-    this.fetchActivity();
-    setInterval(this.fetchActivity.bind(this), this.state
-      .serverUpdateInterval);
+  scheduleNextUpdate() {
+    setTimeout(this.fetchActivity(this.scheduleNextUpdate.bind(this)).bind(this), this.state
+      .serverUpdateInterval * 1000);
   }
 
   // fetch best simulations from server and update in component state
-  fetchActivity() {
+  fetchActivity(nextUpdate) {
     fetch(this.state.dataUrl, {
         mode: 'cors'
       })
@@ -118,9 +117,12 @@ class Layout extends React.Component {
             running: running,
 
           });
+
+	  nextUpdate();
         },
         (error) => {
           console.log("failed to load data from " + this.state.dataUrl);
+	  nextUpdate();
         }
       );
   }
