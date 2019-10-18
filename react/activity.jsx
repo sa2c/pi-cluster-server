@@ -3,18 +3,20 @@ import ReactDOM from 'react-dom';
 import {
   Avatar,
   ClusterSchematic
-} from './clusterschematic.jsx'
+} from './clusterschematic.jsx';
+
 import {
   SimulationList
-} from './simulationlist.jsx'
+} from './simulationlist.jsx';
+
 import {
   colourJob
-} from './receivesimulations.jsx'
+} from './receivesimulations.jsx';
 
-import css from '../assets/styles/activity.sass'
+import css from '../assets/styles/activity.sass';
 
-//const data_url = "http://10.0.0.254:3524/cluster/activity"
-const data_url = "/cluster/activity"
+//const data_url = "http://10.0.0.254:3524/cluster/activity";
+const data_url = "/cluster/activity";
 
 class Layout extends React.Component {
   constructor(props) {
@@ -46,6 +48,12 @@ class Layout extends React.Component {
       dataUrl: data_url,
       pending: [],
       running: [],
+      messages: {
+        error: {
+          datafetch: 'Fetching data...'
+        },
+        info: {},
+      }
     };
 
   }
@@ -67,20 +75,25 @@ class Layout extends React.Component {
     return job_map;
   }
 
-  // start periodic poll of the cluster
-  scheduleNextUpdate() {
-    setTimeout(this.fetchActivity(this.scheduleNextUpdate.bind(this)).bind(this), this.state
-      .serverUpdateInterval * 1000);
-  }
-
   // fetch best simulations from server and update in component state
-  fetchActivity(nextUpdate) {
+  fetchActivity() {
     fetch(this.state.dataUrl, {
         mode: 'cors'
       })
       .then(res => res.json())
       .then(
         (result) => {
+
+          this.setState({
+            messages: {
+              info: {
+                datafetch: this.formatUnixEpoch(result.time)
+              },
+              errors: {
+                datafetch: ''
+              }
+            }
+          });
 
           const running = result.running.map((job) => colourJob(job));
           const pending = result.pending.map((job) => colourJob(job));
@@ -121,18 +134,38 @@ class Layout extends React.Component {
 
           });
 
-	  nextUpdate();
+          this.scheduleNextUpdate();
         },
         (error) => {
-          console.log("failed to load data from " + this.state.dataUrl);
-	  nextUpdate();
+          this.setState({
+            messages: {
+              info: this.state.messages.info,
+              errors: {
+                datafetch: 'Error fetching data'
+              }
+            }
+          });
+          this.scheduleNextUpdate();;
         }
       );
+  }
+
+  formatUnixEpoch(epoch) {
+    const date = new Date(epoch);
+    return date.getHours() + ":" + date.getMinutes() + ":" + date
+      .getSeconds() + "." + String(date.getMilliseconds() / 1000)
+      .slice(2);
+  }
+
+  // start periodic poll of the cluster
+  scheduleNextUpdate() {
+    setTimeout(this.fetchActivity.bind(this), 50);
   }
 
   render() {
     return (
       <div id="layout">
+	  <Messages messages={this.state.messages} />
           <div className="pane lhs">
               <ClusterSchematic info={this.state.nodeInfo} />
           </div>
@@ -141,6 +174,35 @@ class Layout extends React.Component {
       </div>
     );
   }
+}
+
+function Messages(props) {
+  var errors = null;
+  var info = null;
+
+  if (props.messages.info) {
+    info = Object.keys(props.messages.info)
+      .map(key => {
+        return (
+          <div className="info" key={key}>{props.messages.info[key]}</div>);
+      });
+  }
+
+  if (props.messages.errors) {
+    errors = Object.keys(props.messages.errors)
+      .map(key => {
+        return (
+          <div className="error" key={key}>{props.messages.errors[key]}</div>
+        );
+      });
+  }
+
+  return (
+    <div className="messages">
+		{errors}
+		{info}
+	</div>
+  );
 }
 
 ReactDOM.render(
