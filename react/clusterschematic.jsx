@@ -4,16 +4,26 @@ import ReactDOM from 'react-dom';
 import Plot from 'react-plotly.js';
 import {
   Avatar
-} from './avatar.jsx'
+} from './avatar.jsx';
 
-import css from '../assets/styles/cluster-schematic.sass'
+import css from '../assets/styles/cluster-schematic.sass';
 
 function ClusterCore(props) {
+  var percentage_div = null;
+
+  const percentage_value = props.cpuHistory[props.cpuHistory.length - 1];
+
+  if (typeof percentage_value != 'undefined') {
+      percentage_div =
+            <div className="percentage">{percentage_value+ "%"}</div>;
+  }
+
   return (
     <div className="cluster-core" style={{borderColor: props.colour}}>
-          <Avatar whom={props.avatar}/>
-          <ActivityPlot values={props.cpuHistory} colours={props.cpuColourHistory}/>
-        </div>
+      {percentage_div}
+      <Avatar whom={props.avatar}/>
+      <ActivityPlot values={props.cpuHistory} colours={props.cpuColourHistory}/>
+    </div>
   );
 }
 
