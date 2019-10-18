@@ -13,6 +13,9 @@ import {
 
 import css from '../assets/styles/activity.sass'
 
+//const data_url = "http://10.0.0.254:3524/cluster/activity"
+const data_url = "/cluster/activity"
+
 class Layout extends React.Component {
   constructor(props) {
     super(props);
@@ -39,8 +42,8 @@ class Layout extends React.Component {
         })
       ),
       cpuHistoryMax: 50,
-      dataUrl: props.dataUrl,
       serverUpdateInterval: 1, // update time in seconds
+      dataUrl: data_url,
       pending: [],
       running: [],
     };
@@ -141,6 +144,6 @@ class Layout extends React.Component {
 }
 
 ReactDOM.render(
-  <Layout dataUrl={"/cluster/activity"} />,
+  <Layout />,
   document.getElementById('root-activity')
 );
