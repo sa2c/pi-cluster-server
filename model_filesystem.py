@@ -7,6 +7,7 @@ import subprocess
 import pickle
 from PIL import Image
 import glob
+from functools import lru_cache
 
 STATUS_CREATED = 'status.created'
 STATUS_STARTED = 'status.started'
@@ -88,7 +89,7 @@ def pickle_save(sim):
 
     return sim
 
-
+@lru_cache(maxsize=10)
 def pickle_load(filename):
     with open(filename, 'rb') as f:
         sim = pickle.load(f)
