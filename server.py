@@ -19,6 +19,8 @@ from werkzeug.serving import run_simple
 from flask_webpack import Webpack
 webpack = Webpack()
 
+import transfer_data
+
 
 def create_app():
     app = Flask(__name__)
@@ -70,16 +72,36 @@ def activity_html():
 # Service routes
 
 
-@app.route('/simulation', methods=['POST'])
+@app.route('/simulation/contour-info', methods=['POST'])
 def start_simulation():
 
     # extract simulation detail
-    simulation = request.json
+    simulation = transfer_data.post_decode(request)
+
+    # change lists to np arrays in simulation
+    for key, value in simulation.items():
+        if type(value) == list:
+            simulation[key] = np.array(value)
 
     sim_id = model.create_simulation(simulation)
 
     return {'id': str(sim_id)}
 
+@app.route('/simulation/additional-info', methods=['POST'])
+def simulation_additional_info():
+
+    # extract simulation detail
+    simulation = transfer_data.post_decode(request)
+    sim_id = simulation['id']
+
+    # change lists to np arrays in simulation
+    for key, value in simulation.items():
+        if type(value) == list:
+            simulation[key] = np.array(value)
+
+    sim_id = model.create_simulation_additional_info(sim_id, simulation)
+
+    return {'id': str(sim_id)}
 
 @app.route('/simulations', methods=['GET'])
 def all_simulations():
@@ -113,7 +135,6 @@ def get_run_completion_percentage(sim_id):
 @app.route('/simulation/<id>', methods=['GET'])
 def get_simulation(id):
     sim = model.get_simulation(id)
-
     return sim
 
 
@@ -157,7 +178,7 @@ def get_activity():
     }
 
 
-    filter_keys = ['id', 'name', 'avatar', 'cores']
+    filter_keys = ['id', 'name', 'avatar', 'cores', 'images-available']
 
     pending = sims_filtered_keys(model.queued_simulations(), filter_keys)
     running = sims_filtered_keys(model.running_simulations(), filter_keys)

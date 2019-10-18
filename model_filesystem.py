@@ -10,6 +10,7 @@ import glob
 from functools import lru_cache
 
 STATUS_CREATED = 'status.created'
+STATUS_ADDITIONAL_INFO = 'status.info'
 STATUS_STARTED = 'status.started'
 STATUS_FINISHED = 'status.finished'
 
@@ -32,7 +33,10 @@ def sim_filepath(simulation_id, filename):
 
 
 def sim_datafile(simulation_id):
-    return sim_filepath(simulation_id, 'store.pickle')
+    return sim_filepath(simulation_id, 'data.pickle')
+
+def sim_info_file(simulation_id):
+    return sim_filepath(simulation_id, 'additional-info.pickle')
 
 
 def run_directory(index):
@@ -58,10 +62,11 @@ def drag_file(sim_id):
 def touch_file(sim_id, filename):
     open(sim_filepath(sim_id, filename), 'a').close()
 
+def sim_check_file(sim_id, filename):
+    return os.path.isfile(sim_filepath(sim_id, filename))
 
 def check_status(sim_id, status):
-    return os.path.isfile(sim_filepath(sim_id, status))
-
+    return sim_check_file(sim_id, status)
 
 def set_started(sim_id):
     touch_file(sim_id, STATUS_STARTED)
@@ -74,22 +79,20 @@ def set_finished(sim_id):
 ######################################
 
 
-def pickle_save(sim):
+def pickle_save(filename, data):
     """
     Pickles data to a given filename. Note, it writes using a temporary file to
     avoid that file is read before finished writing.
     """
 
-    filename = sim_datafile(sim['id'])
-
     filename_tmp = filename + 'tmp'
 
     with open(filename_tmp, 'wb') as f:
-        pickle.dump(sim, f)
+        pickle.dump(data, f)
 
     os.rename(filename_tmp, filename)
 
-    return sim
+    return data
 
 @lru_cache(maxsize=10)
 def pickle_load(filename):
@@ -187,16 +190,25 @@ def create_simulation(sim):
     sim_id = generate_sim_id()
     sim['id'] = sim_id
 
-    pickle_save(sim)
+    filename = sim_datafile(sim['id'])
 
-    save_data_as_image(sim['rgb_with_contour'],
-                       sim_filepath(sim_id, 'rgb_with_contour.png'))
-    save_data_as_image(sim['depth'], sim_filepath(sim_id, 'depth.png'))
+    pickle_save(filename, sim)
 
     touch_file(sim_id, STATUS_CREATED)
 
     return sim_id
 
+def create_simulation_additional_info(sim_id, sim):
+    filename = sim_info_file(sim_id)
+
+    pickle_save(filename, sim)
+
+    save_data_as_image(sim['rgb_with_contour'],sim_filepath(sim_id, 'rgb_with_contour.png'))
+    save_data_as_image(sim['depth'], sim_filepath(sim_id, 'depth.png'))
+
+    touch_file(sim_id, STATUS_ADDITIONAL_INFO)
+
+    return sim_id
 
 def valid_simulations(id_list):
     # get_simulation can return None if a non-simulation directory exists in
@@ -236,6 +248,9 @@ def get_simulation(sim_id):
     if check_status(sim_id, STATUS_CREATED) and os.path.isfile(datafile):
         simulation = pickle_load(datafile)
         simulation['drag'] = get_drag(sim_id)
+
+        # set the images available key for simulation
+        simulation['images-available'] = sim_check_file(sim_id, 'rgb_with_contour.png') and sim_check_file(sim_id, 'depth.png')
 
         return simulation
     else:
