@@ -40,7 +40,7 @@ class Layout extends React.Component {
       ),
       cpuHistoryMax: 50,
       dataUrl: props.dataUrl,
-      serverUpdateInterval: 50,
+      serverUpdateInterval: 1, // update time in seconds
       pending: [],
       running: [],
     };
