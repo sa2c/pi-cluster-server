@@ -8,6 +8,8 @@ import errno
 import datetime
 import calendar
 import requests
+import transfer_data
+import pickle
 
 from settings import cluster_address
 
@@ -21,11 +23,32 @@ def dispatch(simulation):
         if type(val) == np.ndarray:
             simulation[key] = val.tolist()
 
-    response = requests.post(f'{cluster_address}/simulation', json=simulation)
+    url_early = f'{cluster_address}/simulation/contour-info'
+    url_rest = f'{cluster_address}/simulation/additional-info'
+    early_keys = ['name', 'email', 'contour']
 
-    sim_id = response.json()['id']
+    # First we send only the outline data (so that simulation can start)
+    print("Sending Contour Info")
+    early_simulation = {key: simulation[key] for key in early_keys}
 
-    return sim_id
+    response = transfer_data.post_encoded(url_early, early_simulation)
+
+    simulation['id'] = response.json()['id']
+
+    # Next we send the rest of the data
+    print("Sending Additional Info")
+    rest_simulation = {key: simulation[key] for key in simulation.keys()
+                       if key not in early_keys}
+
+    response = transfer_data.post_encoded(url_rest, rest_simulation)
+
+    # Finally, we save the simulation locally in case anything goes wrong
+    filename = 'sim-client-cache/{sim_id}.npy'.format(sim_id=simulation['id'])
+
+    with open(filename, 'wb') as f:
+        pickle.dump(simulation, f)
+
+    return simulation['id']
 
 
 def fetch_all():
