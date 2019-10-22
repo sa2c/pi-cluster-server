@@ -19,7 +19,7 @@ color_scale = [1, 1, 0.8]
 flip_display_axis = True
 
 # Cluster settings
-cluster_address = "http://localhost:3524"
+cluster_address = "http://10.0.0.254:3524"
 
 # Local settings
 local_path = os.environ['PWD']
