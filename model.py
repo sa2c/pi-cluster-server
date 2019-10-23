@@ -23,9 +23,11 @@ STATUS_ADDITIONAL_INFO = 'status.info'
 STATUS_STARTED = 'status.started'
 STATUS_FINISHED = 'status.finished'
 
-# Batch template (pack)
-with open('templates/slurm.batch') as file_:
-    BATCH_TEMPLATE = Template(file_.read())
+# Read batch template file if exists
+template_file = 'templates/slurm.batch'
+if os.path.isfile(template_file):
+    with open(template_file) as f:
+        BATCH_TEMPLATE = Template(f.read())
 
 ######################################
 ## Paths
