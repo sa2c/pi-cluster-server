@@ -40,7 +40,7 @@ function colourJob(job) {
     } else {
         return {
             ...job,
-            ...{ colour: avatarColours[job.avatar - 1] }
+            ...{ colour: avatarColours[job.avatar_id - 1] }
         };
     }
 }

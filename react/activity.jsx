@@ -67,7 +67,7 @@ class Layout extends React.Component {
     var job_map = {};
 
     jobs.forEach((job) => {
-      job['cores'].forEach((node_id) => {
+      job['nodes'].forEach((node_id) => {
         job_map[node_id] = job;
       });
     });
@@ -104,6 +104,7 @@ class Layout extends React.Component {
             row_idx) => {
             return rows.map((node_id, col_idx) => {
               var info = this.state.nodeInfo[row_idx][col_idx];
+              info.node_id = node_id;
 
               const job = colourJob(job_map[node_id]);
 
@@ -126,6 +127,7 @@ class Layout extends React.Component {
               return info;
             });
           });
+
 
           this.setState({
             nodeInfo: mappedInfo,

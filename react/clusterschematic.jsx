@@ -21,7 +21,7 @@ function ClusterCore(props) {
   return (
     <div className="cluster-core" style={{borderColor: props.colour}}>
       {percentage_div}
-      <Avatar whom={props.avatar}/>
+      <Avatar whom={props.avatar_id}/>
       <ActivityPlot values={props.cpuHistory} colours={props.cpuColourHistory}/>
     </div>
   );
@@ -217,7 +217,7 @@ function ClusterSchematic(props) {
                                   cpuColourHistory={node['cpuColourHistory']}
                                   id={job['id']}
                                   name={job['name']}
-                                  avatar={job['avatar']}
+                                  avatar_id={job['avatar_id']}
                                   colour={job['colour']}
 
                               />

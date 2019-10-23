@@ -176,11 +176,13 @@ def read_usage():
 
     num_retries = 10
 
-    utils.ensure_exists('~/cluster-load/info/')
+    info_path = os.path.expanduser('~/cluster-load/info/')
+    utils.ensure_exists(info_path)
 
     for retries in range(num_retries):
         try:
-            output_lines = subprocess.check_output('cat ~/cluster-load/info/* 2>/dev/null', shell=True).decode('utf8').split('\n')
+            cmd = 'cat {path}* 2>/dev/null'.format(path=info_path)
+            output_lines = subprocess.check_output(cmd, shell=True).decode('utf8').split('\n')
 
             num_tries = retries + 1
 
@@ -215,12 +217,10 @@ def get_activity():
     # Note that this could still fail if activity called again before the request completes
 
 
-    filter_keys = ['id', 'name', 'avatar', 'nodes', 'images-available']
+    filter_keys = ['id', 'name', 'avatar_id', 'nodes', 'images-available']
 
     pending = sims_filtered_keys(model.queued_simulations(), filter_keys)
     running = sims_filtered_keys(model.running_simulations(), filter_keys)
-
-    running  = [ model.add_hostname_info(s) for s in running ]
 
     cpu_usage,temp = read_usage()
 

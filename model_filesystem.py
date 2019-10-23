@@ -240,10 +240,6 @@ def valid_simulations(id_list):
 def all_simulations():
     return valid_simulations(simulation_id_list())
 
-def add_hostname_info(sim):
-    sim['cores'] = get_nodes(sim['id'])
-    return sim
-
 def queued_simulations():
     return [ s for s in simulation_id_list() if is_sim_queued(s) ]
 
@@ -269,6 +265,10 @@ def get_simulation(sim_id):
         simulation['images-available'] = sim_check_file(sim_id, 'rgb_with_contour.png') and sim_check_file(sim_id, 'depth.png')
 
         simulation['nodes'] = get_nodes(sim_id)
+        simulation['avatar_id'] = get_avatar_id(sim_id)
+
+        # force the simulation ID (in case files have been moved around manually)
+        simulation['id'] = sim_id
 
     return simulation
 
