@@ -17,4 +17,12 @@ SIM_ID={{sim_id}}
 cd /home/pi/pi-cluster/simulations/$SIM_ID
 echo $PWD
 
+# Write host info
+
+for host in `scontrol show hostname $SLURM_NODELIST`
+do
+	sed -n "s/\(.?*\)\s*$host/\1/p" /etc/hosts
+done > slurm.hosts
+
+# Run simulation
 python3 /home/pi/pi-cluster/cfd/runcfd.py $SIM_ID 16 /home/pi/pi-cluster/simulations/$SIM_ID/hostfile
