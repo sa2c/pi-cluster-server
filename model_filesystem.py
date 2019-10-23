@@ -241,11 +241,18 @@ def running_simulations():
     return [ s for s in simulation_id_list() if is_sim_running(s) ]
 
 def get_nodes(sim_id):
+    """
+    If slurm.hosts file exists (as written by the jobscript), then return a list of the node
+    IP addresses found in the file for simulation with ID `sim_id`. If the hosts file does not exist return an empty list.
+    """
     filepath = sim_filepath(sim_id, 'slurm.hosts')
-    with open(filepath, 'r') as f:
-        lines = f.readlines()
+    if os.path.isfile(filepath):
+        with open(filepath, 'r') as f:
+            lines = f.readlines()
 
-    ips = [ line.split()[0] for line in lines ]
+        ips = [ line.split()[0] for line in lines ]
+    else:
+        ips = []
 
     return ips
 
