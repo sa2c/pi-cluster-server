@@ -302,15 +302,24 @@ def queue_simulation(sim):
     write_outline(sim_id, sim['contour'])
     batch_script = write_batch_script(sim_id)
 
-    try:
+    # Write avatar to file and add to sim dictionary for writing
+    avatar_id = get_next_avatar()
+    write_avatar(sim_id, avatar_id)
+    sim['avatar_id'] = avatar_id
+
+    # Submit the job to SLURM
+    if settings.devel:
+        # In development, just return a job ID
+        print('WARNING: Not submitting batch script in development')
+        job_id = '123'
+    else:
         cmd = 'cd ~/ && sbatch {script}'.format(script=batch_script)
         output = subprocess.check_output(cmd, shell=True).decode('utf8')
-    except subprocess.CalledProcessError as e:
-        print("error code {err}".format(err=e.returncode))
-        print("output {out}".format(out=e.output))
 
-    job_id = re.match('^Submitted batch job ([0-9]*)', output).group(1)
+        job_id = re.match('^Submitted batch job ([0-9]*)', output).group(1)
 
+
+        # Write job id to file
     with open(sim_filepath(sim_id, 'job_id'), 'w') as f:
         f.write(job_id)
 
