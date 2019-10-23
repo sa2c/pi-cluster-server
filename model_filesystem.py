@@ -103,8 +103,12 @@ def pickle_save(filename, data):
 
     return data
 
-@lru_cache(maxsize=10)
+@lru_cache(maxsize=30)
 def pickle_load(filename):
+    """
+    Loads objects from a pickle file with cache. Note, care should be taken not to
+    attempt to cause invalid cache entries. The datastore is treated as immutable.
+    """
     with open(filename, 'rb') as f:
         sim = pickle.load(f)
     return sim
