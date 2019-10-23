@@ -19,16 +19,16 @@ local_path = os.environ['PWD']
 def logger(msg):
     print(msg)
 
-def load_cached_sim(filename):
+def load_pickle_file(filename):
     """
-    Utility function useful for loading simulations from disk for testing
+    Utility function for loading simulations from the given file  `filename`
     """
     with open(filename, 'rb') as f:
         return pickle.load(f)
 
 def save_data_for_upload(data):
     """
-    Save the image given by an BGR numpy array as an image in a given location
+    Save the image given by an BGR numpy array in `data` as an image in a given location
     """
     rgb = np.uint8(data)
     rgb = rgb[:, :, ::-1]
@@ -39,27 +39,33 @@ def save_data_for_upload(data):
 
     return img_bytes.getvalue()
 
-def dispatch(sim):
-    "Posts data to server to create a new run of a simulation"
+def sim_cache_filename(sim_id):
+    """
+    Returns the filename of the file in which simulation information will be cached locally
+    """
+    return 'sim-client-cache/{sim_id}.npy'.format(sim_id=sim_id)
 
-    for key, val in sim.items():
-        if type(val) == np.ndarray:
-            sim[key] = val.tolist()
+def load_cached_sim(sim_id):
+    """
+    Load a cached simulation from simulation cache by sim_id
+    """
+    return load_pickle_file(sim_cache_filename(sim_id))
 
-    url_early = f'{cluster_address}/simulation/contour-info'
-    early_keys = ['name', 'email', 'contour']
- 
-    early_sim = {key: sim[key] for key in early_keys}
+def redispatch_simulation(sim_id):
+    """
+    Function can be used to dispatch a simulation again from the client (as a new simulation). Note, this will create a brand new simulation dispatch.
+    """
+    sim = load_cached_sim(sim_id)
+    return dispatch(sim)
 
-    response = transfer_data.post_encoded(url_early, early_sim)
+def upload_images(sim_id, sim=None):
+    """
+    Upload images for sim_id. Sim can be provided if the function is called either without
+    a cached simulation available or simply to avoid having to read from disk.
+    """
+    if sim is None:
+        sim = load_cached_sim(sim_id)
 
-    if response.status_code != 200:
-        # do something here to handle failure
-        logger(f'simulation upload failed')
-
-    sim['id'] = response.json()['id']
-
-    # upload files
     rgb_file = save_data_for_upload(sim['rgb_with_contour'])
     depth_file = save_data_for_upload(sim['depth'])
 
@@ -67,20 +73,52 @@ def dispatch(sim):
     response = requests.post(url, data=rgb_file)
 
     if response.status_code != 200:
-        logger(f'rgb_image upload failed for simulation {sim["id"]}')
+        logger(f'rgb image upload failed for simulation {sim["id"]}. retry with upload_images(sim_id)')
 
 
     url = f'{cluster_address}/upload/{sim["id"]}/depth.png'
     response = requests.post(url, data=depth_file)
 
     if response.status_code != 200:
-        logger(f'rgb_image upload failed for simulation {sim["id"]}')
+        logger(f'depth image upload failed for simulation {sim["id"]}. retry with upload_images(sim_id)')
 
-    # Finally, we save the full simulation locally in case we want to re-run anything
-    filename = 'sim-client-cache/{sim_id}.npy'.format(sim_id=sim['id'])
+
+def dispatch(sim):
+    """
+    Posts data to server to create a new run of a simulation.
+    Call redispatch_simulation to re-run this for a cached simulation.
+    """
+
+    # Save the full simulation locally in case we want to re-run anything
+    # Note, this is done first in case recovery is necessary
+    filename_tmp = sim_cache_filename('tmp')
 
     with open(filename, 'wb') as f:
         pickle.dump(sim, f)
+    for key, val in sim.items():
+        if type(val) == np.ndarray:
+            sim[key] = val.tolist()
+
+    # Upload simulation contour and information
+    url_send = f'{cluster_address}/simulation/contour-info'
+    send_keys = ['name', 'email', 'contour']
+ 
+    send_sim = {key: sim[key] for key in send_keys}
+
+    response = transfer_data.post_encoded(url_send, send_sim)
+
+    if response.status_code != 200:
+        # do something here to handle failure
+        logger(f'simulation upload failed. Retry with redispatch_simulation(sim_id)')
+
+    sim['id'] = response.json()['id']
+
+    # moved temporary cached simulation file to final destination
+    filename = sim_cache_filename(sim['id'])
+    os.rename(filename_tmp, filename)
+
+    # upload files, this is done by passing sim and sim_id so that it's easy to run
+    upload_images(sim['id'])
 
     return sim['id']
 
