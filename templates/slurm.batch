@@ -1,8 +1,8 @@
 #!/bin/bash
 #
 #SBATCH --job-name=sim-{{sim_id}}
-#SBATCH --output=/home/pi/pi-cluster/simulations/{{sim_id}}/slurm.output
-#SBATCH --error=/home/pi/pi-cluster/simulations/{{sim_id}}1/slurm.error
+#SBATCH --output=$ROOT_DIR/simulations/{{sim_id}}/slurm.output
+#SBATCH --error=$ROOT_DIR/simulations/{{sim_id}}1/slurm.error
 #
 # Number of nodes
 #SBATCH --ntasks=16
@@ -14,7 +14,9 @@
 
 SIM_ID={{sim_id}}
 
-cd /home/pi/pi-cluster/simulations/$SIM_ID
+ROOT_DIR={{root_dir}}
+
+cd $ROOT_DIR/simulations/$SIM_ID
 echo $PWD
 
 # Write host info
@@ -28,7 +30,7 @@ done > slurm.hosts
 touch "{{start_file}}"
 
 # Run simulation
-python3 /home/pi/pi-cluster/cfd/runcfd.py $SIM_ID 16 /home/pi/pi-cluster/simulations/$SIM_ID/hostfile
+python3 $ROOT_DIR/cfd/runcfd.py $SIM_ID 16 $ROOT_DIR/simulations/$SIM_ID/hostfile
 
 # Notify finished
 touch "{{end_file}}"

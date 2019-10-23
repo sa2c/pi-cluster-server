@@ -201,7 +201,8 @@ def set_drag(sim_id, drag):
 def write_batch_script(sim_id):
     batch_contents = BATCH_TEMPLATE.render(sim_id=sim_id,
                                            start_file=STATUS_STARTED,
-                                           end_file=STATUS_FINISHED)
+                                           end_file=STATUS_FINISHED,
+                                           root_dir=settings.root_dir)
 
     filename = sim_filepath(sim_id, 'slurm.batch')
 
