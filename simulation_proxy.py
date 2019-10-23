@@ -93,8 +93,9 @@ def dispatch(sim):
     # Note, this is done first in case recovery is necessary
     filename_tmp = sim_cache_filename('tmp')
 
-    with open(filename, 'wb') as f:
+    with open(filename_tmp, 'wb') as f:
         pickle.dump(sim, f)
+
     for key, val in sim.items():
         if type(val) == np.ndarray:
             sim[key] = val.tolist()
