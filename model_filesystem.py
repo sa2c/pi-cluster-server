@@ -9,15 +9,16 @@ from PIL import Image
 import glob
 from functools import lru_cache
 
+from jinja2 import Template
+
 STATUS_CREATED = 'status.created'
 STATUS_ADDITIONAL_INFO = 'status.info'
 STATUS_STARTED = 'status.started'
-STATUS_FINISHED = 'status.finished'
+STATUS_FINISHED = 'status.finished' # This is also set in the batch file
 
-
-def choose_avatar():
-    return int(random.random() * 25) + 1
-
+# Globals
+with open('templates/slurm.batch') as file_:
+    batch_template = Template(file_.read())
 
 ######################################
 ## Paths
@@ -64,8 +65,9 @@ def sim_check_file(sim_id, filename):
 def check_status(sim_id, status):
     return sim_check_file(sim_id, status)
 
-def set_started(sim_id):
-    touch_file(sim_id, STATUS_STARTED)
+def set_started(sim_id, job_id):
+    with open(sim_filepath(sim_id, STATUS_STARTED), 'w') as f:
+        f.write(job_id)
 
 def set_finished(sim_id):
     touch_file(sim_id, STATUS_FINISHED)
@@ -87,6 +89,9 @@ def pickle_save(filename, data):
         pickle.dump(data, f)
 ## Utils
 ######################################
+
+def choose_avatar():
+    return int(random.random() * 25) + 1
 
 
 def generate_sim_id():
@@ -152,6 +157,15 @@ def set_drag(sim_id, drag):
     with open(filename, 'w') as file:
         file.write(str(drag))
 
+def write_batch_script(sim_id):
+    batch_contents = batch_template.render(sim_id=sim_id)
+
+    filename = sim_filepath(sim_id, 'slurm.batch')
+
+    with open(filename, 'w') as f:
+        f.write(batch_contents)
+
+    return filename
 
 ######################################
 ## Public API
@@ -226,27 +240,31 @@ def write_outline(sim_id, outline):
     np.savetxt(filename, flipped_outline, fmt='%i %i')
 
 
-def run_simulation(sim_id, hostfilename):
+def run_simulation(sim_id):
     """
     Note: Should only really be called by queue manager, otherwise who knows where the process would be
     """
 
     simulation = get_simulation(sim_id)
+    import re
 
     write_outline(sim_id, simulation['contour'])
+    batch_script = write_batch_script(sim_id)
 
-    command = settings.cfdcommand.format(id=sim_id,
-                                         ncores=settings.nodes_per_job *
-                                         settings.cores_per_node,
-                                         hostfile=hostfilename,
-                                         output=sim_filepath(sim_id, 'output'))
+    try:
+        cmd = 'cd ~/ && sbatch {script}'.format(script=batch_script)
+        output = subprocess.check_output(cmd, shell=True).decode('utf8')
+    except subprocess.CalledProcessError as e:
+        print("error code {err}".format(err=e.returncode))
+        print("output {out}".format(out=e.output))
 
-    print('RUNNING SIMULATION: {command}'.format(command=command))
-    set_started(sim_id)
-    process = subprocess.Popen(command, shell=True)
-    set_finished(sim_id)
+    job_id = re.match('^Submitted batch job ([0-9]*)', output).group(1)
 
-    return process
+    print('RUNNING SIMULATION: {sim_id}'.format(sim_id=sim_id))
+
+    set_started(sim_id, job_id)
+
+    return job_id
 
 
 def outline_coords_file(sim_id):

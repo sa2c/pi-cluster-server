@@ -4,7 +4,7 @@ import settings
 import model
 
 
-def run_cfd_simulation(sim_id, hostfile, nprocs):
+def run_cfd_simulation(sim_id, nprocs):
     print("run_cfd_simulation")
 
     # create the ELMERSOLVER_STARTINFO file
@@ -27,7 +27,7 @@ def run_cfd_simulation(sim_id, hostfile, nprocs):
         os.system(cmd)
     else:
         # First copy the mesh files over
-        cmd = 'cd {run_dir} && mpirun --hostfile hostfile -np '.format(run_dir=run_dir) + str(
+        cmd = 'cd {run_dir} && mpirun -np '.format(run_dir=run_dir) + str(
             nprocs) + " ElmerSolver_mpi"
         print("running: " + cmd)
         os.system(cmd)

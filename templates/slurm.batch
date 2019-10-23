@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+#SBATCH --job-name=sim-{{sim_id}}
+#SBATCH --output=/home/pi/pi-cluster/simulations/{{sim_id}}/slurm.output
+#SBATCH --error=/home/pi/pi-cluster/simulations/{{sim_id}}1/slurm.error
+#
+# Number of nodes
+#SBATCH --ntasks=16
+# Set the job size
+#SBATCH --tasks-per-node=4
+#
+# walltime 1hr
+#SBATCH --time=1:00:00
+
+SIM_ID={{sim_id}}
+
+cd /home/pi/pi-cluster/simulations/$SIM_ID
+echo $PWD
+
+python3 /home/pi/pi-cluster/cfd/runcfd.py $SIM_ID 16 /home/pi/pi-cluster/simulations/$SIM_ID/hostfile

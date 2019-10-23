@@ -23,7 +23,6 @@ webpack = Webpack()
 
 import transfer_data
 
-
 def create_app():
     app = Flask(__name__)
 

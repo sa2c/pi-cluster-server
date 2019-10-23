@@ -38,16 +38,12 @@ import json
 # Default entries
 sim_id = "Square"
 nprocs = 1
-hostfile = "hostfile1"
 
 if len(sys.argv) > 1:
     sim_id = sys.argv[1]
 
 if len(sys.argv) > 2:
     nprocs = int(sys.argv[2])
-
-if len(sys.argv) > 3:
-    hostfile = sys.argv[3]
 
 # Keep track of timings for each step
 timing = {'elapsed': [], 'steps': []}
@@ -74,7 +70,7 @@ print("###################################################################\n")
 ##########################################################
 
 start = time.time()
-run_cfd_simulation(sim_id, hostfile, nprocs)
+run_cfd_simulation(sim_id, nprocs)
 end = time.time()
 timing['elapsed'].append(end - start)
 timing['steps'].append(
