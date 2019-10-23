@@ -323,11 +323,11 @@ def outline_coords_file(sim_id):
     return sim_filepath(sim_id, 'outline-coords.dat')
 
 
-def highest_drag_simulations_sorted(num_sims=10):
+def lowest_drag_simulations_sorted(num_sims=10):
     "fetches `num_sims` simulations and order them by value of drag"
 
     drags, sim_ids = all_drags()
-    idxs = np.argsort(drags)[:num_sims]
+    idxs = np.argsort(drags)[:num_sims][::-1]
 
     result_sim_ids = sim_ids[idxs]
 
@@ -340,3 +340,32 @@ def recent_simulations(num_sims=10):
     recent_sim_ids = sorted(simulation_id_list(), reverse=True)[:num_sims]
 
     return valid_simulations(recent_sim_ids)
+
+######################################
+## Avatars
+######################################
+
+def get_avatar(sim_id):
+    """
+    Return the avatar for a given simulation
+    """
+    return 1
+
+def available_avatars(num_leaderboard):
+    # fetch required info
+    running = running_simulations()
+    queued = queued_simulations()
+    leaderboard = lowest_drag_simulations_sorted(num_sims=num_leaderboard)
+
+    # IDs still visible in the UI
+    visible_ids = set(running+queued+leaderboard)
+
+    used_avatars = set([ get_avatar(s) for s in visible_ids ])
+
+    # work out the available avatars
+    available_avatars = set(range(1,26)) - used_avatars
+
+    # pick a random one
+    available_avatars.random =
+
+    return exclude

@@ -1,9 +1,4 @@
-pi@headnode:~/pi-cluster $ squeue --format="%.18i %.10T %.10M %.6D %N"
-JOBID         ST       TIME  NODES NODELIST(REASON)
-
-
-
-* No ways to detect errors if slurm run fails
+* MAYBE No ways to detect errors if slurm run fails
 - something that stops but doesn't finish will show as running
 * Report progress of a simulation...!!!
 - we used to show progress completion, we don't any more
@@ -22,8 +17,8 @@ JOBID         ST       TIME  NODES NODELIST(REASON)
    - everything is running on the wrong nodes..
    - can the queue system run multiple sims in parallel...!?
    - using the same dir MPI error....??
-* TODO PDF printer
- - Server should maintain "printed" state
+* TODO PDF test printer (and write a process)
+ - Server should maintain a "to be printed" state
  - printer should notify server if there are jobs which should be marked as printed
  - a process runs on a machine and prints the jobs
 * MAYBE logger should write to a console somewhere...
