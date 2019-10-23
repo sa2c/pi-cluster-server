@@ -23,6 +23,7 @@ webpack = Webpack()
 
 import transfer_data
 
+
 def create_app():
     app = Flask(__name__)
 
@@ -86,7 +87,8 @@ def start_simulation():
 
     sim_id = model.queue_simulation(simulation)
 
-    return {'id': str(sim_id) }
+    return {'id': str(sim_id)}
+
 
 @app.route('/upload/<sim_id>/<filename>', methods=['POST'])
 def simulation_handle_upload(sim_id, filename):
@@ -95,6 +97,7 @@ def simulation_handle_upload(sim_id, filename):
     FileStorage(request.stream).save(filepath)
 
     return 'OK', 200
+
 
 @app.route('/simulations', methods=['GET'])
 def all_simulations():
@@ -179,15 +182,17 @@ def sims_filtered_keys(ids, keys):
     """
     sims = [model.get_simulation(sid) for sid in ids]
 
-    sims = [ sim for sim in sims if sim is not None ]
+    sims = [sim for sim in sims if sim is not None]
 
     filtered = [{key: val
                  for key, val in sim.items() if key in keys} for sim in sims]
 
     return filtered
 
+
 def string_to_rounded_int(str):
     return int(round(float(str)))
+
 
 def read_usage():
     """
@@ -207,33 +212,38 @@ def read_usage():
     for retries in range(num_retries):
         try:
             cmd = 'cat {path}* 2>/dev/null'.format(path=info_path)
-            output_lines = subprocess.check_output(cmd, shell=True).decode('utf8').split('\n')
+            output_lines = subprocess.check_output(
+                cmd, shell=True).decode('utf8').split('\n')
 
             num_tries = retries + 1
 
             if num_tries > 1:
-                print('warning: cpu usage reading attempt success at try {x}'.format(x=num_tries))
+                print('warning: cpu usage reading attempt success at try {x}'.
+                      format(x=num_tries))
             break
 
         except subprocess.CalledProcessError as e:
-            if(retries == num_retries - 1):
-                raise(e)
+            if (retries == num_retries - 1):
+                raise (e)
             else:
                 continue
 
-
-    line_parts = [line.split() for line in output_lines if line[:7]=='10.0.0.']
+    line_parts = [
+        line.split() for line in output_lines if line[:7] == '10.0.0.'
+    ]
 
     cpu_usage = {
-            line[0] : string_to_rounded_int(line[1]) for line in line_parts
-            }
+        line[0]: string_to_rounded_int(line[1])
+        for line in line_parts
+    }
 
     temp = {
-            line[0] : int(float(line[2])*100/settings.pi_max_temp) for line in line_parts
-            }
-
+        line[0]: int(float(line[2]) * 100 / settings.pi_max_temp)
+        for line in line_parts
+    }
 
     return cpu_usage, temp
+
 
 @app.route('/cluster/activity', methods=['GET'])
 def get_activity():
@@ -241,13 +251,12 @@ def get_activity():
     # Added safety layer to ensure that cpuinfo.txt isn't written to whilst being read
     # Note that this could still fail if activity called again before the request completes
 
-
     filter_keys = ['id', 'name', 'avatar_id', 'nodes', 'images-available']
 
     pending = sims_filtered_keys(model.queued_simulations(), filter_keys)
     running = sims_filtered_keys(model.running_simulations(), filter_keys)
 
-    cpu_usage,temp = read_usage()
+    cpu_usage, temp = read_usage()
 
     response = {
         'time': time.time(),
