@@ -17,6 +17,9 @@ SIM_ID={{sim_id}}
 cd /home/pi/pi-cluster/simulations/$SIM_ID
 echo $PWD
 
+# Notify started
+touch "{{start_file}}"
+
 # Write host info
 
 for host in `scontrol show hostname $SLURM_NODELIST`
@@ -26,3 +29,6 @@ done > slurm.hosts
 
 # Run simulation
 python3 /home/pi/pi-cluster/cfd/runcfd.py $SIM_ID 16 /home/pi/pi-cluster/simulations/$SIM_ID/hostfile
+
+# Notify finished
+touch "{{end_file}}"

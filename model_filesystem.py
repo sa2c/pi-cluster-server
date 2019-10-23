@@ -12,14 +12,20 @@ from functools import lru_cache
 
 from jinja2 import Template
 
+######################################
+## Package variables
+######################################
+
 STATUS_CREATED = 'status.created'
 STATUS_ADDITIONAL_INFO = 'status.info'
-STATUS_STARTED = 'status.started'
-STATUS_FINISHED = 'status.finished' # This is also set in the batch file
 
-# Globals
+# This is also set in the batch file
+STATUS_STARTED = 'status.started'
+STATUS_FINISHED = 'status.finished'
+
+# Batch template (pack)
 with open('templates/slurm.batch') as file_:
-    batch_template = Template(file_.read())
+    BATCH_TEMPLATE = Template(file_.read())
 
 ######################################
 ## Paths
@@ -187,7 +193,9 @@ def set_drag(sim_id, drag):
         file.write(str(drag))
 
 def write_batch_script(sim_id):
-    batch_contents = batch_template.render(sim_id=sim_id)
+    batch_contents = BATCH_TEMPLATE.render(sim_id=sim_id,
+                                           start_file=STATUS_STARTED,
+                                           end_file=STATUS_FINISHED)
 
     filename = sim_filepath(sim_id, 'slurm.batch')
 
