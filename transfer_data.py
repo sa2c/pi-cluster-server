@@ -18,7 +18,7 @@ def decode_data(bytestring):
     """
     """
     #return np.load(io.BytesIO(zlib.decompress(bytestring)))
-    return np.load(io.BytesIO(bytestring))
+    return np.load(io.BytesIO(bytestring), allow_pickle=True)
 
 
 def post_encoded(url, data):

@@ -35,10 +35,6 @@ def sim_filepath(simulation_id, filename):
 def sim_datafile(simulation_id):
     return sim_filepath(simulation_id, 'data.pickle')
 
-def sim_info_file(simulation_id):
-    return sim_filepath(simulation_id, 'additional-info.pickle')
-
-
 def run_directory(index):
     directory = '{sim_dir}/{index}'.format(sim_dir=simulation_store_directory(), index=index)
 
@@ -195,18 +191,6 @@ def create_simulation(sim):
     pickle_save(filename, sim)
 
     touch_file(sim_id, STATUS_CREATED)
-
-    return sim_id
-
-def create_simulation_additional_info(sim_id, sim):
-    filename = sim_info_file(sim_id)
-
-    pickle_save(filename, sim)
-
-    save_data_as_image(sim['rgb_with_contour'],sim_filepath(sim_id, 'rgb_with_contour.png'))
-    save_data_as_image(sim['depth'], sim_filepath(sim_id, 'depth.png'))
-
-    touch_file(sim_id, STATUS_ADDITIONAL_INFO)
 
     return sim_id
 

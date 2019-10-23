@@ -16,6 +16,7 @@ from flask import Flask, request, render_template, send_from_directory
 from flask_cors import CORS
 
 from werkzeug.serving import run_simple
+from werkzeug.datastructures import FileStorage
 
 from flask_webpack import Webpack
 webpack = Webpack()
@@ -88,21 +89,13 @@ def start_simulation():
 
     return {'id': str(sim_id)}
 
-@app.route('/simulation/additional-info', methods=['POST'])
-def simulation_additional_info():
+@app.route('/upload/<sim_id>/<filename>', methods=['POST'])
+def simulation_handle_upload(sim_id, filename):
+    filepath = model.sim_filepath(sim_id, filename)
 
-    # extract simulation detail
-    simulation = transfer_data.post_decode(request)
-    sim_id = simulation['id']
+    FileStorage(request.stream).save(filepath)
 
-    # change lists to np arrays in simulation
-    for key, value in simulation.items():
-        if type(value) == list:
-            simulation[key] = np.array(value)
-
-    sim_id = model.create_simulation_additional_info(sim_id, simulation)
-
-    return {'id': str(sim_id)}
+    return 'OK', 200
 
 @app.route('/simulations', methods=['GET'])
 def all_simulations():
