@@ -69,18 +69,18 @@ def upload_images(sim_id, sim=None):
     rgb_file = save_data_for_upload(sim['rgb_with_contour'])
     depth_file = save_data_for_upload(sim['depth'])
 
-    url = f'{cluster_address}/upload/{sim["id"]}/rgb_with_contour.png'
+    url = f'{cluster_address}/upload/{sim_id}/rgb_with_contour.png'
     response = requests.post(url, data=rgb_file)
 
     if response.status_code != 200:
-        logger(f'rgb image upload failed for simulation {sim["id"]}. retry with upload_images(sim_id)')
+        logger(f'rgb image upload failed for simulation {sim_id}. retry by calling upload_images with a simulation id')
 
 
-    url = f'{cluster_address}/upload/{sim["id"]}/depth.png'
+    url = f'{cluster_address}/upload/{sim_id}/depth.png'
     response = requests.post(url, data=depth_file)
 
     if response.status_code != 200:
-        logger(f'depth image upload failed for simulation {sim["id"]}. retry with upload_images(sim_id)')
+        logger(f'depth image upload failed for simulation {sim_id}. retry by calling upload_images with a simulation id')
 
 
 def dispatch(sim):
@@ -93,8 +93,9 @@ def dispatch(sim):
     # Note, this is done first in case recovery is necessary
     filename_tmp = sim_cache_filename('tmp')
 
-    with open(filename, 'wb') as f:
+    with open(filename_tmp, 'wb') as f:
         pickle.dump(sim, f)
+
     for key, val in sim.items():
         if type(val) == np.ndarray:
             sim[key] = val.tolist()
