@@ -10,45 +10,83 @@ import calendar
 import requests
 import transfer_data
 import pickle
+from PIL import Image
 
 from settings import cluster_address
 
 local_path = os.environ['PWD']
 
+def logger(msg):
+    print(msg)
 
-def dispatch(simulation):
+def load_cached_sim(filename):
+    """
+    Utility function useful for loading simulations from disk for testing
+    """
+    with open(filename, 'rb') as f:
+        return pickle.load(f)
+
+def save_data_as_image(data, filename):
+    """
+    Save the image given by an BGR numpy array as an image in a given location
+    """
+    rgb = np.uint8(data)
+    rgb = rgb[:, :, ::-1]
+    i = Image.fromarray(rgb)
+
+    i.save(filename)
+
+def save_data_for_upload(data, filename):
+    filename = '/tmp/{filename}'.format(filename=filename)
+    save_data_as_image(data, filename)
+    return filename
+
+def dispatch(sim):
     "Posts data to server to create a new run of a simulation"
 
-    for key, val in simulation.items():
+    for key, val in sim.items():
         if type(val) == np.ndarray:
-            simulation[key] = val.tolist()
+            sim[key] = val.tolist()
 
     url_early = f'{cluster_address}/simulation/contour-info'
-    url_rest = f'{cluster_address}/simulation/additional-info'
     early_keys = ['name', 'email', 'contour']
+ 
+    early_sim = {key: sim[key] for key in early_keys}
 
-    # First we send only the outline data (so that simulation can start)
-    print("Sending Contour Info")
-    early_simulation = {key: simulation[key] for key in early_keys}
+    response = transfer_data.post_encoded(url_early, early_sim)
 
-    response = transfer_data.post_encoded(url_early, early_simulation)
+    if response.status_code != 200:
+        # do something here to handle failure
+        logger(f'simulation upload failed')
 
-    simulation['id'] = response.json()['id']
+    sim['id'] = response.json()['id']
 
-    # Next we send the rest of the data
-    print("Sending Additional Info")
-    rest_simulation = {key: simulation[key] for key in simulation.keys()
-                       if key not in early_keys}
+    # upload files
+    rgb_filename = save_data_for_upload(sim['rgb_with_contour'],'rgb_with_contour.png')
+    depth_filename = save_data_for_upload(sim['depth'],'depth.png')
 
-    response = transfer_data.post_encoded(url_rest, rest_simulation)
+    with open(rgb_filename, 'rb') as f:
+        url = f'{cluster_address}/upload/{sim["id"]}/rgb_with_contour.png'
+        response = requests.post(url, data=f)
 
-    # Finally, we save the simulation locally in case anything goes wrong
-    filename = 'sim-client-cache/{sim_id}.npy'.format(sim_id=simulation['id'])
+        if response.status_code != 200:
+            logger(f'rgb_image upload failed for simulation {sim["id"]}')
+
+
+    with open(depth_filename, 'rb') as f:
+        url = f'{cluster_address}/upload/{sim["id"]}/depth.png'
+        response = requests.post(url, data=f)
+
+        if response.status_code != 200:
+            logger(f'rgb_image upload failed for simulation {sim["id"]}')
+
+    # Finally, we save the full simulation locally in case we want to re-run anything
+    filename = 'sim-client-cache/{sim_id}.npy'.format(sim_id=sim['id'])
 
     with open(filename, 'wb') as f:
-        pickle.dump(simulation, f)
+        pickle.dump(sim, f)
 
-    return simulation['id']
+    return sim['id']
 
 
 def fetch_all():
