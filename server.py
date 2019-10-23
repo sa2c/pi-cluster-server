@@ -84,10 +84,9 @@ def start_simulation():
         if type(value) == list:
             simulation[key] = np.array(value)
 
-    sim_id = model.create_simulation(simulation)
-    job_id = model.run_simulation(sim_id)
+    sim_id = model.queue_simulation(simulation)
 
-    return {'id': str(sim_id), 'job_id': str(job_id)}
+    return {'id': str(sim_id) }
 
 @app.route('/upload/<sim_id>/<filename>', methods=['POST'])
 def simulation_handle_upload(sim_id, filename):

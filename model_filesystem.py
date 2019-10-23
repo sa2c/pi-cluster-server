@@ -1,5 +1,6 @@
 import status_codes
 import numpy as np
+import re
 import utils
 import settings
 import os
@@ -200,18 +201,6 @@ def write_batch_script(sim_id):
 ######################################
 
 
-def create_simulation(sim):
-    sim_id = generate_sim_id()
-    sim['id'] = sim_id
-
-    filename = sim_datafile(sim['id'])
-
-    pickle_save(filename, sim)
-
-    touch_file(sim_id, STATUS_CREATED)
-
-    return sim_id
-
 def valid_simulations(id_list):
     # get_simulation can return None if a non-simulation directory exists in
     # simulations or if the pickle file is half-written
@@ -268,15 +257,18 @@ def write_outline(sim_id, outline):
     np.savetxt(filename, flipped_outline, fmt='%i %i')
 
 
-def run_simulation(sim_id):
+def queue_simulation(sim):
     """
-    Note: Should only really be called by queue manager, otherwise who knows where the process would be
+    Creates the simulation data files and submits the simulation to the queue manager
     """
 
-    simulation = get_simulation(sim_id)
-    import re
+    # Ensure that simulation has an ID
+    if 'id' not in sim.keys():
+        sim['id'] = generate_sim_id()
 
-    write_outline(sim_id, simulation['contour'])
+    sim_id = sim['id']
+
+    write_outline(sim_id, sim['contour'])
     batch_script = write_batch_script(sim_id)
 
     try:
@@ -288,11 +280,19 @@ def run_simulation(sim_id):
 
     job_id = re.match('^Submitted batch job ([0-9]*)', output).group(1)
 
+    with open(sim_filepath(sim_id, 'job_id'), 'w') as f:
+        f.write(job_id)
+
     print('RUNNING SIMULATION: {sim_id}'.format(sim_id=sim_id))
 
-    set_started(sim_id, job_id)
+    # Save data files for the simulation
+    filename = sim_datafile(sim['id'])
 
-    return job_id
+    pickle_save(filename, sim)
+
+    touch_file(sim_id, STATUS_CREATED)
+
+    return sim_id
 
 
 def outline_coords_file(sim_id):
