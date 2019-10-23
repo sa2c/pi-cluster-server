@@ -131,12 +131,33 @@ def get_simulation(id):
     return sim
 
 
+def make_item_serialisable(item):
+    if type(item) == np.ndarray:
+        return item.tolist()
+    else:
+        return item
+
+
+def jsonify(sims, keys=[]):
+
+    serialisable = [{
+        k: make_item_serialisable(v)
+        for k, v in sim.items() if k in keys
+    } for sim in sims]
+
+    return json.dumps(serialisable)
+
+
 @app.route('/simulations/min_drag/<nsims>', methods=['GET'])
 def min_drag_simulations(nsims):
 
     simulations = model.lowest_drag_simulations_sorted(int(nsims))
 
-    return json.dumps(simulations)
+    keys = [
+        'name', 'email', 'id', 'drag', 'images-available', 'avatar_id'
+    ]
+
+    return jsonify(simulations, keys)
 
 
 @app.route('/simulations/recent/<nsims>', methods=['GET'])
@@ -144,7 +165,11 @@ def most_recent_simulations(nsims):
 
     simulations = model.recent_simulations(int(nsims))
 
-    return json.dumps(simulations)
+    keys = [
+        'name', 'email', 'id', 'drag', 'images-available', 'avatar_id'
+    ]
+
+    return jsonify(simulations, keys)
 
 
 def sims_filtered_keys(ids, keys):
