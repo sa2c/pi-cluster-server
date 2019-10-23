@@ -345,13 +345,23 @@ def recent_simulations(num_sims=10):
 ## Avatars
 ######################################
 
-def get_avatar(sim_id):
-    """
-    Return the avatar for a given simulation
-    """
-    return 1
+def avatar_file(sim_id):
+    return sim_filepath(sim_id, 'avatar_id')
 
-def available_avatars(num_leaderboard):
+def get_avatar_id(sim_id):
+    """
+    Return the avatar id for a given simulation
+    """
+
+    filename = avatar_file(sim_id)
+
+    if os.path.exists(filename):
+        with open(avatar_file(sim_id), 'r') as f:
+            return int(f.readline())
+    else:
+        return 0
+
+def get_available_avatars(num_leaderboard=10):
     # fetch required info
     running = running_simulations()
     queued = queued_simulations()
@@ -360,12 +370,20 @@ def available_avatars(num_leaderboard):
     # IDs still visible in the UI
     visible_ids = set(running+queued+leaderboard)
 
-    used_avatars = set([ get_avatar(s) for s in visible_ids ])
+    used_avatars = set([ get_avatar_id(s) for s in visible_ids ])
 
     # work out the available avatars
     available_avatars = set(range(1,26)) - used_avatars
+    return available_avatars
 
+def choose_avatar(available):
+    return  random.choice(tuple(available))
+
+def get_next_avatar(num_leaderboard=10):
     # pick a random one
-    available_avatars.random =
+    available_avatars = get_available_avatars(num_leaderboard)
+    return choose_avatar(available_avatars)
 
-    return exclude
+def write_avatar(sim_id, avatar_id):
+    with open(avatar_file(sim_id), 'w') as f:
+        f.write(str(avatar_id))
