@@ -29,7 +29,9 @@ function SimulationList(props) {
   return (
     <div className="simulation-pane pane">
             <h1 className="title has-text-centered">{ props.title }</h1>
+      <div className="scrolling">
             {simulations}
+      </div>
         </div>
   )
 

@@ -1,10 +1,26 @@
 /* Activity Window */
 
+html,body
+  overflow: hidden
+  max-height: 100%
+  margin: 0px
+  padding: 0px
+
+#layout,#root-activity
+  height: 100%
+
 .pane
-  margin: 20px
+  margin: 10px
   float: left
+  max-height: 1000px
 
   &.lhs
+    height: 100%
     box-shadow: 5px 5px 5px #ccc
     border: 1px solid black
     border-radius: 10px
+
+  .scrolling
+    height: 800px
+    overflow-y: scroll
+    overflow-x: hidden
