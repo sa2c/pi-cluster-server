@@ -148,7 +148,13 @@ def most_recent_simulations(nsims):
 
 
 def sims_filtered_keys(ids, keys):
+    """
+    Returns a list of simulations specified by the list of IDs in `ids`, with each
+    simulation filtered to contain only dict entries given by `keys`.
+    """
     sims = [model.get_simulation(sid) for sid in ids]
+
+    sims = [ sim for sim in sims if sim is not None ]
 
     filtered = [{key: val
                  for key, val in sim.items() if key in keys} for sim in sims]
@@ -159,11 +165,18 @@ def string_to_rounded_int(str):
     return int(round(float(str)))
 
 def read_usage():
-
-    num_retries = 5
+    """
+    Read the usage information from ~/cluster-load/info. Information is expected to
+    be updated through another process.
+    The function creates ~/cluster-load/info if it doesn't exists.
+    """
 
     # Because the file transfer might change files as they're being read, this could fail
     # Retry until success or num_retries
+
+    num_retries = 10
+
+    utils.ensure_exists('~/cluster-load/info/')
 
     for retries in range(num_retries):
         try:
@@ -176,7 +189,7 @@ def read_usage():
             break
 
         except subprocess.CalledProcessError as e:
-            if(retries == retries - 1):
+            if(retries == num_retries - 1):
                 raise(e)
             else:
                 continue
@@ -226,11 +239,6 @@ def run_filepath(index, filename):
     directory = run_directory(index)
     path = os.path.join(directory, filename)
     return path
-
-
-def setup_cluster_inbox():
-    utils.ensure_exists(settings.cluster_path + '/inbox')
-    utils.ensure_exists(settings.cluster_path + '/signal_in')
 
 
 if __name__ == '__main__':

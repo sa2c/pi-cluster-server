@@ -208,38 +208,6 @@ def write_batch_script(sim_id):
 
     return filename
 
-######################################
-## Public API
-######################################
-
-
-def valid_simulations(id_list):
-    # get_simulation can return None if a non-simulation directory exists in
-    # simulations or if the pickle file is half-written
-
-    return [s for s in [get_simulation(i) for i in id_list] if s is not None]
-
-
-def all_simulations():
-    return valid_simulations(simulation_id_list())
-
-def get_ip_info(sim_id):
-    hostfilename = sim_filepath(sim_id, 'hostfile')
-    with open(hostfilename) as f:
-        ips = [ line.split(" ")[0] for line in f.readlines() ]
-
-    return ips
-
-def add_hostname_info(sim):
-    sim['cores'] = get_ip_info(sim['id'])
-    return sim
-
-def queued_simulations():
-    return [ s for s in simulation_id_list() if is_sim_queued(s) ]
-
-def running_simulations():
-    return [ s for s in simulation_id_list() if is_sim_running(s) ]
-
 def get_nodes(sim_id):
     """
     If slurm.hosts file exists (as written by the jobscript), then return a list of the node
@@ -256,6 +224,31 @@ def get_nodes(sim_id):
 
     return ips
 
+
+######################################
+## Public API
+######################################
+
+
+def valid_simulations(id_list):
+    # get_simulation can return None if a non-simulation directory exists in
+    # simulations or if the pickle file is half-written
+
+    return [s for s in [get_simulation(i) for i in id_list] if s is not None]
+
+
+def all_simulations():
+    return valid_simulations(simulation_id_list())
+
+def add_hostname_info(sim):
+    sim['cores'] = get_nodes(sim['id'])
+    return sim
+
+def queued_simulations():
+    return [ s for s in simulation_id_list() if is_sim_queued(s) ]
+
+def running_simulations():
+    return [ s for s in simulation_id_list() if is_sim_running(s) ]
 
 def get_simulation(sim_id):
     """
