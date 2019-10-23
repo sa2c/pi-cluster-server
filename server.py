@@ -131,10 +131,10 @@ def get_simulation(id):
     return sim
 
 
-@app.route('/simulations/max_drag/<nsims>', methods=['GET'])
-def max_drag_simulations(nsims):
+@app.route('/simulations/min_drag/<nsims>', methods=['GET'])
+def min_drag_simulations(nsims):
 
-    simulations = model.highest_drag_simulations_sorted(int(nsims))
+    simulations = model.lowest_drag_simulations_sorted(int(nsims))
 
     return json.dumps(simulations)
 

@@ -80,7 +80,7 @@ class Layout extends React.Component {
   }
 
   fetchBestSimulations() {
-    this.simulationFetcher("/simulations/max_drag/10", 'bestSimulations');
+    this.simulationFetcher("/simulations/min_drag/10", 'bestSimulations');
   }
 
   fetchRecentSimulations() {
