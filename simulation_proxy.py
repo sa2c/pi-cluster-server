@@ -26,7 +26,7 @@ def load_cached_sim(filename):
     with open(filename, 'rb') as f:
         return pickle.load(f)
 
-def save_data_as_image(data, filename):
+def save_data_for_upload(data):
     """
     Save the image given by an BGR numpy array as an image in a given location
     """
@@ -34,12 +34,10 @@ def save_data_as_image(data, filename):
     rgb = rgb[:, :, ::-1]
     i = Image.fromarray(rgb)
 
-    i.save(filename)
+    img_bytes = io.BytesIO()
+    i.save(img_bytes, format='PNG')
 
-def save_data_for_upload(data, filename):
-    filename = '/tmp/{filename}'.format(filename=filename)
-    save_data_as_image(data, filename)
-    return filename
+    return img_bytes.getvalue()
 
 def dispatch(sim):
     "Posts data to server to create a new run of a simulation"
@@ -62,23 +60,21 @@ def dispatch(sim):
     sim['id'] = response.json()['id']
 
     # upload files
-    rgb_filename = save_data_for_upload(sim['rgb_with_contour'],'rgb_with_contour.png')
-    depth_filename = save_data_for_upload(sim['depth'],'depth.png')
+    rgb_file = save_data_for_upload(sim['rgb_with_contour'])
+    depth_file = save_data_for_upload(sim['depth'])
 
-    with open(rgb_filename, 'rb') as f:
-        url = f'{cluster_address}/upload/{sim["id"]}/rgb_with_contour.png'
-        response = requests.post(url, data=f)
+    url = f'{cluster_address}/upload/{sim["id"]}/rgb_with_contour.png'
+    response = requests.post(url, data=rgb_file)
 
-        if response.status_code != 200:
-            logger(f'rgb_image upload failed for simulation {sim["id"]}')
+    if response.status_code != 200:
+        logger(f'rgb_image upload failed for simulation {sim["id"]}')
 
 
-    with open(depth_filename, 'rb') as f:
-        url = f'{cluster_address}/upload/{sim["id"]}/depth.png'
-        response = requests.post(url, data=f)
+    url = f'{cluster_address}/upload/{sim["id"]}/depth.png'
+    response = requests.post(url, data=depth_file)
 
-        if response.status_code != 200:
-            logger(f'rgb_image upload failed for simulation {sim["id"]}')
+    if response.status_code != 200:
+        logger(f'rgb_image upload failed for simulation {sim["id"]}')
 
     # Finally, we save the full simulation locally in case we want to re-run anything
     filename = 'sim-client-cache/{sim_id}.npy'.format(sim_id=sim['id'])
