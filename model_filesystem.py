@@ -85,30 +85,6 @@ def pickle_save(filename, data):
 
     with open(filename_tmp, 'wb') as f:
         pickle.dump(data, f)
-
-    os.rename(filename_tmp, filename)
-
-    return data
-
-@lru_cache(maxsize=10)
-def pickle_load(filename):
-    with open(filename, 'rb') as f:
-        sim = pickle.load(f)
-    return sim
-
-
-def save_data_as_image(data, filename):
-    """
-    Save the image given by an BGR numpy array as an image in a given location
-    """
-    rgb = np.uint8(data)
-    rgb = rgb[:, :, ::-1]
-    i = Image.fromarray(rgb)
-
-    i.save(filename)
-
-
-######################################
 ## Utils
 ######################################
 
