@@ -181,7 +181,7 @@ def read_usage():
             else:
                 continue
 
-        
+
     line_parts = [line.split() for line in output_lines if line[:7]=='10.0.0.']
 
     cpu_usage = {
@@ -202,7 +202,7 @@ def get_activity():
     # Note that this could still fail if activity called again before the request completes
 
 
-    filter_keys = ['id', 'name', 'avatar', 'cores', 'images-available']
+    filter_keys = ['id', 'name', 'avatar', 'nodes', 'images-available']
 
     pending = sims_filtered_keys(model.queued_simulations(), filter_keys)
     running = sims_filtered_keys(model.running_simulations(), filter_keys)

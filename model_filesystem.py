@@ -236,6 +236,16 @@ def queued_simulations():
 def running_simulations():
     return [ s for s in simulation_id_list() if is_sim_running(s) ]
 
+def get_nodes(sim_id):
+    filepath = sim_filepath(sim_id, 'slurm.hosts')
+    with open(filepath, 'r') as f:
+        lines = f.readlines()
+
+    ips = [ line.split()[0] for line in lines ]
+
+    return ips
+
+
 def get_simulation(sim_id):
     """
     Returns simulation data for a simulation if the data file exists and the created flag exists. Otherwise returns None.
@@ -244,6 +254,9 @@ def get_simulation(sim_id):
 
     datafile = sim_datafile(sim_id)
 
+    simulation = None
+
+    # Read the info about simulation if it has been created
     if check_status(sim_id, STATUS_CREATED) and os.path.isfile(datafile):
         simulation = pickle_load(datafile)
         simulation['drag'] = get_drag(sim_id)
@@ -251,10 +264,9 @@ def get_simulation(sim_id):
         # set the images available key for simulation
         simulation['images-available'] = sim_check_file(sim_id, 'rgb_with_contour.png') and sim_check_file(sim_id, 'depth.png')
 
-        return simulation
-    else:
-        return None
+        simulation['nodes'] = get_nodes(sim_id)
 
+    return simulation
 
 def write_outline(sim_id, outline):
     "Takes an outline as an array and saves it to file outline file"
