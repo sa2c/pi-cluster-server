@@ -81,7 +81,7 @@ function SimulationView(props) {
             onClick={() => props.clickHandler(simulation)}
             style={{ "color" : outlineColour}} >
         <div className="simulation-heading">
-                    <Avatar whom={simulation.avatar} />
+                    <Avatar whom={simulation.avatar_id} />
                     <div className="right">
                         <div className="sim-title"> {simulation_name} </div>
                         {progressBar}
