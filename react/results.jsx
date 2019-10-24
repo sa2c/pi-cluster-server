@@ -11,6 +11,8 @@ import {
 
 import css from '../assets/styles/leaderboard.sass'
 
+import '../assets/styles/activity.sass';
+
 function SimulationViewer(props) {
     console.log(typeof props.currentSimulation)
   if (typeof props.currentSimulation == 'undefined') {
