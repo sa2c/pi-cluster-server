@@ -243,9 +243,11 @@ def get_nodes(sim_id):
 
     return ips
 
+
 ######################################
 ## Printing
 ######################################
+
 
 def mark_as_printed(sim_id):
     """
@@ -256,13 +258,15 @@ def mark_as_printed(sim_id):
 
     os.remove(filepath)
 
+
 def find_to_print():
     cmd = 'ls {dir}/*/status.toprint'.format(dir=simulation_store_directory())
     output = subprocess.check_output(cmd, shell=True).decode('utf8')
 
-    print_ids = [int(path.split('/')[-2]) for path in output.splitlines() ] 
+    print_ids = [int(path.split('/')[-2]) for path in output.splitlines()]
 
     return sorted(print_ids)
+
 
 def next_to_print():
     """
@@ -274,6 +278,7 @@ def next_to_print():
         return to_print[0]
     else:
         return None
+
 
 ######################################
 ## Public API
@@ -371,16 +376,18 @@ def get_progress(sim_id):
 
     return percentage
 
+
 def get_simulation_detail_key(sim_id, key):
     filepath = sim_filepath(sim_id, 'all_data.pickle')
 
     if os.path.isfile(filepath):
-        with open(filepath,'rb') as f:
+        with open(filepath, 'rb') as f:
             sim = pickle.load(f)
             val = sim[key]
         return val
     else:
-        print("key simulation key: file {filepath} not found".format(filepath=filepath))
+        print("key simulation key: file {filepath} not found".format(
+            filepath=filepath))
         return None
 
 
@@ -488,7 +495,9 @@ def lowest_drag_simulations_sorted(num_sims=10):
 def recently_finished_simulations(num_sims=10):
     "fetches `num_sims` simulations with the highest ID"
 
-    recent_sim_ids = [sim_id for sim_id in simulation_id_list() if is_sim_finished(sim_id) ]
+    recent_sim_ids = [
+        sim_id for sim_id in simulation_id_list() if is_sim_finished(sim_id)
+    ]
     sorted_sim_ids = sorted(recent_sim_ids, reverse=True)[:num_sims]
 
     return valid_simulations(sorted_sim_ids)
@@ -549,3 +558,4 @@ def get_next_avatar(num_leaderboard=10):
 def write_avatar(sim_id, avatar_id):
     with open(avatar_file(sim_id), 'w') as f:
         f.write(str(avatar_id))
+
