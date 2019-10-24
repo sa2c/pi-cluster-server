@@ -9,6 +9,7 @@ import pickle
 from PIL import Image
 import glob
 import random
+from repoze.lru import lru_cache
 
 from jinja2 import Template
 
@@ -108,6 +109,7 @@ def pickle_save(filename, data):
     return data
 
 
+@lru_cache(maxsize=20)
 def pickle_load(filename):
     """
     Loads objects from a pickle file with cache. Note, care should be taken not to
@@ -115,6 +117,7 @@ def pickle_load(filename):
     """
     with open(filename, 'rb') as f:
         sim = pickle.load(f)
+
     return sim
 
 
