@@ -1,5 +1,4 @@
-* MAYBE No ways to detect errors if slurm run fails
-- something that stops but doesn't finish will show as running
+* TODO No original photo on the wind image
 * DONE Make sure the runner is OK, one option could be:
   - Some scaling could/would be nice to inform job size
   - Install SLURM - https\://medium.com/@glmdev/building-a-raspberry-pi-cluster-784f0df9afbd
@@ -19,7 +18,22 @@
  - Server should maintain a "to be printed" state
  - printer should notify server if there are jobs which should be marked as printed
  - a process runs on a machine and prints the jobs
-* MAYBE Client logger should write to some visible console somewhere...
+* TODO Scaling test
+ - the simulations are taking a long time (how long...?)
+ - Measure them
+ - Can I parallelise the images or something?
+* TODO Reduce activity refresh stuff
+* the job output is not flushing?
+* Does UI keep retrying to submit simulation if network send fails...? Is there an easy retry manually?
+* Are we resilient to things being off/down/not working
+* PHASE2 Generating the images is too slow
+  - Option 1: do this in parallel (probably 4 times faster)
+  - Option 2: do this on the client (or some client)
+  - Option 3: Hack together a plotter that can run on the client? (maybe the easiest)
+* delete my private keys from the cluster!!
+* what about disk space?? do I have enough?? Should I check before the festival?
+* ED Are the avatars suitable...??
+* HOME: Client logger should write to some visible console somewhere...
   - Client should retry until success
   - Client should give feedback on success
   - What should the simulation job do once it gets to the part that needs the additional info
@@ -37,27 +51,6 @@
  - Server currently returns the right info in this case (i.e. images-available)
  - We just need a spinning icon whilst these are uploaded
  - Another option could be that the client generates a png file and just sends that to the server....would that be quicker?
-* TODO Scaling test
- - the simulations are taking a long time (how long...?)
- - Measure them
- - Can I parallelise the images or something?
-* TODO Reduce activity refresh stuff
-* the job output is not flushing
-* Things that should be solved by above:
- - should fail with a sensible error message if ADDITIONAL_INFO status not there when needed
- - UI should keep retrying if there is an issue sending network traffic (e.g. additional info). If it fails, it should notify and warn. It should also provide a way to send manually, and should warn the user that this is the thing to do.
-* Things to check before the festival
-  - client should notify if the cluster is somehow down
-* make activity refresh less frequent
-* Move timestamp on client
-- the time stamp on the top left of the activity page should be on the bottom right (really)
-* PHASE2 client could temperature
-  - can I add a thermometer to the cluster view? just a subtle little line on the RHS of the cluster (maybe the same colour as the pi)
-* PHASE2 Generating the images is too slow
-  - Option 1: do this in parallel (probably 4 times faster)
-  - Option 2: do this on the client (or some client)
-  - Option 3: Hack together a plotter that can run on the client? (maybe the easiest)
-
-* delete my private keys from the cluster!!
-* what about disk space?? do I have enough?? Should I check before the festival?
+* MAYBE No ways to detect errors if slurm run fails
+- something that stops but doesn't finish will show as running
 * PHASE2 Client should notice if cpu_usage goes out of sync
