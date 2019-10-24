@@ -41,7 +41,7 @@ cores_per_node = 4
 
 nodes_per_job = 1
 
-root_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.dirname(os.path.abspath(__file__)).replace('/nfs/nodeimg','')
 
 cfdcommand = "python3 " + root_dir + "/cfd/runcfd.py {id} {ncores} {hostfile} 2>{output}.err >> {output}"
 
