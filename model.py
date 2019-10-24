@@ -254,11 +254,25 @@ def all_simulations():
 
 
 def queued_simulations():
-    return [s for s in simulation_id_list() if is_sim_queued(s)]
+    """
+    Returns a list of IDs of queued simulations, in their order in the queue.
+    The last to be added is returned first.
+    """
+
+    ids = [s for s in simulation_id_list() if is_sim_queued(s)]
+    ids.sort(reverse=True)
+
+    return ids
 
 
 def running_simulations():
-    return [s for s in simulation_id_list() if is_sim_running(s)]
+    """
+    Returns a list of IDs of running simulations, most recently started first
+    """
+    ids = [s for s in simulation_id_list() if is_sim_running(s)]
+    ids.sort(reverse=True)
+
+    return ids
 
 
 def get_progress(sim_id):
