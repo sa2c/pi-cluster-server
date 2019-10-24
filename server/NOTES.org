@@ -1,3 +1,11 @@
+* Do it all with jobsteps...!!! How awesome would that be...!?
+  - preprocess
+  - FEM
+  - postprocess (two images)
+  - generate_pdf
+* ACtivity page doesn't refresh when ImageAvailable is now available
+  - use an if statement to show a different image until the image is available
+* Jobs are not being put in a running state
 * TODO No original photo on the wind image
 * DONE Make sure the runner is OK, one option could be:
   - Some scaling could/would be nice to inform job size

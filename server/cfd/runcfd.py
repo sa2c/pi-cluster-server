@@ -31,6 +31,7 @@ from createcontoureps import *
 import computedrag
 import model
 import json
+from images_to_pdf.pdfgen import build_sim_document
 
 # Read the project name and other flags from the command line arguments
 #
@@ -55,53 +56,53 @@ print("###################################################################\n")
 #
 #################################################
 
-start = time.time()
-generate_mesh_from_outline(sim_id, nprocs)
-end = time.time()
-timing['elapsed'].append(end - start)
-timing['steps'].append('Step 1: Read the outline and generate the mesh')
-
-print("Step 1 completed successfully\n\n")
-print("Starting Step 2 (CFD Mesh  -->  CFD Results)")
-print("###################################################################\n")
-#
-# Step 2: Run Elmer with the mesh file generated in Step 1
-#
-##########################################################
-
-start = time.time()
-run_cfd_simulation(sim_id, nprocs)
-end = time.time()
-timing['elapsed'].append(end - start)
-timing['steps'].append(
-    'Step 2: Run Elmer with the mesh file generated in Step 1')
-
-print("Step 2 completed successfully\n\n")
-print("Starting Step 3 (CFD Results  -->  VTK files)")
-print("###################################################################\n")
-#
-# Step 3: Create .vtk files from Elmer output
-#
-#####################################################
-
-start = time.time()
-generate_vtk_files(sim_id, nprocs)
-end = time.time()
-timing['elapsed'].append(end - start)
-timing['steps'].append('Step 3: Create .vtk files from Elmer output')
-
-print("Step 3 completed successfully\n\n")
-print("Starting Step 4 (VTK files  -->  Images)")
-print("###################################################################\n")
-#
-# Step 4: Process .vtk files and generate images for visualisation
-#
-##################################################################
+### start = time.time()
+### generate_mesh_from_outline(sim_id, nprocs)
+### end = time.time()
+### timing['elapsed'].append(end - start)
+### timing['steps'].append('Step 1: Read the outline and generate the mesh')
+### 
+### print("Step 1 completed successfully\n\n")
+### print("Starting Step 2 (CFD Mesh  -->  CFD Results)")
+### print("###################################################################\n")
+### #
+### # Step 2: Run Elmer with the mesh file generated in Step 1
+### #
+### ##########################################################
+### 
+### start = time.time()
+### run_cfd_simulation(sim_id, nprocs)
+### end = time.time()
+### timing['elapsed'].append(end - start)
+### timing['steps'].append(
+###     'Step 2: Run Elmer with the mesh file generated in Step 1')
+### 
+### print("Step 2 completed successfully\n\n")
+### print("Starting Step 3 (CFD Results  -->  VTK files)")
+### print("###################################################################\n")
+### #
+### # Step 3: Create .vtk files from Elmer output
+### #
+### #####################################################
+### 
+### start = time.time()
+### generate_vtk_files(sim_id, nprocs)
+### end = time.time()
+### timing['elapsed'].append(end - start)
+### timing['steps'].append('Step 3: Create .vtk files from Elmer output')
+### 
+### print("Step 3 completed successfully\n\n")
+### print("Starting Step 4 (VTK files  -->  Images)")
+### print("###################################################################\n")
+### #
+### # Step 4: Process .vtk files and generate images for visualisation
+### #
+### ##################################################################
 
 num_timesteps = 10
 
 start = time.time()
-generate_images_vtk(sim_id, nprocs, num_timesteps)
+left, right, rgb, depth = generate_images_vtk(sim_id, nprocs, num_timesteps)
 end = time.time()
 timing['elapsed'].append(end - start)
 timing['steps'].append(
@@ -126,6 +127,22 @@ timing['steps'].append('Step 5: Compute drag from simulation output')
 print("Hurrayyyyy! The program is executed successfully.")
 print("\nYou can now display the images\n")
 
+print("Starting Step 6 (Generate PDF)")
+print("###################################################################\n")
+#
+# Step 6: Generate PDF for printing
+#
+##################################################################
+start = time.time()
+images = [
+    depth,
+    rgb,
+    left,
+    right,
+]
+
+build_sim_document(sim_id, images)
+start = time.time()
 elapsed_time_file = model.run_directory(sim_id) + '/elapsed.json'
 with open(elapsed_time_file, 'w') as outfile:
     json.dump(timing, outfile)

@@ -107,7 +107,6 @@ def plot(canvas,
          dovector,
          docontour,
          subject_image,
-         target_dims,
          velo_magn_max=None):
 
     fig = canvas.figure
@@ -133,8 +132,8 @@ def plot(canvas,
     ax.set_xlim(xplotlims)
     ax.set_ylim(yplotlims)
 
-    target_dims[0] = xplotlims[1] - xplotlims[0]
-    target_dims[1] = yplotlims[1] - yplotlims[0]
+    target_width = xplotlims[1] - xplotlims[0]
+    target_height = yplotlims[1] - yplotlims[0]
 
     # In any case we plot the mesh
     if dotri:
@@ -174,31 +173,36 @@ def plot(canvas,
                   width=0.0075,
                   scale=0.0325)
 
-    if not hasattr(fig.canvas, 'renderer'):
-        fig.canvas.draw()
-
     if subject_image is not None:
         #https://matplotlib.org/gallery/misc/agg_buffer_to_array.html
         #subject_image = subject_image[:, :, [0, 1, 2]]
         M = np.float32([[1, 0, 0], [0, -1, subject_image.shape[0]]])
 
         im_x, im_y, _ = subject_image.shape
+        fig.canvas.draw()
         _, dxpx, _ = np.array(fig.canvas.renderer._renderer).shape
         dypx = int((im_y / im_x) * dxpx)
         subject_layer = cv2.warpAffine(subject_image, M, (dxpx, dypx))
 
         ax.imshow(subject_layer)
 
-    fig.canvas.draw()
-    return np.array(fig.canvas.renderer._renderer)
+    return target_width, target_height
 
 
-def vtk_to_plot(canvas, vtk_filename, nprocs, dotri,dovector,docontour,image,\
-                target_dims=[0,0], velocity_magn=None):
+def vtk_to_plot(canvas,
+                vtk_filename,
+                nprocs,
+                dotri,
+                dovector,
+                docontour,
+                image,
+                velocity_magn=None):
 
     if image is not None:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     coords, elems, velocity = vtkfile_to_numpy(vtk_filename, nprocs)
-    return plot(canvas, coords, elems, velocity, dotri, dovector, docontour,
-                image, target_dims, velocity_magn)
+    target_w, target_h = plot(canvas, coords, elems, velocity, dotri, dovector,
+                              docontour, image, velocity_magn)
+
+    return target_w, target_h

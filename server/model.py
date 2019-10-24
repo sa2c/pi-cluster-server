@@ -22,6 +22,7 @@ STATUS_CREATED = 'status.created'
 # This is also set in the batch file
 STATUS_STARTED = 'status.started'
 STATUS_FINISHED = 'status.finished'
+STATUS_TOPRINT = 'status.toprint'
 
 # Read batch template file if exists
 template_file = 'templates/slurm.batch'
@@ -247,6 +248,15 @@ def get_nodes(sim_id):
 ######################################
 ## Printing
 ######################################
+
+def sim_printstatus(sim_id):
+    """
+    Mark a job as printed
+    """
+
+    filepath = sim_filepath(sim_id, 'status.toprint')
+
+    os.remove(filepath)
 
 
 def mark_as_printed(sim_id):
@@ -558,4 +568,3 @@ def get_next_avatar(num_leaderboard=10):
 def write_avatar(sim_id, avatar_id):
     with open(avatar_file(sim_id), 'w') as f:
         f.write(str(avatar_id))
-
