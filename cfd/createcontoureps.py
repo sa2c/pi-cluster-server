@@ -219,8 +219,10 @@ def generate_images_vtk(sim_id, nprocs, num_timesteps):
     # read RGB, but avoid failing just because it can't be read
     try:
         rgb = model.get_simulation_detail_key(sim_id, 'rgb')
-    except:
-        print("failed to read RGB value")
+    except Exception as e:
+        e.print_exc()
+
+        print("failed to read RGB value for {sim_id}".format(sim_id))
 
     fig = plt.figure()
 

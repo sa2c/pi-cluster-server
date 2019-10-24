@@ -349,6 +349,7 @@ def get_simulation_detail_key(sim_id, key):
             val = sim[key]
         return val
     else:
+        print("key simulation key: file {filepath} not found".format(filepath=filepath))
         return None
 
 
