@@ -190,13 +190,14 @@ def generate_images_vtk(sim_id, nprocs, num_timesteps):
     Generates gif images for display on screen. The images are (cryptically) called
     named left.gif and right.gif
     """
-    sim = model.get_simulation(sim_id)
 
-    if sim is not None:
-        if 'rgb' in sim:
-            rgb = sim['rgb']
-        else:
-            rgb = None
+    rgb = None
+
+    # read RGB, but avoid failing just because it can't be read
+    try:
+        rgb = model.get_simulation_detail_key(sim_id, 'rgb')
+    except:
+        print("failed to read RGB value")
 
     fig = plt.figure()
 

@@ -8,7 +8,6 @@ import subprocess
 import pickle
 from PIL import Image
 import glob
-from functools import lru_cache
 import random
 
 from jinja2 import Template
@@ -102,14 +101,13 @@ def pickle_save(filename, data):
     filename_tmp = filename + 'tmp'
 
     with open(filename_tmp, 'wb') as f:
-        pickle.dump(data, f)
+        pickle.dump(data, f, 2)
 
     os.rename(filename_tmp, filename)
 
     return data
 
 
-@lru_cache(maxsize=30)
 def pickle_load(filename):
     """
     Loads objects from a pickle file with cache. Note, care should be taken not to
@@ -338,6 +336,17 @@ def get_progress(sim_id):
         percentage = int(100 * done / todo)
 
     return percentage
+
+def get_simulation_detail_key(sim_id, key):
+    filepath = sim_filepath(sim_id, 'all_data.pickle')
+
+    if os.path.isfile(filepath):
+        with open(filepath,'rb') as f:
+            sim = pickle.load(f)
+            val = sim[key]
+        return val
+    else:
+        return None
 
 
 def get_simulation(sim_id):
