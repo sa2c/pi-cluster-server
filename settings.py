@@ -57,6 +57,12 @@ poly_fname = "simulation.poly"
 # Configuration files
 elmer_sif_file = '{root_dir}/cfd/config.sif'.format(root_dir=root_dir)
 
+number_timesteps = 10
+
+# The total number of times that "Starting Step" is written to the slurm output file
+# This is used for progress indication. Take care when changing this.
+jobstep_count = 5
+
 # Executables
 triangle_exe = '{root_dir}/cfd/triangle-lib/triangle'.format(root_dir=root_dir)
 elmer_postprocess_serial_exe = '{root_dir}/cfd/elmerpostprocessserial'.format(root_dir=root_dir)
