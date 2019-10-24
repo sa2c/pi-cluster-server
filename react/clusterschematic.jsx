@@ -221,6 +221,7 @@ function ClusterSchematic(props) {
         <ClusterNetworkCanvas info={props.info}/>
       {
           props.info.map((row, row_index) => {
+
               return (
                   <div key={row_index} className="cluster-row">
                   {
