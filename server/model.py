@@ -1,5 +1,5 @@
-import status_codes
 import numpy as np
+import glob
 import re
 import utils
 import settings
@@ -249,14 +249,12 @@ def get_nodes(sim_id):
 ## Printing
 ######################################
 
-def sim_printstatus(sim_id):
+def set_toprint(sim_id):
     """
-    Mark a job as printed
+    Mark a job as ready for printing
     """
 
-    filepath = sim_filepath(sim_id, 'status.toprint')
-
-    os.remove(filepath)
+    touch_file(sim_id, STATUS_TOPRINT)
 
 
 def mark_as_printed(sim_id):
@@ -264,16 +262,19 @@ def mark_as_printed(sim_id):
     Mark a job as printed
     """
 
-    filepath = sim_filepath(sim_id, 'status.toprint')
+    filepath = sim_filepath(sim_id, STATUS_TOPRINT)
 
-    os.remove(filepath)
+    if os.path.isfile(filepath):
+        os.remove(filepath)
 
 
 def find_to_print():
-    cmd = 'ls {dir}/*/status.toprint'.format(dir=simulation_store_directory())
-    output = subprocess.check_output(cmd, shell=True).decode('utf8')
+    paths = glob.glob("{dir}/*/status.toprint".format(dir=simulation_store_directory()))
 
-    print_ids = [int(path.split('/')[-2]) for path in output.splitlines()]
+    if len(paths) > 0:
+        print_ids = [int(path.split('/')[-2]) for path in paths]
+    else:
+        print_ids = []
 
     return sorted(print_ids)
 

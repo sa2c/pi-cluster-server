@@ -43,6 +43,9 @@ def build_sim_document(sim_id, images):
 
     build_document(filename, images, name, drag)
 
+    # mark the PDF for the printer
+    model.set_toprint(sim_id)
+
 
 def build_document(filename, images, name, drag):
     """
