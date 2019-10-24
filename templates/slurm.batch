@@ -1,8 +1,8 @@
 #!/bin/bash
 #
 #SBATCH --job-name=sim-{{sim_id}}
-#SBATCH --output=$ROOT_DIR/simulations/{{sim_id}}/slurm.output
-#SBATCH --error=$ROOT_DIR/simulations/{{sim_id}}1/slurm.error
+#SBATCH --output={{root_dir}}/simulations/{{sim_id}}/slurm.output
+#SBATCH --error={{root_dir}}/simulations/{{sim_id}}/slurm.error
 #
 # Number of nodes
 #SBATCH --ntasks=16
@@ -19,6 +19,9 @@ ROOT_DIR={{root_dir}}
 cd $ROOT_DIR/simulations/$SIM_ID
 echo $PWD
 
+# Store job ID to file
+echo ${RES##* } > job_id
+
 # Write host info
 
 for host in `scontrol show hostname $SLURM_NODELIST`
@@ -30,7 +33,7 @@ done > slurm.hosts
 touch "{{start_file}}"
 
 # Run simulation
-python3 $ROOT_DIR/cfd/runcfd.py $SIM_ID 16 $ROOT_DIR/simulations/$SIM_ID/hostfile
+python3 $ROOT_DIR/cfd/runcfd.py $SIM_ID 16
 
 # Notify finished
 touch "{{end_file}}"
