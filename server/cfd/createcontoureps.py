@@ -172,11 +172,34 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
 
 
 # save a gif from a list of PIL images
-def save_gif(filename, images):
+def save_gif(filename, images, target_dims):
     if images[0] is None:
         print("NO image to write to {filename} (image is None)".format(filename=filename))
     else:
         print('writing image: {filename}'.format(filename=filename))
+
+        # manually crop image
+        target_width = target_dims[0]
+        target_height = target_dims[1]
+        current_height = images[0].height
+        current_width =  images[0].width
+
+        bbox = [0, 0, current_width, current_height]
+
+        # crop if too tall
+        if(current_height > target_height):
+            adjust = (current_height - target_height) / 2
+            bbox[1] += adjust
+            bbox[3] -= adjust
+
+        if(current_width > target_width):
+            adjust = (current_width - target_width) / 2
+            bbox[0] += adjust
+            bbox[2] -= adjust
+
+        print(bbox)
+        images = [ image.crop(box=bbox) for image in images ]
+
         images[0].save(filename,
                        save_all=True,
                        append_images=images[1:],
@@ -190,29 +213,34 @@ def generate_images_vtk(sim_id, nprocs, num_timesteps):
     Generates gif images for display on screen. The images are (cryptically) called
     named left.gif and right.gif
     """
-    sim = model.get_simulation(sim_id)
 
-    if sim is not None:
-        if 'rgb' in sim:
-            rgb = sim['rgb']
-        else:
-            rgb = None
+    rgb = None
+
+    # read RGB, but avoid failing just because it can't be read
+    try:
+        rgb = model.get_simulation_detail_key(sim_id, 'rgb')
+    except Exception as e:
+        e.print_exc()
+
+        print("failed to read RGB value for {sim_id}".format(sim_id))
 
     fig = plt.figure()
 
     simdir = model.run_directory(sim_id) + '/'
 
+    target_dims = [0,0]
     images_left = [
         generate_single_vtk_plot(fig, i, sim_id, nprocs, False, True, False,
-                                 rgb) for i in range(1, 11)
+                                 target_dims, rgb) for i in range(1, 11)
     ]
-    save_gif(simdir + 'left.gif', images_left)
+    save_gif(simdir + 'left.gif', images_left, target_dims)
 
+    target_dims = [0,0]
     images_right = [
         generate_single_vtk_plot(fig, i, sim_id, nprocs, True, False, True,
-                                 rgb) for i in range(1, 11)
+                                 target_dims, rgb) for i in range(1, 11)
     ]
-    save_gif(simdir + 'right.gif', images_right)
+    save_gif(simdir + 'right.gif', images_right, target_dims)
 
     return
 
@@ -224,6 +252,7 @@ def generate_single_vtk_plot(fig,
                              dotri,
                              dovector,
                              docontour,
+                             target_dims,
                              image=None,
                              velocity_magn=None):
 
@@ -234,7 +263,7 @@ def generate_single_vtk_plot(fig,
 
     if (os.path.isfile(vtk_filename) == True):
         post.vtk_to_plot(fig.canvas, vtk_filename, nprocs, dotri, dovector,
-                         docontour, image, velocity_magn)
+                         docontour, image, target_dims, velocity_magn)
         im = fig2img(fig)
         return im
     else:

@@ -41,7 +41,7 @@ cores_per_node = 4
 
 nodes_per_job = 1
 
-root_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.dirname(os.path.abspath(__file__)).replace('/nfs/nodeimg','')
 
 cfdcommand = "python3 " + root_dir + "/cfd/runcfd.py {id} {ncores} {hostfile} 2>{output}.err >> {output}"
 
@@ -56,6 +56,12 @@ poly_fname = "simulation.poly"
 
 # Configuration files
 elmer_sif_file = '{root_dir}/cfd/config.sif'.format(root_dir=root_dir)
+
+number_timesteps = 10
+
+# The total number of times that "Starting Step" is written to the slurm output file
+# This is used for progress indication. Take care when changing this.
+jobstep_count = 5
 
 # Executables
 triangle_exe = '{root_dir}/cfd/triangle-lib/triangle'.format(root_dir=root_dir)

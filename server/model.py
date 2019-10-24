@@ -8,7 +8,8 @@ import subprocess
 import pickle
 from PIL import Image
 import glob
-from functools import lru_cache
+import random
+from repoze.lru import lru_cache
 
 from jinja2 import Template
 
@@ -101,14 +102,14 @@ def pickle_save(filename, data):
     filename_tmp = filename + 'tmp'
 
     with open(filename_tmp, 'wb') as f:
-        pickle.dump(data, f)
+        pickle.dump(data, f, 2)
 
     os.rename(filename_tmp, filename)
 
     return data
 
 
-@lru_cache(maxsize=30)
+@lru_cache(maxsize=20)
 def pickle_load(filename):
     """
     Loads objects from a pickle file with cache. Note, care should be taken not to
@@ -116,6 +117,7 @@ def pickle_load(filename):
     """
     with open(filename, 'rb') as f:
         sim = pickle.load(f)
+
     return sim
 
 
@@ -163,6 +165,12 @@ def is_sim_running(sim_id):
 
     return check_status(
         sim_id, STATUS_STARTED) and not check_status(sim_id, STATUS_FINISHED)
+
+
+def is_sim_finished(sim_id):
+    sim_id = clean_sim_id(sim_id)
+
+    return check_status(sim_id, STATUS_FINISHED)
 
 
 def is_sim_queued(sim_id):
@@ -235,6 +243,37 @@ def get_nodes(sim_id):
 
     return ips
 
+######################################
+## Printing
+######################################
+
+def mark_as_printed(sim_id):
+    """
+    Mark a job as printed
+    """
+
+    filepath = sim_filepath(sim_id, 'status.toprint')
+
+    os.remove(filepath)
+
+def find_to_print():
+    cmd = 'ls {dir}/*/status.toprint'.format(dir=simulation_store_directory())
+    output = subprocess.check_output(cmd, shell=True).decode('utf8')
+
+    print_ids = [int(path.split('/')[-2]) for path in output.splitlines() ] 
+
+    return sorted(print_ids)
+
+def next_to_print():
+    """
+    Returns next print job, otherwise returns None
+    """
+    to_print = find_to_print()
+
+    if len(to_print) > 1:
+        return to_print[0]
+    else:
+        return None
 
 ######################################
 ## Public API
@@ -253,11 +292,25 @@ def all_simulations():
 
 
 def queued_simulations():
-    return [s for s in simulation_id_list() if is_sim_queued(s)]
+    """
+    Returns a list of IDs of queued simulations, in their order in the queue.
+    The last to be added is returned first.
+    """
+
+    ids = [s for s in simulation_id_list() if is_sim_queued(s)]
+    ids.sort(reverse=True)
+
+    return ids
 
 
 def running_simulations():
-    return [s for s in simulation_id_list() if is_sim_running(s)]
+    """
+    Returns a list of IDs of running simulations, most recently started first
+    """
+    ids = [s for s in simulation_id_list() if is_sim_running(s)]
+    ids.sort(reverse=True)
+
+    return ids
 
 
 def get_progress(sim_id):
@@ -277,23 +330,38 @@ def get_progress(sim_id):
         cmd = 'grep "MAIN:  Time:" {file}'.format(file=outputfile)
 
         # Count simulation steps
-        output = subprocess.check_output(["grep", "MAIN:  Time",
-                                          outputfile]).decode('utf-8')
+        try:
+            output = subprocess.check_output(
+                ["grep", "MAIN:  Time", outputfile]).decode('utf-8')
+            completed_steps, total_steps = output.splitlines()[-1].split(
+            )[2].split("/")
 
-        completed_steps, total_steps = output.splitlines()[-1].split(
-        )[2].split("/")
+        except subprocess.CalledProcessError as e:
+            # grep returns an error if nothing found
+            completed_steps = 0
+            total_steps = settings.number_timesteps
+
+        # Convert strings to ints
+        completed_steps = int(completed_steps)
+        total_steps = int(total_steps)
 
         # Ignore the last step, this is accounted for in the jobstep finishing
         if completed_steps == total_steps:
-            completed_steps = int(total_steps) - 1
-        total_steps = int(total_steps) - 1
+            completed_steps = total_steps - 1
+            total_steps = total_steps - 1
 
         # Count job steps (could break if anyone changes output file text)
-        output = subprocess.check_output(
-            ["grep", "Starting Step [0-9]", outputfile]).decode('utf-8')
+        total_jobsteps = settings.jobstep_count
 
-        completed_jobsteps = len(output.splitlines())
-        total_jobsteps = 5
+        try:
+            output = subprocess.check_output(
+                ["grep", "Starting Step [0-9]", outputfile]).decode('utf-8')
+
+            completed_jobsteps = len(output.splitlines())
+
+        except subprocess.CalledProcessError as e:
+            # grep returns an error if nothing found
+            completed_jobsteps = 0
 
         # Compute completion percentage
         done = float(completed_steps + completed_jobsteps)
@@ -302,6 +370,18 @@ def get_progress(sim_id):
         percentage = int(100 * done / todo)
 
     return percentage
+
+def get_simulation_detail_key(sim_id, key):
+    filepath = sim_filepath(sim_id, 'all_data.pickle')
+
+    if os.path.isfile(filepath):
+        with open(filepath,'rb') as f:
+            sim = pickle.load(f)
+            val = sim[key]
+        return val
+    else:
+        print("key simulation key: file {filepath} not found".format(filepath=filepath))
+        return None
 
 
 def get_simulation(sim_id):
@@ -405,12 +485,13 @@ def lowest_drag_simulations_sorted(num_sims=10):
     return valid_simulations(result_sim_ids)
 
 
-def recent_simulations(num_sims=10):
+def recently_finished_simulations(num_sims=10):
     "fetches `num_sims` simulations with the highest ID"
 
-    recent_sim_ids = sorted(simulation_id_list(), reverse=True)[:num_sims]
+    recent_sim_ids = [sim_id for sim_id in simulation_id_list() if is_sim_finished(sim_id) ]
+    sorted_sim_ids = sorted(recent_sim_ids, reverse=True)[:num_sims]
 
-    return valid_simulations(recent_sim_ids)
+    return valid_simulations(sorted_sim_ids)
 
 
 ######################################
@@ -440,7 +521,10 @@ def get_available_avatars(num_leaderboard=10):
     # fetch required info
     running = running_simulations()
     queued = queued_simulations()
-    leaderboard = lowest_drag_simulations_sorted(num_sims=num_leaderboard)
+
+    # leaderboard returns a dict, we extract the ID key as an int
+    leaderboard_sims = lowest_drag_simulations_sorted(num_sims=num_leaderboard)
+    leaderboard = [int(s['id']) for s in leaderboard_sims]
 
     # IDs still visible in the UI
     visible_ids = set(running + queued + leaderboard)
