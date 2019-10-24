@@ -142,7 +142,7 @@ def min_drag_simulations(nsims):
 
 
 @app.route('/simulations/recent/<nsims>', methods=['GET'])
-def most_recent_simulations(nsims):
+def most_recent_simulations(nsims=10):
 
     simulations = model.recently_finished_simulations(int(nsims))
 
