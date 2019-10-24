@@ -107,6 +107,7 @@ def plot(canvas,
          dovector,
          docontour,
          subject_image,
+         target_dims,
          velo_magn_max=None):
 
     fig = canvas.figure
@@ -131,6 +132,9 @@ def plot(canvas,
 
     ax.set_xlim(xplotlims)
     ax.set_ylim(yplotlims)
+
+    target_dims[0] = xplotlims[1] - xplotlims[0]
+    target_dims[1] = yplotlims[1] - yplotlims[0]
 
     # In any case we plot the mesh
     if dotri:
@@ -190,11 +194,11 @@ def plot(canvas,
 
 
 def vtk_to_plot(canvas, vtk_filename, nprocs, dotri,dovector,docontour,image,\
-        velocity_magn=None):
+                target_dims=[0,0], velocity_magn=None):
 
     if image is not None:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     coords, elems, velocity = vtkfile_to_numpy(vtk_filename, nprocs)
     return plot(canvas, coords, elems, velocity, dotri, dovector, docontour,
-                image, velocity_magn)
+                image, target_dims, velocity_magn)
