@@ -17,7 +17,6 @@ from jinja2 import Template
 ######################################
 
 STATUS_CREATED = 'status.created'
-STATUS_ADDITIONAL_INFO = 'status.info'
 
 # This is also set in the batch file
 STATUS_STARTED = 'status.started'
@@ -45,12 +44,10 @@ def sim_filepath(simulation_id, filename):
 def sim_datafile(simulation_id):
     return sim_filepath(simulation_id, 'data.pickle')
 
-def sim_info_file(simulation_id):
-    return sim_filepath(simulation_id, 'additional-info.pickle')
-
 
 def run_directory(index):
-    directory = '{sim_dir}/{index}'.format(sim_dir=simulation_store_directory(), index=index)
+    directory = '{sim_dir}/{index}'.format(
+        sim_dir=simulation_store_directory(), index=index)
 
     utils.ensure_exists(directory)
 
@@ -72,18 +69,23 @@ def drag_file(sim_id):
 def touch_file(sim_id, filename):
     open(sim_filepath(sim_id, filename), 'a').close()
 
+
 def sim_check_file(sim_id, filename):
     return os.path.isfile(sim_filepath(sim_id, filename))
 
+
 def check_status(sim_id, status):
     return sim_check_file(sim_id, status)
+
 
 def set_started(sim_id, job_id):
     with open(sim_filepath(sim_id, STATUS_STARTED), 'w') as f:
         f.write(job_id)
 
+
 def set_finished(sim_id):
     touch_file(sim_id, STATUS_FINISHED)
+
 
 ######################################
 ## Pickle and save/load utils
@@ -104,6 +106,7 @@ def pickle_save(filename, data):
     os.rename(filename_tmp, filename)
 
     return data
+
 
 @lru_cache(maxsize=30)
 def pickle_load(filename):
@@ -131,6 +134,7 @@ def save_data_as_image(data, filename):
 ## Utils
 ######################################
 
+
 def choose_avatar():
     return int(random.random() * 25) + 1
 
@@ -153,11 +157,13 @@ def simulation_id_list():
         for i in glob.glob('{sim_store}/[0-9]*'.format(sim_store=sim_store))
     ]
 
+
 def is_sim_running(sim_id):
     sim_id = clean_sim_id(sim_id)
 
     return check_status(
         sim_id, STATUS_STARTED) and not check_status(sim_id, STATUS_FINISHED)
+
 
 def is_sim_queued(sim_id):
     sim_id = clean_sim_id(sim_id)
@@ -198,6 +204,7 @@ def set_drag(sim_id, drag):
     with open(filename, 'w') as file:
         file.write(str(drag))
 
+
 def write_batch_script(sim_id):
     batch_contents = BATCH_TEMPLATE.render(sim_id=sim_id,
                                            start_file=STATUS_STARTED,
@@ -211,6 +218,7 @@ def write_batch_script(sim_id):
 
     return filename
 
+
 def get_nodes(sim_id):
     """
     If slurm.hosts file exists (as written by the jobscript), then return a list of the node
@@ -221,7 +229,7 @@ def get_nodes(sim_id):
         with open(filepath, 'r') as f:
             lines = f.readlines()
 
-        ips = [ line.split()[0] for line in lines ]
+        ips = [line.split()[0] for line in lines]
     else:
         ips = []
 
@@ -243,11 +251,14 @@ def valid_simulations(id_list):
 def all_simulations():
     return valid_simulations(simulation_id_list())
 
+
 def queued_simulations():
-    return [ s for s in simulation_id_list() if is_sim_queued(s) ]
+    return [s for s in simulation_id_list() if is_sim_queued(s)]
+
 
 def running_simulations():
-    return [ s for s in simulation_id_list() if is_sim_running(s) ]
+    return [s for s in simulation_id_list() if is_sim_running(s)]
+
 
 def get_progress(sim_id):
     """
@@ -266,18 +277,20 @@ def get_progress(sim_id):
         cmd = 'grep "MAIN:  Time:" {file}'.format(file=outputfile)
 
         # Count simulation steps
-        output = subprocess.check_output(["grep", "MAIN:  Time", outputfile]).decode('utf-8')
+        output = subprocess.check_output(["grep", "MAIN:  Time",
+                                          outputfile]).decode('utf-8')
 
-        completed_steps, total_steps = output.splitlines()[-1].split()[2].split("/")
+        completed_steps, total_steps = output.splitlines()[-1].split(
+        )[2].split("/")
 
         # Ignore the last step, this is accounted for in the jobstep finishing
         if completed_steps == total_steps:
             completed_steps = int(total_steps) - 1
         total_steps = int(total_steps) - 1
 
-
         # Count job steps (could break if anyone changes output file text)
-        output = subprocess.check_output(["grep", "Starting Step [0-9]", outputfile]).decode('utf-8')
+        output = subprocess.check_output(
+            ["grep", "Starting Step [0-9]", outputfile]).decode('utf-8')
 
         completed_jobsteps = len(output.splitlines())
         total_jobsteps = 5
@@ -289,7 +302,6 @@ def get_progress(sim_id):
         percentage = int(100 * done / todo)
 
     return percentage
-
 
 
 def get_simulation(sim_id):
@@ -308,7 +320,9 @@ def get_simulation(sim_id):
         simulation['drag'] = get_drag(sim_id)
 
         # set the images available key for simulation
-        simulation['images-available'] = sim_check_file(sim_id, 'rgb_with_contour.png') and sim_check_file(sim_id, 'depth.png')
+        simulation['images-available'] = sim_check_file(
+            sim_id, 'rgb_with_contour.png') and sim_check_file(
+                sim_id, 'depth.png')
 
         simulation['nodes'] = get_nodes(sim_id)
         simulation['avatar_id'] = get_avatar_id(sim_id)
@@ -319,6 +333,7 @@ def get_simulation(sim_id):
         simulation['id'] = sim_id
 
     return simulation
+
 
 def write_outline(sim_id, outline):
     "Takes an outline as an array and saves it to file outline file"
@@ -359,7 +374,6 @@ def queue_simulation(sim):
 
         job_id = re.match('^Submitted batch job ([0-9]*)', output).group(1)
 
-
         # Write job id to file
     with open(sim_filepath(sim_id, 'job_id'), 'w') as f:
         f.write(job_id)
@@ -398,12 +412,15 @@ def recent_simulations(num_sims=10):
 
     return valid_simulations(recent_sim_ids)
 
+
 ######################################
 ## Avatars
 ######################################
 
+
 def avatar_file(sim_id):
     return sim_filepath(sim_id, 'avatar_id')
+
 
 def get_avatar_id(sim_id):
     """
@@ -418,6 +435,7 @@ def get_avatar_id(sim_id):
     else:
         return 0
 
+
 def get_available_avatars(num_leaderboard=10):
     # fetch required info
     running = running_simulations()
@@ -425,21 +443,24 @@ def get_available_avatars(num_leaderboard=10):
     leaderboard = lowest_drag_simulations_sorted(num_sims=num_leaderboard)
 
     # IDs still visible in the UI
-    visible_ids = set(running+queued+leaderboard)
+    visible_ids = set(running + queued + leaderboard)
 
-    used_avatars = set([ get_avatar_id(s) for s in visible_ids ])
+    used_avatars = set([get_avatar_id(s) for s in visible_ids])
 
     # work out the available avatars
-    available_avatars = set(range(1,26)) - used_avatars
+    available_avatars = set(range(1, 26)) - used_avatars
     return available_avatars
 
+
 def choose_avatar(available):
-    return  random.choice(tuple(available))
+    return random.choice(tuple(available))
+
 
 def get_next_avatar(num_leaderboard=10):
     # pick a random one
     available_avatars = get_available_avatars(num_leaderboard)
     return choose_avatar(available_avatars)
+
 
 def write_avatar(sim_id, avatar_id):
     with open(avatar_file(sim_id), 'w') as f:
