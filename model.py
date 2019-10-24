@@ -299,8 +299,8 @@ def get_progress(sim_id):
 
         # Count simulation steps
         try:
-            output = subprocess.check_output(["grep", "MAIN:  Time",
-                                          outputfile]).decode('utf-8')
+            output = subprocess.check_output(
+                ["grep", "MAIN:  Time", outputfile]).decode('utf-8')
             completed_steps, total_steps = output.splitlines()[-1].split(
             )[2].split("/")
 
@@ -309,11 +309,14 @@ def get_progress(sim_id):
             completed_steps = 0
             total_steps = settings.number_timesteps
 
+        # Convert strings to ints
+        completed_steps = int(completed_steps)
+        total_steps = int(total_steps)
 
         # Ignore the last step, this is accounted for in the jobstep finishing
         if completed_steps == total_steps:
-            completed_steps = int(total_steps) - 1
-            total_steps = int(total_steps) - 1
+            completed_steps = total_steps - 1
+            total_steps = total_steps - 1
 
         # Count job steps (could break if anyone changes output file text)
         total_jobsteps = settings.jobstep_count
@@ -474,7 +477,10 @@ def get_available_avatars(num_leaderboard=10):
     # fetch required info
     running = running_simulations()
     queued = queued_simulations()
-    leaderboard = lowest_drag_simulations_sorted(num_sims=num_leaderboard)
+
+    # leaderboard returns a dict, we extract the ID key as an int
+    leaderboard_sims = lowest_drag_simulations_sorted(num_sims=num_leaderboard)
+    leaderboard = [int(s['id']) for s in leaderboard_sims]
 
     # IDs still visible in the UI
     visible_ids = set(running + queued + leaderboard)
