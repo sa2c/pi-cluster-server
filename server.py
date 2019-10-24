@@ -134,9 +134,7 @@ def min_drag_simulations(nsims):
 
     simulations = model.lowest_drag_simulations_sorted(int(nsims))
 
-    keys = [
-        'name', 'email', 'id', 'drag', 'images-available', 'avatar_id'
-    ]
+    keys = ['name', 'email', 'id', 'drag', 'images-available', 'avatar_id']
 
     return jsonify(simulations, keys)
 
@@ -146,9 +144,7 @@ def most_recent_simulations(nsims=10):
 
     simulations = model.recently_finished_simulations(int(nsims))
 
-    keys = [
-        'name', 'email', 'id', 'drag', 'images-available', 'avatar_id'
-    ]
+    keys = ['name', 'email', 'id', 'drag', 'images-available', 'avatar_id']
 
     return jsonify(simulations, keys)
 
@@ -229,7 +225,9 @@ def get_activity():
     # Added safety layer to ensure that cpuinfo.txt isn't written to whilst being read
     # Note that this could still fail if activity called again before the request completes
 
-    filter_keys = ['id', 'name', 'avatar_id', 'nodes', 'images-available', 'progress']
+    filter_keys = [
+        'id', 'name', 'avatar_id', 'nodes', 'images-available', 'progress'
+    ]
 
     pending = sims_filtered_keys(model.queued_simulations(), filter_keys)
     running = sims_filtered_keys(model.running_simulations(), filter_keys)
@@ -245,6 +243,24 @@ def get_activity():
     }
 
     return response
+
+@app.route('/print_queue/', methods=['GET'])
+def get_all_print_job():
+    ids = model.find_to_print()
+
+    return {'jobs': ids}
+
+
+@app.route('/print_queue/next', methods=['GET'])
+def get_print_job():
+    sim_id = model.next_to_print()
+
+    return {'id': sim_id}
+
+
+@app.route('/print_queue/done/<sim_id>', methods=['POST'])
+def finished_print_job(sim_id):
+    model.mark_as_printed(sim_id)
 
 
 def run_filepath(index, filename):

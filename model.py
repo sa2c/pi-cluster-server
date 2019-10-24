@@ -243,6 +243,37 @@ def get_nodes(sim_id):
 
     return ips
 
+######################################
+## Printing
+######################################
+
+def mark_as_printed(sim_id):
+    """
+    Mark a job as printed
+    """
+
+    filepath = sim_filepath(sim_id, 'status.toprint')
+
+    os.remove(filepath)
+
+def find_to_print():
+    cmd = 'ls {dir}/*/status.toprint'.format(dir=simulation_store_directory())
+    output = subprocess.check_output(cmd, shell=True).decode('utf8')
+
+    print_ids = [int(path.split('/')[-2]) for path in output.splitlines() ] 
+
+    return sorted(print_ids)
+
+def next_to_print():
+    """
+    Returns next print job, otherwise returns None
+    """
+    to_print = find_to_print()
+
+    if len(to_print) > 1:
+        return to_print[0]
+    else:
+        return None
 
 ######################################
 ## Public API
