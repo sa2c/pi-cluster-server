@@ -166,6 +166,12 @@ def is_sim_running(sim_id):
         sim_id, STATUS_STARTED) and not check_status(sim_id, STATUS_FINISHED)
 
 
+def is_sim_finished(sim_id):
+    sim_id = clean_sim_id(sim_id)
+
+    return check_status(sim_id, STATUS_FINISHED)
+
+
 def is_sim_queued(sim_id):
     sim_id = clean_sim_id(sim_id)
 
@@ -432,12 +438,13 @@ def lowest_drag_simulations_sorted(num_sims=10):
     return valid_simulations(result_sim_ids)
 
 
-def recent_simulations(num_sims=10):
+def recently_finished_simulations(num_sims=10):
     "fetches `num_sims` simulations with the highest ID"
 
-    recent_sim_ids = sorted(simulation_id_list(), reverse=True)[:num_sims]
+    recent_sim_ids = [sim_id for sim_id in simulation_id_list() if is_sim_finished(sim_id) ]
+    sorted_sim_ids = sorted(recent_sim_ids, reverse=True)[:num_sims]
 
-    return valid_simulations(recent_sim_ids)
+    return valid_simulations(sorted_sim_ids)
 
 
 ######################################

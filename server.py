@@ -144,7 +144,7 @@ def min_drag_simulations(nsims):
 @app.route('/simulations/recent/<nsims>', methods=['GET'])
 def most_recent_simulations(nsims):
 
-    simulations = model.recent_simulations(int(nsims))
+    simulations = model.recently_finished_simulations(int(nsims))
 
     keys = [
         'name', 'email', 'id', 'drag', 'images-available', 'avatar_id'
