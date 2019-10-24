@@ -44,7 +44,7 @@ class Layout extends React.Component {
         })
       ),
       cpuHistoryMax: 50,
-      serverUpdateInterval: 1, // update time in seconds
+      serverUpdateInterval: 0.5, // update time in seconds
       dataUrl: data_url,
       pending: [],
       running: [],
@@ -161,7 +161,7 @@ class Layout extends React.Component {
 
   // start periodic poll of the cluster
   scheduleNextUpdate() {
-    setTimeout(this.fetchActivity.bind(this), 50);
+    setTimeout(this.fetchActivity.bind(this), this.state.serverUpdateInterval*1000);
   }
 
   render() {
