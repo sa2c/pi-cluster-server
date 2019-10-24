@@ -23,7 +23,7 @@ function SimulationViewer(props) {
       return (
           <div className="simulation-viewer">
               <div className="placeholder">
-                  Please select a simulation to view
+                  Select a simulation to see it here...
               </div>
           </div>
       );
