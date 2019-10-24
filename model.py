@@ -9,6 +9,7 @@ import pickle
 from PIL import Image
 import glob
 from functools import lru_cache
+import random
 
 from jinja2 import Template
 
