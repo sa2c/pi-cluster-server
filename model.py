@@ -278,23 +278,35 @@ def get_progress(sim_id):
         cmd = 'grep "MAIN:  Time:" {file}'.format(file=outputfile)
 
         # Count simulation steps
-        output = subprocess.check_output(["grep", "MAIN:  Time",
+        try:
+            output = subprocess.check_output(["grep", "MAIN:  Time",
                                           outputfile]).decode('utf-8')
+            completed_steps, total_steps = output.splitlines()[-1].split(
+            )[2].split("/")
 
-        completed_steps, total_steps = output.splitlines()[-1].split(
-        )[2].split("/")
+        except subprocess.CalledProcessError as e:
+            # grep returns an error if nothing found
+            completed_steps = 0
+            total_steps = settings.number_timesteps
+
 
         # Ignore the last step, this is accounted for in the jobstep finishing
         if completed_steps == total_steps:
             completed_steps = int(total_steps) - 1
-        total_steps = int(total_steps) - 1
+            total_steps = int(total_steps) - 1
 
         # Count job steps (could break if anyone changes output file text)
-        output = subprocess.check_output(
-            ["grep", "Starting Step [0-9]", outputfile]).decode('utf-8')
+        total_jobsteps = settings.jobstep_count
 
-        completed_jobsteps = len(output.splitlines())
-        total_jobsteps = 5
+        try:
+            output = subprocess.check_output(
+                ["grep", "Starting Step [0-9]", outputfile]).decode('utf-8')
+
+            completed_jobsteps = len(output.splitlines())
+
+        except subprocess.CalledProcessError as e:
+            # grep returns an error if nothing found
+            completed_jobsteps = 0
 
         # Compute completion percentage
         done = float(completed_steps + completed_jobsteps)
