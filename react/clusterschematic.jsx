@@ -8,7 +8,22 @@ import {
 
 import css from '../assets/styles/cluster-schematic.sass';
 
+function Thermometer(props) {
+    var percentage = props.percentage;
+
+    if (typeof props.percentage == 'undefined') {
+        percentage = 100;
+    }
+
+    return (
+        <div className="thermometer">
+          <div className="mask" style={{height: percentage + "%"}} />
+        </div>
+    );
+}
+
 function ClusterCore(props) {
+
   var percentage_div = null;
 
   const percentage_value = props.cpuHistory[props.cpuHistory.length - 1];
@@ -18,10 +33,12 @@ function ClusterCore(props) {
             <div className="percentage">{percentage_value+ "%"}</div>;
   }
 
+
   return (
     <div className="cluster-core" style={{borderColor: props.colour}}>
       {percentage_div}
       <Avatar whom={props.avatar_id}/>
+      <Thermometer percentage={props.temp}/>
       <ActivityPlot values={props.cpuHistory} colours={props.cpuColourHistory}/>
     </div>
   );
@@ -217,6 +234,7 @@ function ClusterSchematic(props) {
                                   cpuColourHistory={node['cpuColourHistory']}
                                   id={job['id']}
                                   name={job['name']}
+                                  temp={node['temp']}
                                   avatar_id={job['avatar_id']}
                                   colour={job['colour']}
 

@@ -108,6 +108,10 @@ class Layout extends React.Component {
 
               const job = colourJob(job_map[node_id]);
 
+              const temp = result.temp_percent[node_id];
+
+              info.temp = temp;
+
               info.job = job;
               info.cpuHistory.push(result.cpu_usage[node_id]);
               info.cpuColourHistory.push(job.colour);
@@ -127,7 +131,6 @@ class Layout extends React.Component {
               return info;
             });
           });
-
 
           this.setState({
             nodeInfo: mappedInfo,
@@ -161,7 +164,8 @@ class Layout extends React.Component {
 
   // start periodic poll of the cluster
   scheduleNextUpdate() {
-    setTimeout(this.fetchActivity.bind(this), this.state.serverUpdateInterval*1000);
+    setTimeout(this.fetchActivity.bind(this), this.state
+      .serverUpdateInterval * 1000);
   }
 
   render() {
