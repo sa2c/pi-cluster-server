@@ -106,28 +106,6 @@ def all_simulations():
     return simulations
 
 
-@app.route('/simulation/<sim_id>/percentage', methods=['GET'])
-def get_run_completion_percentage(sim_id):
-    ''' Read the completion percentage of the run
-    '''
-    directory = model.run_directory(sim_id)
-
-    utils.ensure_exists(directory)
-
-    if not os.path.exists(directory):
-        percentage = 0
-    else:
-        fname = '{directory}/output'.format(directory=directory)
-
-        output = check_output(["grep", "MAIN:  Time", fname]).decode('utf-8')
-
-        numer, denom = output.splitlines()[-1].split()[2].split("/")
-
-        percentage = int(100 * float(numer) / float(denom))
-
-    return {'percentage': percentage}
-
-
 @app.route('/simulation/<id>', methods=['GET'])
 def get_simulation(id):
     sim = model.get_simulation(id)
@@ -251,7 +229,7 @@ def get_activity():
     # Added safety layer to ensure that cpuinfo.txt isn't written to whilst being read
     # Note that this could still fail if activity called again before the request completes
 
-    filter_keys = ['id', 'name', 'avatar_id', 'nodes', 'images-available']
+    filter_keys = ['id', 'name', 'avatar_id', 'nodes', 'images-available', 'progress']
 
     pending = sims_filtered_keys(model.queued_simulations(), filter_keys)
     running = sims_filtered_keys(model.running_simulations(), filter_keys)

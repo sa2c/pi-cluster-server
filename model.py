@@ -249,6 +249,49 @@ def queued_simulations():
 def running_simulations():
     return [ s for s in simulation_id_list() if is_sim_running(s) ]
 
+def get_progress(sim_id):
+    """
+    Read the completion percentage of the run by using grep and the output file and
+    counting the completed steps and jobsteps. Each jobstep (i.e. "Starting Step"
+    string appearing in the output file) is equivalent progress to completing
+    a timestep of the simulation. Whilst this is not true in general, it allows a
+    simple measure of total progress.
+    """
+
+    percentage = 0
+
+    outputfile = sim_filepath(sim_id, 'slurm.output')
+
+    if os.path.isfile(outputfile):
+        cmd = 'grep "MAIN:  Time:" {file}'.format(file=outputfile)
+
+        # Count simulation steps
+        output = subprocess.check_output(["grep", "MAIN:  Time", outputfile]).decode('utf-8')
+
+        completed_steps, total_steps = output.splitlines()[-1].split()[2].split("/")
+
+        # Ignore the last step, this is accounted for in the jobstep finishing
+        if completed_steps == total_steps:
+            completed_steps = int(total_steps) - 1
+        total_steps = int(total_steps) - 1
+
+
+        # Count job steps (could break if anyone changes output file text)
+        output = subprocess.check_output(["grep", "Starting Step [0-9]", outputfile]).decode('utf-8')
+
+        completed_jobsteps = len(output.splitlines())
+        total_jobsteps = 5
+
+        # Compute completion percentage
+        done = float(completed_steps + completed_jobsteps)
+        todo = float(total_steps + total_jobsteps)
+
+        percentage = int(100 * done / todo)
+
+    return percentage
+
+
+
 def get_simulation(sim_id):
     """
     Returns simulation data for a simulation if the data file exists and the created flag exists. Otherwise returns None.
@@ -269,6 +312,8 @@ def get_simulation(sim_id):
 
         simulation['nodes'] = get_nodes(sim_id)
         simulation['avatar_id'] = get_avatar_id(sim_id)
+
+        simulation['progress'] = get_progress(sim_id)
 
         # force the simulation ID (in case files have been moved around manually)
         simulation['id'] = sim_id
