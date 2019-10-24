@@ -1,7 +1,5 @@
 * MAYBE No ways to detect errors if slurm run fails
 - something that stops but doesn't finish will show as running
-* Report progress of a simulation...!!!
-- we used to show progress completion, we don't any more
 * DONE Make sure the runner is OK, one option could be:
   - Some scaling could/would be nice to inform job size
   - Install SLURM - https\://medium.com/@glmdev/building-a-raspberry-pi-cluster-784f0df9afbd
@@ -21,23 +19,13 @@
  - Server should maintain a "to be printed" state
  - printer should notify server if there are jobs which should be marked as printed
  - a process runs on a machine and prints the jobs
-* MAYBE logger should write to a console somewhere...
+* MAYBE Client logger should write to some visible console somewhere...
   - Client should retry until success
   - Client should give feedback on success
   - What should the simulation job do once it gets to the part that needs the additional info
   - Hang and wait - but this could be indefinite, maybe we need manual sending
   - Error and allow for re-run - this is probably the best idea really
-* PHASE2 Generating the images is too slow
-  - Option 1: do this in parallel (probably 4 times faster)
-  - Option 2: do this on the client (or some client)
-  - Option 3: Hack together a plotter that can run on the client? (maybe the easiest)
-* TODO Drag is wrong, it should be min not max....!
-- Server should choose avatar colours
- - a simple implementation could be random
- - have a pool of avatars
- - Choose new one by exluding top 10 from leaderboard, exluding all running and waiting, excluding errored and choosing first of the remaining
- - Split into two function, "available_avatars" and "choose_avatar" (choose_avatar can change at a later date)
-* HOME : TEST Client Simulation Submission Options
+* HOME : Better Client Simulation Submission
 - Client should submit in another thread (NO CLUSTER)
  - The client currently hangs as submission takes place
 - Option: Client generates a png file and sends to server
@@ -49,31 +37,27 @@
  - Server currently returns the right info in this case (i.e. images-available)
  - We just need a spinning icon whilst these are uploaded
  - Another option could be that the client generates a png file and just sends that to the server....would that be quicker?
-* DONE Better caching
- - Reading pickle file can cache results if files (still) exist
- - Get simulation can't cache, because we want the status files to indicate stuff
- - Having said that, the status could (possibly) be managed more by SLURM in the future??
-* TODO the simulations are taking a long time (how long...?)
+* TODO Scaling test
+ - the simulations are taking a long time (how long...?)
  - Measure them
  - Can I parallelise the images or something?
 * TODO Reduce activity refresh stuff
-* DONE Cluster should report IP of running based on SLURM
-
-- Nice to haves:
-  - the output is not flushing
-  - client shows temperature
-
+* the job output is not flushing
 * Things that should be solved by above:
  - should fail with a sensible error message if ADDITIONAL_INFO status not there when needed
  - UI should keep retrying if there is an issue sending network traffic (e.g. additional info). If it fails, it should notify and warn. It should also provide a way to send manually, and should warn the user that this is the thing to do.
 * Things to check before the festival
   - client should notify if the cluster is somehow down
-* get_simulation should cache based on file changes and their times...? would that work...?
-- delete my private keys from the cluster!!
-- what about disk space?? do I have enough?? Should I check before the festival?
-- the activity refresh is waaaaaay too often (possilby) - should it be about double the time from the server (or at least similar)
-- can I add a thermometer to the cluster view? just a subtle little line on the RHS of the cluster (maybe the same colour as the pi)
+* make activity refresh less frequent
+* Move timestamp on client
 - the time stamp on the top left of the activity page should be on the bottom right (really)
-- choose from nodes or choose from IPs...?
+* PHASE2 client could temperature
+  - can I add a thermometer to the cluster view? just a subtle little line on the RHS of the cluster (maybe the same colour as the pi)
+* PHASE2 Generating the images is too slow
+  - Option 1: do this in parallel (probably 4 times faster)
+  - Option 2: do this on the client (or some client)
+  - Option 3: Hack together a plotter that can run on the client? (maybe the easiest)
 
-  
+* delete my private keys from the cluster!!
+* what about disk space?? do I have enough?? Should I check before the festival?
+* PHASE2 Client should notice if cpu_usage goes out of sync
