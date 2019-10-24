@@ -10,11 +10,11 @@ import css from '../assets/styles/simulation-list.sass'
 function SimulationList(props) {
   const simulations = props.simulations.map((sim, index) => {
 
-   // set isCurrent
-   var isCurrent = false
-   if(typeof props.currentSimulation !== 'undefined') {
-       isCurrent = sim.id == props.currentSimulation.id
-   }
+    // set isCurrent
+    var isCurrent = false
+    if (typeof props.currentSimulation !== 'undefined') {
+      isCurrent = sim.id == props.currentSimulation.id
+    }
 
     return <SimulationView key={sim['id']}
                                simulation={sim}
@@ -46,35 +46,42 @@ function SimulationView(props) {
   } else {
     const sim_id = simulation['id'];
 
-    const rgb_url = "simulations/" + sim_id +
-      "/rgb_with_contour.png";
-    const depth_url = "simulations/" + sim_id +
-      "/depth.png";
+    var rgb_url = "static/sim-image-loading.gif";
+    var depth_url = "static/sim-image-loading.gif";
+    var image_class = ""
 
+    if (simulation['images-available']) {
+      rgb_url = "simulations/" + sim_id +
+        "/rgb_with_contour.png";
+      depth_url = "simulations/" + sim_id +
+        "/depth.png";
+    } else {
+      image_class = " loading";
+    }
     var progressBar = null;
 
     if (props.percentageKey in simulation) {
-      progressBar =
+      progressBar = (
         <div className="progress-indicator-container">
                     <div className="progress-indicator" style={{width : simulation.progress + "%"}}/>
-                </div>
+        </div>);
     }
 
     // (slightly hacky) setting of simulation name if not provided
-    var simulation_name
+    var simulation_name;
     if (simulation['name']) {
-      simulation_name = simulation['name']
+      simulation_name = simulation['name'];
     } else {
-      simulation_name = 'Simulation'
+      simulation_name = 'Simulation';
     }
-    simulation_name = simulation_name + " (" + simulation.id + ")"
+    simulation_name = simulation_name + " (" + simulation.id + ")";
 
     // Add index to title if showIndex is true
     if (props.showIndex) {
-      simulation_name = '#' + props.index + ' ' + simulation_name
+      simulation_name = '#' + props.index + ' ' + simulation_name;
     }
 
-    const outlineColour = props.isCurrent ? simulation['colour'] : ""
+    const outlineColour = props.isCurrent ? simulation['colour'] : "";
 
     return (
       <div className={"simulation-view" + (props.isCurrent ? " selected" : "")}
@@ -88,8 +95,8 @@ function SimulationView(props) {
                     </div>
                 </div>
                 <div className="simulation-data">
-                    <img className="simulation-capture left" src={rgb_url} />
-                    <img className="simulation-capture right" src={depth_url} />
+                    <img className={"simulation-capture left" + image_class} src={rgb_url} />
+                    <img className={"simulation-capture right" + image_class} src={depth_url} />
                 </div>
             </div>
     );
