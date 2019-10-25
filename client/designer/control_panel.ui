@@ -125,6 +125,11 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>23</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Calibrate</string>
            </property>
@@ -137,6 +142,11 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>23</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Colour</string>
@@ -151,10 +161,28 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>23</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>&amp;Details...</string>
            </property>
           </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
          <item>
           <widget class="QPushButton" name="capture_button">
@@ -163,6 +191,11 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>23</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>&amp;Capture</string>
@@ -177,6 +210,11 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>23</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>&amp;Show Capture</string>
            </property>
@@ -189,6 +227,11 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>23</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>&amp;Go...</string>
