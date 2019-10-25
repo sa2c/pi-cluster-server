@@ -14,19 +14,19 @@ import css from '../assets/styles/leaderboard.sass'
 import '../assets/styles/activity.sass';
 
 function SimulationViewer(props) {
-    console.log(typeof props.currentSimulation)
+
   if (typeof props.currentSimulation == 'undefined') {
     return null;
   } else if (typeof props.currentSimulation == 'number') {
-      // simulation is initially set to a number as a placeholder
-      // quite an ugly hack, but it avoid undefined values everywhere
-      return (
-          <div className="simulation-viewer">
+    // simulation is initially set to a number as a placeholder
+    // quite an ugly hack, but it avoid undefined values everywhere
+    return (
+      <div className="simulation-viewer">
               <div className="placeholder">
                   Select a simulation to see it here...
               </div>
           </div>
-      );
+    );
   } else {
     const sim = props.currentSimulation
 
@@ -57,7 +57,8 @@ class Layout extends React.Component {
       bestSimulations: [],
       recentSimulations: [],
       currentSimulation: 1,
-      errors: []
+      errors: [],
+      serverUpdateInterval: 3, // server update interval in seconds
     };
   }
 
@@ -81,6 +82,21 @@ class Layout extends React.Component {
       );
   }
 
+  componentDidMount() {
+    // Start fetching data once the simulation has started
+  }
+
+  doDataUpdates() {
+      console.log('update page...');
+      this.fetchBestSimulations();
+      this.fetchRecentSimulations();
+      this.scheduleNextUpdate();
+  }
+
+  scheduleNextUpdate() {
+      setTimeout(this.doDataUpdates.bind(this), this.state.serverUpdateInterval * 1000);
+  }
+
   fetchBestSimulations() {
     this.simulationFetcher("/simulations/min_drag/10", 'bestSimulations');
   }
@@ -89,8 +105,7 @@ class Layout extends React.Component {
     this.simulationFetcher("/simulations/recent/10", 'recentSimulations');
   }
   componentDidMount() {
-    this.fetchBestSimulations();
-    this.fetchRecentSimulations();
+      this.scheduleNextUpdate();
   }
 
   simulationChoiceHandler(sim) {
