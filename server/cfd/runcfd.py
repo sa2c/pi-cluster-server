@@ -31,6 +31,7 @@ from createcontoureps import *
 import computedrag
 import model
 import json
+from images_to_pdf.pdfgen import build_sim_document
 
 # Read the project name and other flags from the command line arguments
 #
@@ -101,7 +102,7 @@ print("###################################################################\n")
 num_timesteps = 10
 
 start = time.time()
-generate_images_vtk(sim_id, nprocs, num_timesteps)
+left, right, rgb, depth = generate_images_vtk(sim_id, nprocs, num_timesteps)
 end = time.time()
 timing['elapsed'].append(end - start)
 timing['steps'].append(
@@ -126,6 +127,22 @@ timing['steps'].append('Step 5: Compute drag from simulation output')
 print("Hurrayyyyy! The program is executed successfully.")
 print("\nYou can now display the images\n")
 
+print("Starting Step 6 (Generate PDF)")
+print("###################################################################\n")
+#
+# Step 6: Generate PDF for printing
+#
+##################################################################
+start = time.time()
+images = [
+    depth,
+    rgb,
+    left,
+    right,
+]
+
+build_sim_document(sim_id, images)
+start = time.time()
 elapsed_time_file = model.run_directory(sim_id) + '/elapsed.json'
 with open(elapsed_time_file, 'w') as outfile:
     json.dump(timing, outfile)

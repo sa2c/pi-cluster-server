@@ -1,4 +1,3 @@
-#ioff()
 import sys
 import os
 import matplotlib
@@ -6,6 +5,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import model
+from pyina.launchers import SlurmPool
 import postplotting as post
 from matplotlib_to_image import fig2img
 
@@ -171,34 +171,36 @@ def generate_velocityvectorplots_from_vtk(filename, compute_bound, nprocs):
 ######################################################
 
 
+def crop_to_target_dims(image, target_width, target_height):
+    # manually crop image
+    current_height = image.height
+    current_width = image.width
+
+    bbox = [0, 0, current_width, current_height]
+
+    # crop if too tall
+    if (current_height > target_height):
+        adjust = (current_height - target_height) / 2
+        bbox[1] += adjust
+        bbox[3] -= adjust
+
+    if (current_width > target_width):
+        adjust = (current_width - target_width) / 2
+        bbox[0] += adjust
+        bbox[2] -= adjust
+
+    print(bbox)
+
+    return image.crop(box=bbox)
+
+
 # save a gif from a list of PIL images
-def save_gif(filename, images, target_dims):
+def save_gif(filename, images):
     if images[0] is None:
-        print("NO image to write to {filename} (image is None)".format(filename=filename))
+        print("NO image to write to {filename} (image is None)".format(
+            filename=filename))
     else:
         print('writing image: {filename}'.format(filename=filename))
-
-        # manually crop image
-        target_width = target_dims[0]
-        target_height = target_dims[1]
-        current_height = images[0].height
-        current_width =  images[0].width
-
-        bbox = [0, 0, current_width, current_height]
-
-        # crop if too tall
-        if(current_height > target_height):
-            adjust = (current_height - target_height) / 2
-            bbox[1] += adjust
-            bbox[3] -= adjust
-
-        if(current_width > target_width):
-            adjust = (current_width - target_width) / 2
-            bbox[0] += adjust
-            bbox[2] -= adjust
-
-        print(bbox)
-        images = [ image.crop(box=bbox) for image in images ]
 
         images[0].save(filename,
                        save_all=True,
@@ -206,9 +208,13 @@ def save_gif(filename, images, target_dims):
                        duration=500,
                        loop=0)
 
+def generate_left_plot(timestep, sim_id):
+
+    return generate_single_vtk_plot(fig, timestep, sim_id, nprocs, False, True, False,
+                                 rgb)
 
 # Generates the images for all the time steps requested #
-def generate_images_vtk(sim_id, nprocs, num_timesteps):
+def generate_images_vtk(sim_id, nprocs, nsteps):
     """
     Generates gif images for display on screen. The images are (cryptically) called
     named left.gif and right.gif
@@ -219,52 +225,56 @@ def generate_images_vtk(sim_id, nprocs, num_timesteps):
     # read RGB, but avoid failing just because it can't be read
     try:
         rgb = model.get_simulation_detail_key(sim_id, 'rgb')
+        depth = model.get_simulation_detail_key(sim_id, 'depth')
     except Exception as e:
-        e.print_exc()
+        import traceback
+        traceback.print_exc()
 
-        print("failed to read RGB value for {sim_id}".format(sim_id))
-
-    fig = plt.figure()
+        print("failed to read RGB value for {sim_id}".format(sim_id=sim_id))
 
     simdir = model.run_directory(sim_id) + '/'
 
-    target_dims = [0,0]
-    images_left = [
-        generate_single_vtk_plot(fig, i, sim_id, nprocs, False, True, False,
-                                 target_dims, rgb) for i in range(1, 11)
-    ]
-    save_gif(simdir + 'left.gif', images_left, target_dims)
+    config = {'nodes':'32:ppn=4', 'queue':'dedicated', 'timelimit':'11:59'}
+    pool = SlurmPool(**config)
 
-    target_dims = [0,0]
-    images_right = [
-        generate_single_vtk_plot(fig, i, sim_id, nprocs, True, False, True,
-                                 target_dims, rgb) for i in range(1, 11)
-    ]
-    save_gif(simdir + 'right.gif', images_right, target_dims)
+    # Setup arguments
+    i_list = range(1, nsteps+1)
 
-    return
+    res_left = pool.map(generate_single_vtk_plot, i_list, sim_id, nprocs, False, True, False, rgb)
+
+    res_right = pool.map(generate_single_vtk_plot, i_list, sim_id, nprocs, True, False, True, rgb)
+
+    images_right = res_right.get()
+    images_left = res_left.get()
+
+    save_gif(simdir + 'left.gif', images_left)
+    save_gif(simdir + 'right.gif', images_right)
+
+    return images_left[0], images_right[0], rgb, depth
 
 
-def generate_single_vtk_plot(fig,
-                             index,
+def generate_single_vtk_plot(index,
                              sim_id,
                              nprocs,
                              dotri,
                              dovector,
                              docontour,
-                             target_dims,
                              image=None,
                              velocity_magn=None):
+
+    fig = plt.figure()
 
     vtk_filename = model.run_directory(
         sim_id) + "/" + 'elmeroutput{index:04}.vtk'.format(index=index)
 
-    fig.clear()
-
     if (os.path.isfile(vtk_filename) == True):
-        post.vtk_to_plot(fig.canvas, vtk_filename, nprocs, dotri, dovector,
-                         docontour, image, target_dims, velocity_magn)
+        target_width, target_height = post.vtk_to_plot(fig.canvas,
+                                                       vtk_filename, nprocs,
+                                                       dotri, dovector,
+                                                       docontour, image,
+                                                       velocity_magn)
         im = fig2img(fig)
+        im = crop_to_target_dims(im, target_width, target_height)
         return im
     else:
         print("{} file does not exist".format(vtk_filename))
@@ -272,3 +282,6 @@ def generate_single_vtk_plot(fig,
 
 ##################################################
 ##################################################
+
+if __name__ == '__main__':
+    generate_images_vtk(8, 4, 10)

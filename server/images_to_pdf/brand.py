@@ -1,5 +1,5 @@
 #!/bin/env python
-
+import os
 from reportlab.platypus import Flowable
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT
@@ -62,15 +62,19 @@ def get_logo(filename, target_width, width_in_file, height_in_file):
                     target_width, target_height)
     return logo
 
+__package_dir = os.path.dirname(os.path.abspath(__file__))
 
-erdf_logo = get_logo('ERDF.pdf', 127.56, 370, 269)
-scw_logo = get_logo('scw.pdf', 126, 447, 303)
-scw_bg = get_logo('scw-bg.pdf', 216, 84.86, 84.86)
+def package_dir(name):
+    return os.path.join(__package_dir, name)
+
+erdf_logo = get_logo(package_dir('ERDF.pdf'), 127.56, 370, 269)
+scw_logo = get_logo(package_dir('scw.pdf'), 126, 447, 303)
+scw_bg = get_logo(package_dir('scw-bg.pdf'), 216, 84.86, 84.86)
 
 
 def get_styles():
-    pdfmetrics.registerFont(TTFont('Futura', 'Futura-Book.ttf'))
-    pdfmetrics.registerFont(TTFont('FuturaHeavy', 'Futura-Heavy.ttf'))
+    pdfmetrics.registerFont(TTFont('Futura', package_dir('Futura-Book.ttf')))
+    pdfmetrics.registerFont(TTFont('FuturaHeavy', package_dir('Futura-Heavy.ttf')))
 
     styles = getSampleStyleSheet()
     styles["Normal"].fontName = "Futura"
