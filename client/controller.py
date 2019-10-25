@@ -88,6 +88,3 @@ class Controller(object):
 
     def get_completion_percentage(self, index):
         return simulation_proxy.get_run_completion_percentage(index)
-
-    def restart_slot(self, slot):
-        return simulation_proxy.restart_slot(slot)
