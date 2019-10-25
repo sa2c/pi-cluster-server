@@ -1,11 +1,9 @@
-
 import cv2, sys, time, os
 import numpy as np
 from scipy import interpolate
 import matplotlib
 matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
-from kinectlib.calibration import affine_calibration as affc
 
 from settings import dmin, dmax, min_distance, nmeasurements
 from settings import num_points, corner_cutting_steps
@@ -27,6 +25,7 @@ try:
 except:
     print("Freenect library could not be loaded - falling back to mock input")
     mock_kinect = True
+
 
 class KinectAdapter:
     def __init__(self):
@@ -77,7 +76,6 @@ class KinectAdapter:
         return self.color_scale
 
 
-
 class MockKinectAdapter(KinectAdapter):
     def __init__(self):
         super().__init__()
@@ -97,7 +95,6 @@ class MockKinectAdapter(KinectAdapter):
 
         return depth
 
-
     def _get_video(self):
         self.current_frame = self.current_frame % len(self.mock_color)
         rgb = np.copy(self.mock_color[self.current_frame])
@@ -109,6 +106,7 @@ if mock_kinect:
     device = MockKinectAdapter()
 else:
     device = KinectAdapter()
+
 
 def invert_color_order(rgb):
     return cv2.cvtColor(rgb, cv2.COLOR_BGR2RGB)
@@ -158,11 +156,17 @@ def normalised_depth_to_contour(depth):
     _, thresholded = cv2.threshold(gray, min_distance, 255,
                                    cv2.THRESH_BINARY_INV)
 
-    contours, _ = cv2.findContours(
-        thresholded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    contours, _ = cv2.findContours(thresholded, cv2.RETR_EXTERNAL,
+                                   cv2.CHAIN_APPROX_NONE)
 
     contour = max(contours, key=cv2.contourArea)
-    return np.array(contour).astype(int)
+
+    contour = np.array(contour).astype(int)
+
+    # remove additional dimension
+    contour = contour[:, 0, :]
+
+    return contour
 
 
 def cut_corners(outline, n):
@@ -175,59 +179,72 @@ def cut_corners(outline, n):
 
 
 def transform_contour(contour, scale, offset):
-    outline = contour[:, 0, :]
-    outline = cut_corners(outline, corner_cutting_steps)
-    tck, u = interpolate.splprep(outline.transpose(), s=10)
+    contour = cut_corners(contour, corner_cutting_steps)
+    tck, u = interpolate.splprep(contour.transpose(), s=10)
     du = 1 / (num_points)
     unew = np.arange(0, 1.0, du)
-    outline = interpolate.splev(unew, tck)
-    outline = np.array(outline)
+    contour = interpolate.splev(unew, tck)
+    contour = np.array(contour)
 
-    transformed_outline = np.copy(outline)
+    transformed_contour = np.copy(contour)
 
     # apply affine transform from calibration to contour
-    transformed_outline = affc.affine_transform_contour_dtc(
-        transformed_outline)
+    #transformed_contour = affc.affine_transform_contour_dtc(transformed_contour)
 
     # apply offset and scale to contour
-    transformed_outline[0, :] = transformed_outline[0, :] * scale[0]
-    transformed_outline[1, :] = transformed_outline[1, :] * scale[1]
+    transformed_contour[0, :] = transformed_contour[0, :] * scale[0]
+    transformed_contour[1, :] = transformed_contour[1, :] * scale[1]
 
-    transformed_outline[0, :] = transformed_outline[0, :] + offset[0]
-    transformed_outline[1, :] = transformed_outline[1, :] + offset[1]
+    transformed_contour[0, :] = transformed_contour[0, :] + offset[0]
+    transformed_contour[1, :] = transformed_contour[1, :] + offset[1]
 
-    outline = outline.transpose().reshape((-1, 1, 2))
-    transformed_outline = transformed_outline.transpose().reshape((-1, 1, 2))
+    contour = contour.transpose().reshape((-1, 1, 2))
+    transformed_contour = transformed_contour.transpose().reshape((-1, 1, 2))
 
-    return outline.astype(int), transformed_outline.astype(int)
+    return transformed_contour.astype(int)
 
 
-def images_and_outline(background, scale, offset):
+def images_and_outline(background, scale=[1.0, 1.0], offset=[0.0, 0.0]):
     ''' Capture depth and color input and find the contour.
         Transform the contour to match the color image.
         Return copy on color input, rgb image representing the depth and
         the transformed contour '''
-
-    capture_depth = measure_depth( nmeasurements )
+    
+    capture_depth = measure_depth(nmeasurements)
     rgb_frame = np.copy(device.get_video())
 
     clean_depth = remove_background(capture_depth, background)
-    contour = normalised_depth_to_contour(clean_depth)
-    outline_affine = affine_transform_contour_dtc(contour)
-    outline, transformed_outline = transform_contour(
-        outline_affine, scale, offset)
+    contour_orig = normalised_depth_to_contour(clean_depth)
 
-    # set rgb image visible
+    transformed_contour = transform_contour(contour_orig, scale, offset)
+
+    # Plot depth image and add origina contour
     depthimage = depth_to_depthimage(capture_depth)
+    cv2.drawContours(depthimage, [contour_orig], -1, (0, 0, 255), 2)
 
-    # add contour to images
-    cv2.drawContours(depthimage, [outline], -1, (0, 0, 255), 2)
-
+    # plot rgb image and add transformed contour
     rgb_frame_with_outline = np.copy(rgb_frame)
-    cv2.drawContours(rgb_frame_with_outline, [transformed_outline], -1,
-                (0, 0, 255), 2)
+    cv2.drawContours(rgb_frame_with_outline, [transformed_contour], -1,
+                     (0, 0, 255), 2)
+    cv2.drawContours(rgb_frame_with_outline, [contour_orig], -1, (255, 0, 0),
+                     2)
 
-    return rgb_frame, rgb_frame_with_outline, depthimage, transformed_outline
+    return rgb_frame, rgb_frame_with_outline, depthimage, transformed_contour
+
+
+def load_cache(sim_id):
+    filename = f'/home/mark/code/pi-cluster/client/sim-client-cache/{sim_id}.npy'
+    return pickle.load(open(filename, 'rb'))
+
+
+def save_image(rgb):
+    Image.fromarray(rgb.astype(np.uint8)).save('test.png')
+
+
+def load_and_save(sim_id, k):
+    sim = load_cache(sim_id)
+    save_image(sim[k])
+
 
 # Mock data utility functions for testing
 def get_mock_video():
@@ -240,4 +257,3 @@ def get_mock_depth():
 
 def get_mock_background_depth():
     return np.load("test_data/depth_background_image.npy")
-
