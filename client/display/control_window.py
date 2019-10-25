@@ -27,7 +27,6 @@ class ControlWindow(QMainWindow):
         # connect signals
         self.ui.capture_button.released.connect(self.capture_action)
         self.ui.process_button.released.connect(self.run_cfd_action)
-        self.ui.print_button.released.connect(self.print_action)
         self.ui.details_button.released.connect(self.fill_in_details_action)
         self.ui.calibrate_button.released.connect(self.controller.calibrate)
         self.ui.show_button.released.connect(self.show_capture_action)
@@ -84,9 +83,6 @@ class ControlWindow(QMainWindow):
 
         if not accepted:
             kinect.device.set_color_scale(old)
-
-    def print_action(self):
-        self.controller.print_simulation(index)
 
     def fill_in_details_action(self):
         prev_name, prev_email = self.controller.get_user_details()
