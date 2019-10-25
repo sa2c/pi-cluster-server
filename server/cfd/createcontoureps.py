@@ -1,4 +1,3 @@
-#ioff()
 import sys
 import os
 import matplotlib
@@ -6,6 +5,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import model
+from pyina.launchers import SlurmPool
 import postplotting as post
 from matplotlib_to_image import fig2img
 
@@ -208,9 +208,13 @@ def save_gif(filename, images):
                        duration=500,
                        loop=0)
 
+def generate_left_plot(timestep, sim_id):
+
+    return generate_single_vtk_plot(fig, timestep, sim_id, nprocs, False, True, False,
+                                 rgb)
 
 # Generates the images for all the time steps requested #
-def generate_images_vtk(sim_id, nprocs, num_timesteps):
+def generate_images_vtk(sim_id, nprocs, nsteps):
     """
     Generates gif images for display on screen. The images are (cryptically) called
     named left.gif and right.gif
@@ -223,31 +227,33 @@ def generate_images_vtk(sim_id, nprocs, num_timesteps):
         rgb = model.get_simulation_detail_key(sim_id, 'rgb')
         depth = model.get_simulation_detail_key(sim_id, 'depth')
     except Exception as e:
-        e.print_exc()
+        import traceback
+        traceback.print_exc()
 
-        print("failed to read RGB value for {sim_id}".format(sim_id))
-
-    fig = plt.figure()
+        print("failed to read RGB value for {sim_id}".format(sim_id=sim_id))
 
     simdir = model.run_directory(sim_id) + '/'
 
-    images_left = [
-        generate_single_vtk_plot(fig, i, sim_id, nprocs, False, True, False,
-                                 rgb) for i in range(1, 11)
-    ]
-    save_gif(simdir + 'left.gif', images_left)
+    config = {'nodes':'32:ppn=4', 'queue':'dedicated', 'timelimit':'11:59'}
+    pool = SlurmPool(**config)
 
-    images_right = [
-        generate_single_vtk_plot(fig, i, sim_id, nprocs, True, False, True,
-                                 rgb) for i in range(1, 11)
-    ]
+    # Setup arguments
+    i_list = range(1, nsteps+1)
+
+    res_left = pool.map(generate_single_vtk_plot, i_list, sim_id, nprocs, False, True, False, rgb)
+
+    res_right = pool.map(generate_single_vtk_plot, i_list, sim_id, nprocs, True, False, True, rgb)
+
+    images_right = res_right.get()
+    images_left = res_left.get()
+
+    save_gif(simdir + 'left.gif', images_left)
     save_gif(simdir + 'right.gif', images_right)
 
     return images_left[0], images_right[0], rgb, depth
 
 
-def generate_single_vtk_plot(fig,
-                             index,
+def generate_single_vtk_plot(index,
                              sim_id,
                              nprocs,
                              dotri,
@@ -256,10 +262,10 @@ def generate_single_vtk_plot(fig,
                              image=None,
                              velocity_magn=None):
 
+    fig = plt.figure()
+
     vtk_filename = model.run_directory(
         sim_id) + "/" + 'elmeroutput{index:04}.vtk'.format(index=index)
-
-    fig.clear()
 
     if (os.path.isfile(vtk_filename) == True):
         target_width, target_height = post.vtk_to_plot(fig.canvas,
@@ -276,3 +282,6 @@ def generate_single_vtk_plot(fig,
 
 ##################################################
 ##################################################
+
+if __name__ == '__main__':
+    generate_images_vtk(8, 4, 10)
