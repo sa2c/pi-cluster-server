@@ -10,7 +10,7 @@ class Controller(object):
     def __init__(self, parent=None):
 
         # instance variables
-        self.offset = [15, 0]
+        self.offset = [0, 0]
         self.scale = [1.0, 1.0]
         self.current_name = 'Simulation'
         self.current_email = ''

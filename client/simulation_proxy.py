@@ -11,7 +11,7 @@ import requests
 import transfer_data
 import pickle
 from PIL import Image
-
+from kinect_affine_calibration import affine_transform_dtc
 from settings import cluster_address
 
 local_path = os.environ['PWD']
@@ -131,6 +131,8 @@ def dispatch(sim):
     send_keys = ['name', 'email', 'contour']
 
     send_sim = {key: sim[key] for key in send_keys}
+
+    send_sim['contour'] = affine_transform_contour_dtc(send_sim['contour'])
 
     response = transfer_data.post_encoded(url_send, send_sim)
 

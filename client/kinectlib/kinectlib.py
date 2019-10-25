@@ -213,8 +213,9 @@ def images_and_outline(background, scale, offset):
 
     clean_depth = remove_background(capture_depth, background)
     contour = normalised_depth_to_contour(clean_depth)
+    outline_affine = affine_transform_contour_dtc(contour)
     outline, transformed_outline = transform_contour(
-        contour, scale, offset)
+        outline_affine, scale, offset)
 
     # set rgb image visible
     depthimage = depth_to_depthimage(capture_depth)
