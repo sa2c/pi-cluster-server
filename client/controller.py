@@ -17,6 +17,8 @@ class Controller(object):
         self.outline = None
         self.transformed_outline = None
         self.contour = np.array([[]])
+        self.capture_frame = None
+        self.capture_depth = None
 
         self.calibrate()
 
@@ -56,7 +58,9 @@ class Controller(object):
 
     def start_simulation(self):
 
-        # save simulation details for later
+        # If no capture frame, then capture one before submitting
+        if self.capture_frame is None:
+            self.capture()
 
         index = simulation_proxy.dispatch({
             'name': self.current_name,

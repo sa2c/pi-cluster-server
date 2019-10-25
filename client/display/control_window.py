@@ -94,8 +94,27 @@ class ControlWindow(QMainWindow):
             self.name_changed_action(prev_name, prev_email)
             print('name change cancelled')
 
+        return accepted
+
     def run_cfd_action(self):
-        index = self.controller.start_simulation()
+        name, email = self.controller.get_user_details()
+        capture_frame, capture_depth = self.controller.get_capture_images()
+
+        # capture frame if there is none
+        if capture_frame is None:
+            self.capture_action()
+
+        # fill in details if there are none
+        response = True
+        if name is not None and len(name) == 0:
+            response = self.fill_in_details_action()
+
+        # submit unless user has pressed cancel
+        if response:
+            print("Submitting simulation...")
+            index = self.controller.start_simulation()
+            print("Simulation submitted...")
+            self.controller.set_user_details('', '')
 
     def reset_action(self):
         self.name_changed_action('', '')
