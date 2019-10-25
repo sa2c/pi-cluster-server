@@ -146,7 +146,7 @@ class Layout extends React.Component {
             messages: {
               info: this.state.messages.info,
               errors: {
-                datafetch: 'Error fetching data'
+                datafetch: 'Waiting for server information...'
               }
             }
           });
