@@ -4,6 +4,15 @@
   - use an if statement to show a different image until the image is available
 * If you kill a job it doesn't handle creating finished status
 * What about doing it all with jobsteps, to free up the cluster a bit more
+* If you kill a job it doesn't handle creating finished status
+* Not all clusters are "there"
+* Overlay the name text on the screen and get the user to type it
+* Can the user choose avatar?
+* Drop some submission scripts in place
+* Change results window size....!
+* buttons could be bigger on client
+* Affine transformation not working - fix manually movement
+* Do it all with jobsteps...!!! How awesome would that be...!?
   - preprocess
   - FEM
   - postprocess (two images)
