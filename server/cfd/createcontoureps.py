@@ -5,7 +5,6 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import model
-from pyina.launchers import SlurmPool
 import postplotting as post
 from matplotlib_to_image import fig2img
 
@@ -234,18 +233,11 @@ def generate_images_vtk(sim_id, nprocs, nsteps):
 
     simdir = model.run_directory(sim_id) + '/'
 
-    config = {'nodes':'4:ppn=4', 'queue':'compute', 'timelimit':'11:59'}
-    pool = SlurmPool(**config)
-
     # Setup arguments
     i_list = range(1, nsteps+1)
 
-    res_left = pool.map(generate_single_vtk_plot, i_list, sim_id, nprocs, False, True, False, rgb)
-
-    res_right = pool.map(generate_single_vtk_plot, i_list, sim_id, nprocs, True, False, True, rgb)
-
-    images_right = res_right.get()
-    images_left = res_left.get()
+    images_left = [ generate_single_vtk_plot( i, sim_id, nprocs, False, True, False, rgb) for i in range (1, nsteps + 1) ]
+    images_right = [ generate_single_vtk_plot( i, sim_id, nprocs, True, False, True, rgb) for i in range (1, nsteps + 1) ]
 
     save_gif(simdir + 'left.gif', images_left)
     save_gif(simdir + 'right.gif', images_right)
