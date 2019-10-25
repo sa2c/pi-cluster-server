@@ -48,12 +48,8 @@ class Layout extends React.Component {
       dataUrl: data_url,
       pending: [],
       running: [],
-      messages: {
-        error: {
-          datafetch: 'Fetching data...'
-        },
-        info: {},
-      }
+      last_fetch: '- - -',
+      last_fetch_error: true,
     };
 
   }
@@ -85,14 +81,8 @@ class Layout extends React.Component {
         (result) => {
 
           this.setState({
-            messages: {
-              info: {
-                datafetch: this.formatUnixEpoch(result.time)
-              },
-              errors: {
-                datafetch: ''
-              }
-            }
+            last_fetch: this.formatUnixEpoch(result.time),
+            last_fetch_error: false,
           });
 
           const running = result.running.map((job) => colourJob(job));
@@ -143,12 +133,7 @@ class Layout extends React.Component {
         },
         (error) => {
           this.setState({
-            messages: {
-              info: this.state.messages.info,
-              errors: {
-                datafetch: 'Waiting for server information...'
-              }
-            }
+            last_fetch_error: true
           });
           this.scheduleNextUpdate();;
         }
@@ -156,10 +141,9 @@ class Layout extends React.Component {
   }
 
   formatUnixEpoch(epoch) {
-    const date = new Date(epoch);
+    const date = new Date(epoch * 1000);
     return date.getHours() + ":" + date.getMinutes() + ":" + date
-      .getSeconds() + "." + String(date.getMilliseconds() / 1000)
-      .slice(2);
+      .getSeconds();
   }
 
   // start periodic poll of the cluster
@@ -171,7 +155,7 @@ class Layout extends React.Component {
   render() {
     return (
       <div id="layout">
-	  <Messages messages={this.state.messages} />
+	    <RecentFetch last_fetch={this.state.last_fetch} last_fetch_error={this.state.last_fetch_error} />
           <div className="pane lhs">
               <ClusterSchematic info={this.state.nodeInfo} />
           </div>
@@ -182,32 +166,12 @@ class Layout extends React.Component {
   }
 }
 
-function Messages(props) {
-  var errors = null;
-  var info = null;
-
-  if (props.messages.info) {
-    info = Object.keys(props.messages.info)
-      .map(key => {
-        return (
-          <div className="info" key={key}>{props.messages.info[key]}</div>);
-      });
-  }
-
-  if (props.messages.errors) {
-    errors = Object.keys(props.messages.errors)
-      .map(key => {
-        return (
-          <div className="error" key={key}>{props.messages.errors[key]}</div>
-        );
-      });
-  }
+function RecentFetch(props) {
+  const className = "last-fetch-time " +
+    (props.last_fetch_error ? "error" : "");
 
   return (
-    <div className="messages">
-		{errors}
-		{info}
-	</div>
+    <div className={className}>{props.last_fetch}</div>
   );
 }
 
