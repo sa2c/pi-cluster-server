@@ -53,7 +53,7 @@ class ControlWindow(QMainWindow):
             rgb_frame, depthimage = self.controller.get_capture_images()
 
             # set images
-            rgb_with_contour = self.controller.get_rgb_image_with_scaled_contour(rgb_frame)
+            rgb_with_contour = self.controller.get_rgb_with_scaled_contour()
             self.viewfinder.set_static(rgb_with_contour, depthimage)
 
             # change button text
@@ -80,7 +80,7 @@ class ControlWindow(QMainWindow):
         if rgb_frame is None:
             rgb_frame, depthimage = self.controller.get_capture_images()
 
-        rgb_with_contour = self.controller.get_rgb_image_with_scaled_contour(rgb_frame)
+        rgb_with_contour = self.controller.get_rgb_with_scaled_contour()
 
         self.ui.captured_rgb.setImage(rgb_with_contour)
 

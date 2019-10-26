@@ -132,8 +132,6 @@ def dispatch(sim):
 
     send_sim = {key: sim[key] for key in send_keys}
 
-    #send_sim['contour'] = affine_calibration.affine_transform_contour_dtc(send_sim['contour'])
-
     response = transfer_data.post_encoded(url_send, send_sim)
 
     if response.status_code != 200:

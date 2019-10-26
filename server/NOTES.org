@@ -1,10 +1,7 @@
-* Not all clusters are "there"
-* Overlay the name text on the screen and get the user to type it
-* Can the user choose avatar?
+* Not all clusters are "there" - need to sort/fix IPs
 * Drop some submission scripts in place
 =======
 * Change results window size....!
-* buttons could be bigger on client
 * Affine transformation not working - fix manually movement
 * Do it all with jobsteps...!!! How awesome would that be...!?
   - preprocess
@@ -61,3 +58,5 @@ Maybe I could have a view of the "typical/average simulation" and our simulation
 * MAYBE Warn if the meshing error happens...
 - something that stops but doesn't finish will show as running
 * PHASE2 Client should notice if cpu_usage goes out of sync
+* PHASE2 Overlay the name text on the screen and get the user to type it
+* PHASE2 Can the user choose avatar?

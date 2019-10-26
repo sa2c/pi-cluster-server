@@ -61,23 +61,27 @@ class Controller(object):
         if self.capture_frame is None:
             self.capture()
 
+        contour = kinect.scale_and_translate_contour(self.contour, self.scale, self.offset)
+
+        self.capture_frame_with_outline,
         index = simulation_proxy.dispatch({
             'name': self.current_name,
             'email': self.current_email,
             'rgb': self.capture_frame,
-            'rgb_with_contour': self.capture_frame_with_outline,
+            'rgb_with_contour': self.get_rgb_with_scaled_contour(),
             'depth': self.capture_depth,
             'background': self.background,
-            'contour': self.contour
+            'contour': kinect.scale_and_translate_contour(self.contour, self.scale, self.offset),
+            'contour-orig': self.contour
         })
 
         return index
 
-    def get_rgb_image_with_scaled_contour(self, rgb_frame):
+    def get_rgb_with_scaled_contour(self):
         contour = kinect.scale_and_translate_contour(self.contour, self.scale,
                                                      self.offset)
 
-        rgb_with_contour = rgb_frame.copy()
+        rgb_with_contour = self.capture_frame.copy()
 
         cv2.drawContours(rgb_with_contour, [contour], -1, (0, 0, 255), 2)
 
