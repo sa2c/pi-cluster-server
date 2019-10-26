@@ -53,7 +53,8 @@ class ControlWindow(QMainWindow):
             rgb_frame, depthimage = self.controller.get_capture_images()
 
             # set images
-            self.viewfinder.set_static(rgb_frame, depthimage)
+            rgb_with_contour = self.controller.get_rgb_image_with_scaled_contour(rgb_frame)
+            self.viewfinder.set_static(rgb_with_contour, depthimage)
 
             # change button text
             self.ui.show_button.setText('&Resume Video')
