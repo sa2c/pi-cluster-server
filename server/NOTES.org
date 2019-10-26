@@ -1,32 +1,8 @@
-* Not all clusters are "there" - need to sort/fix IPs
-* Drop some submission scripts in place
-=======
 * Change results window size....!
-* Affine transformation not working - fix manually movement
-* Do it all with jobsteps...!!! How awesome would that be...!?
-  - preprocess
-  - FEM
-  - postprocess (two images)
-  - generate_pdf
-* ACtivity page doesn't refresh when ImageAvailable is now available
+* Test transformations that are sent to server
+* "Position" the last few nodes...
+* Activity page doesn't refresh when ImageAvailable is now available
   - use an if statement to show a different image until the image is available
-* Jobs are not being put in a running state
-* TODO No original photo on the wind image
-* DONE Make sure the runner is OK, one option could be:
-  - Some scaling could/would be nice to inform job size
-  - Install SLURM - https\://medium.com/@glmdev/building-a-raspberry-pi-cluster-784f0df9afbd
-  - Queue goes away, I just submit to jobs from the cluster
-  - The plotting jobs could then run on the nodes
-  - I could (maybe?) use gnu parallel to generate the images in parallel?
-  - I would need to change "running" to read the IPs of the running jobs from SLURM
-  - Would need some way of detecting errors and success
-  - Read "running" directly from SLURM
-  - Anything that isn't "running" or "finished" is an error
-  - Show errors in the client and link them to simulation output <====== ****
-  Solves:
-   - everything is running on the wrong nodes..
-   - can the queue system run multiple sims in parallel...!?
-   - using the same dir MPI error....??
 * TODO PDF test printer (and write a process)
  - Server should maintain a "to be printed" state
  - printer should notify server if there are jobs which should be marked as printed
@@ -60,3 +36,9 @@ Maybe I could have a view of the "typical/average simulation" and our simulation
 * PHASE2 Client should notice if cpu_usage goes out of sync
 * PHASE2 Overlay the name text on the screen and get the user to type it
 * PHASE2 Can the user choose avatar?
+* PHASE2 Drop some submission scripts in place
+* PHASE2 Do it all with jobsteps...!!! How awesome would that be...!?
+  - preprocess
+  - FEM
+  - postprocess (two images)
+  - generate_pdf
