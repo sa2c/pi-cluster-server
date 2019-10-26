@@ -1,44 +1,37 @@
-* Change results window size....!
+* The results and activity windows are a fixed size - for the larger surface screen. Is this a problem?
 * Test transformations that are sent to server
-* "Position" the last few nodes...
-* Activity page doesn't refresh when ImageAvailable is now available
+* Activity page doesn't refresh when ImageAvailable is not available
   - use an if statement to show a different image until the image is available
-* TODO PDF test printer (and write a process)
- - Server should maintain a "to be printed" state
- - printer should notify server if there are jobs which should be marked as printed
- - a process runs on a machine and prints the jobs
+* If you kill a job it doesn't handle creating finished status
+* What about doing it all with jobsteps, to free up the cluster a bit more
+  - preprocess
+  - FEM
+  - postprocess (two images)
+  - generate_pdf
+* Jobs are not being put in a running state
 * TODO Scaling test
  - currently running on 16 processors...would be nice to know how well they're utilised!
  - the simulations are taking a long time (how long...?)
  - Measure them
  - Can I parallelise the images or something?
 * Average simulation profile 
-Maybe I could have a view of the "typical/average simulation" and our simulation
-* Does UI keep retrying to submit simulation if network send fails...? Is there an easy retry manually?
-* Are we resilient to things being off/down/not working
-* PHASE2 Generating the images is too slow
+Would be nice to have a view of the "typical/average simulation" and our simulation
+* Network outage resilience
+- UI doesn't keep retrying to submit simulation if network send fails
+- User should be notified very obviously of the failed upload
+- I should check that we're resilient to these things being off/down/not working
+* Generating the images is slow - this is annoying
   - Option 1: do this in parallel (probably 4 times faster)
   - Option 2: do this on the client (or some client)
-  - Option 3: Hack together a plotter that can run on the client? (maybe the easiest)
-* delete my private keys from the cluster!!
-* Pre-flight checks
-- what about disk space?? do I have enough?? Should I check before the festival?
-* ED Are the avatars suitable...??
-* HOME: Client logger should write to some visible console somewhere...
+  - Option 3: Hack together a plotter that can run on the client? (maybe the easiest) - but what about streamlines etc?
+* Would be nice if the video feed was part of the web interface, so I can have one (web-based) client that switches between views
+* Have a disk space indicator somewhere?
+* Client logger should write to some visible console somewhere...
   - Client should retry until success
   - Client should give feedback on success
   - What should the simulation job do once it gets to the part that needs the additional info
   - Hang and wait - but this could be indefinite, maybe we need manual sending
   - Error and allow for re-run - this is probably the best idea really
-* HOME : Client submission notify success
-* MAYBE Warn if the meshing error happens...
-- something that stops but doesn't finish will show as running
-* PHASE2 Client should notice if cpu_usage goes out of sync
-* PHASE2 Overlay the name text on the screen and get the user to type it
-* PHASE2 Can the user choose avatar?
-* PHASE2 Drop some submission scripts in place
-* PHASE2 Do it all with jobsteps...!!! How awesome would that be...!?
-  - preprocess
-  - FEM
-  - postprocess (two images)
-  - generate_pdf
+* Jobs which stop but don't finish will show as running (I think) - e.g. if the meshing fails
+* User can enter their name after the fact
+* Users choose an avatar from available avatars - makes a bit more sense than a random avatar - do this from the "tablet" interface
