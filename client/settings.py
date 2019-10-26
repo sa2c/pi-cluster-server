@@ -7,6 +7,8 @@ mock_kinect = False
 # Kinect depth data settigs
 min_distance = 230  # out of 255
 thresholds_from_file = True
+dmin = 1000
+dmax = 3000
 
 # Settings related to the contour estimation
 num_points = 100
