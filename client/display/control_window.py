@@ -19,9 +19,8 @@ class ControlWindow(QMainWindow):
         # set control window size
         self.resize(1920, 1080)
 
-        self.ui = loadUiWidget(
-            'control_panel.ui',
-            customWidgets=[QVideoWidget])
+        self.ui = loadUiWidget('control_panel.ui',
+                               customWidgets=[QVideoWidget])
         self.setCentralWidget(self.ui)
 
         # connect signals
@@ -48,8 +47,6 @@ class ControlWindow(QMainWindow):
         video_source.changeFramePixmap.connect(self.ui.video_rgb.setImage)
         video_source.changeDepthPixmap.connect(self.ui.video_depth.setImage)
 
-
-
     def show_capture_action(self):
         if self.viewfinder.ui.main_video.dynamic_update:
             # Show capture
@@ -72,9 +69,19 @@ class ControlWindow(QMainWindow):
     def capture_action(self):
         rgb_frame, depthimage = self.controller.capture()
 
-        # set images
-        self.ui.captured_rgb.setImage(rgb_frame)
+        # set depth
         self.ui.captured_depth.setImage(depthimage)
+
+        # set rgb
+        self.update_rgb_image(rgb_frame)
+
+    def update_rgb_image(self, rgb_frame=None):
+        if rgb_frame is None:
+            rgb_frame, depthimage = self.controller.get_capture_images()
+
+        rgb_with_contour = self.controller.get_rgb_image_with_scaled_contour(rgb_frame)
+
+        self.ui.captured_rgb.setImage(rgb_with_contour)
 
     def calibrate_color_action(self):
         old = kinect.device.get_color_scale()
@@ -125,52 +132,30 @@ class ControlWindow(QMainWindow):
         self.viewfinder.ui.email.setText(f'e-mail (optional): {email}')
 
     def keyPressEvent(self, event):
-
-        motion = 1
-        large_motion = 10
-
         if event.text() == 'k':
-            self.offset[1] -= large_motion
-            self.process_image()
-            event.accept()
+            self.controller.move_offset_up()
         elif event.text() == 'j':
-            self.offset[1] += large_motion
-            self.process_image()
-            event.accept()
+            self.controller.move_offset_down()
         elif event.text() == 'h':
-            self.offset[0] -= large_motion
-            self.process_image()
-            event.accept()
+            self.controller.move_offset_left()
         elif event.text() == 'l':
-            self.offset[0] += large_motion
-            self.process_image()
-            event.accept()
+            self.controller.move_offset_right()
         elif event.text() == 'K':
-            self.offset[1] -= motion
-            self.process_image()
-            event.accept()
+            self.controller.move_offset_up(large=True)
         elif event.text() == 'J':
-            self.offset[1] += motion
-            self.process_image()
-            event.accept()
+            self.controller.move_offset_down(large=True)
         elif event.text() == 'H':
-            self.offset[0] -= motion
-            self.process_image()
-            event.accept()
+            self.controller.move_offset_left(large=True)
         elif event.text() == 'L':
-            self.offset[0] += motion
-            self.process_image()
-            event.accept()
+            self.controller.move_offset_right(large=True)
         elif event.text() == '+':
-            self.scale[0] += 0.05
-            self.scale[1] += 0.05
-            self.process_image()
-            event.accept()
+            self.controller.scale_up(0.01)
+        elif event.text() == '_':
+            self.controller.scale_down(0.01)
+        elif event.text() == '=':
+            self.controller.scale_up(0.05)
         elif event.text() == '-':
-            self.scale[0] -= 0.05
-            self.scale[1] -= 0.05
-            self.process_image()
-            event.accept()
+            self.controller.scale_down(0.05)
         elif event.text() == 'd':
             # show details
             self.fill_in_details_action()
@@ -183,3 +168,6 @@ class ControlWindow(QMainWindow):
             self.run_cfd_action()
         elif event.text() == 'v':
             self.toggle_views()
+
+        self.update_rgb_image()
+        event.accept()

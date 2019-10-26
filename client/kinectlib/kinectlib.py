@@ -177,6 +177,24 @@ def cut_corners(outline, n):
         outline = 0.5 * L + 0.5 * R
     return outline
 
+def scale_and_translate_contour(contour, scale, offset):
+    # apply offset and scale to contour
+    transformed_contour = np.copy(contour)
+
+    x = transformed_contour[:, :, 0]
+    y = transformed_contour[:, :, 1]
+
+    midx = np.min(x) + 0.5*(np.max(x) - np.min(x))
+    midy = np.min(y) + 0.5*(np.max(y) - np.min(y))
+
+    x_scale = (x - midx)*scale[0] + midx
+    y_scale = (y - midy)*scale[1] + midy
+
+    transformed_contour[:,:,0] = x_scale + offset[0]
+    transformed_contour[:,:,1] = y_scale + offset[1]
+
+    return transformed_contour
+
 
 def transform_contour(contour, scale, offset):
     contour = cut_corners(contour, corner_cutting_steps)
@@ -186,20 +204,10 @@ def transform_contour(contour, scale, offset):
     contour = interpolate.splev(unew, tck)
     contour = np.array(contour)
 
-    transformed_contour = np.copy(contour)
-
     # apply affine transform from calibration to contour
     #transformed_contour = affc.affine_transform_contour_dtc(transformed_contour)
 
-    # apply offset and scale to contour
-    transformed_contour[0, :] = transformed_contour[0, :] * scale[0]
-    transformed_contour[1, :] = transformed_contour[1, :] * scale[1]
-
-    transformed_contour[0, :] = transformed_contour[0, :] + offset[0]
-    transformed_contour[1, :] = transformed_contour[1, :] + offset[1]
-
-    contour = contour.transpose().reshape((-1, 1, 2))
-    transformed_contour = transformed_contour.transpose().reshape((-1, 1, 2))
+    transformed_contour = contour.transpose().reshape((-1, 1, 2))
 
     return transformed_contour.astype(int)
 
@@ -225,7 +233,7 @@ def images_and_outline(background, scale=[1.0, 1.0], offset=[0.0, 0.0]):
     # plot rgb image and add transformed contour
     rgb_frame_with_outline = np.copy(rgb_frame)
     cv2.drawContours(rgb_frame_with_outline, [transformed_contour], -1,
-                     (0, 0, 255), 2)
+                     (255, 0, 0), 2)
     cv2.drawContours(rgb_frame_with_outline, [contour_orig], -1, (255, 0, 0),
                      2)
 
