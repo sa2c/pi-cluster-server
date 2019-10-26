@@ -73,25 +73,6 @@ class Controller(object):
 
         return index
 
-    def best_simulations(self):
-        nsims = 10
-        return simulation_proxy.best_simulations(nsims)
-
-    def list_simulations(self):
-        return simulation_proxy.all_available_indices_and_names()
-
-    def get_activity(self):
-        return simulation_proxy.fetch_activity()
-
-    def get_simulation(self, index):
-        return simulation_proxy.load_simulation(index)
-
-    def get_simulation_name(self, index):
-        return simulation_proxy.load_simulation_name(index)
-
-    def get_completion_percentage(self, index):
-        return simulation_proxy.get_run_completion_percentage(index)
-
     def get_rgb_image_with_scaled_contour(self, rgb_frame):
         contour = kinect.scale_and_translate_contour(self.contour, self.scale,
                                                      self.offset)
