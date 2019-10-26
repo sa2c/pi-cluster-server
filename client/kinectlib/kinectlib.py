@@ -5,7 +5,7 @@ import matplotlib
 matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 
-from settings import dmin, dmax, min_distance, nmeasurements
+from settings import dmin, dmax, min_distance, nmeasurements, thresholds_from_file
 from settings import num_points, corner_cutting_steps
 from settings import color_scale, flip_display_axis
 from settings import mock_kinect
@@ -113,6 +113,13 @@ def invert_color_order(rgb):
 
 
 def threshold(d):
+    # read thresholds from file
+    if thresholds_from_file:
+        with open('thresholds.txt') as f:
+            lines = f.readlines()
+        dmin = int(lines[1])
+        dmax = int(lines[2])
+
     t = d * (d >= 1) + dmax * (d < 1)
     t = (t - dmin) * (t > dmin)
     t = t * (d < dmax) + (dmax - dmin) * (d >= dmax)
