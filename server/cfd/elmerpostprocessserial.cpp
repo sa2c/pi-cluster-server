@@ -216,7 +216,7 @@ void  writeoutputvtk(int nNode, int nElem,
     fout << "POINTS " << '\t' << nNode << " float" << endl;
     for(ii=0; ii<nNode; ++ii)
     {
-      fout << xco[ii] << setw(20) << yco[ii] << setw(20) << 0.0 << endl;
+      fout << xco[ii] << setw(20) << " " << yco[ii] << setw(20) << " " << 0.0 << endl;
     }
 
     // Element<->Nodes connectivity
@@ -231,7 +231,7 @@ void  writeoutputvtk(int nNode, int nElem,
     int n1 = 5;
     for(ee=0; ee<nElem; ++ee)
     {
-      fout << npElem << setw(20) << elemNodeConn[ee][0]-1  << setw(20) << elemNodeConn[ee][1]-1  << setw(20) << elemNodeConn[ee][2]-1 << endl;
+      fout << npElem << setw(20) << " " << elemNodeConn[ee][0]-1  << setw(20) << " " << elemNodeConn[ee][1]-1  << setw(20) << " " << elemNodeConn[ee][2]-1 << endl;
     }
 
     // Cell type, as per VTK
@@ -255,7 +255,7 @@ void  writeoutputvtk(int nNode, int nElem,
     fout << "VECTORS velocity float" << endl;
     for(ii=0; ii<nNode; ++ii)
     {
-      fout << veloX[ii] << setw(16) << veloY[ii] << setw(16) << 0.0 << endl;
+      fout << veloX[ii] << setw(16) << " " << veloY[ii] << setw(16) << " " << 0.0 << endl;
     }
 
     // close the file
