@@ -13,11 +13,11 @@ if __name__ == "__main__":
     color_images = []
     print('start')
     for i in range(n_frames):
+        print(f"Step {i} of {n_frames}, please wait...")
         (depth, _) = get_depth(format=DEPTH_MM)
         (rgb, _) = get_video()
         depth_images.append(np.copy(depth))
         color_images.append(np.copy(rgb))
-        print(f"Step {i} of {ns}, please wait...")
 
     print('finished, saving')
 
