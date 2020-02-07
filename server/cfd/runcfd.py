@@ -111,6 +111,10 @@ timing['elapsed'].append(end - start)
 timing['steps'].append(
     'Step 4: Process .vtk files and generate images for visualisation ')
 
+# mark job as finished at this point
+# so that it is displayed in the UI as soon as possible
+os.system('touch status.finished')
+
 print("Step 4 completed successfully\n\n")
 print("Starting Step 5 (Compute drag)")
 print("###################################################################\n")
