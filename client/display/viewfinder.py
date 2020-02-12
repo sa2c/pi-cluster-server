@@ -15,8 +15,11 @@ class ViewfinderWindow(QMainWindow):
         self.freeze = False
 
         # connect the video source output to the viewfinder
-        video_source.changeFramePixmap.connect(self.set_video)
-        video_source.changeDepthPixmap.connect(self.set_depth)
+        video_source.changeFramePixmap.connect(self.set_frame)
+
+    def set_frame(self, frame, depthimage):
+        self.set_video(frame)
+        self.set_depth(depthimage)
 
     def set_depth(self, image):
         if not self.freeze:
