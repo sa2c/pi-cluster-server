@@ -47,9 +47,9 @@ class ControlWindow(QMainWindow):
         video_source.changeFramePixmap.connect(self.set_frame)
 
 
-    def set_frame(self, image, depth):
+    def set_frame(self, image, depthimage, depth):
         self.ui.video_rgb.setImage(image)
-        self.ui.video_depth.setImage(depth)
+        self.ui.video_depth.setImage(depthimage)
 
     def show_capture_action(self):
         if self.viewfinder.ui.main_video.dynamic_update:

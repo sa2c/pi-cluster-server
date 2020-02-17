@@ -59,7 +59,7 @@ class VideoCaptureThread(QThread):
     """ continuously captures video and a depth map from kinect. Signals output
     the depth map and frame as a QPixmap.
     """
-    changeFramePixmap = Signal(np.ndarray,np.ndarray)
+    changeFramePixmap = Signal(np.ndarray,np.ndarray,np.ndarray)
 
     def run(self):
         while True:
@@ -77,4 +77,4 @@ class VideoCaptureThread(QThread):
         depthimage = depth_to_depthimage(depth)
 
         # Emit video frame
-        self.changeFramePixmap.emit(frame, depthimage)
+        self.changeFramePixmap.emit(frame, depthimage, depth)

@@ -17,7 +17,7 @@ class ViewfinderWindow(QMainWindow):
         # connect the video source output to the viewfinder
         video_source.changeFramePixmap.connect(self.set_frame)
 
-    def set_frame(self, frame, depthimage):
+    def set_frame(self, frame, depthimage, depth):
         self.set_video(frame)
         self.set_depth(depthimage)
 

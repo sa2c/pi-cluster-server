@@ -6,6 +6,7 @@ from display.video_capture import VideoCaptureThread
 from display.control_window import ControlWindow
 from display.viewfinder import ViewfinderWindow
 from controller import Controller
+from server import server
 
 from settings import local_path
 
@@ -16,6 +17,9 @@ if __name__ == '__main__':
     # initialise another thread for video capture
 
     video_source = VideoCaptureThread()
+
+    # Call write_video_maybe every time that video_source emits a frame
+    video_source.changeFramePixmap.connect(server.write_video_maybe)
 
     controller = Controller()
 

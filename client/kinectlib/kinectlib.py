@@ -130,6 +130,9 @@ def threshold(d):
 def measure_depth(n=1):
     global device
 
+    '''
+    Measure the depth by measuring the average depth over n frames
+    '''
     depth = device.get_depth()
     depth = threshold(depth)
     depth = depth.astype(np.float32) / n
