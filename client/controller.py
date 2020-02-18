@@ -8,7 +8,7 @@ from settings import nmeasurements
 
 
 class Controller(object):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, calibration_callback=None):
 
         # instance variables
         self.offset = [0, 5]
@@ -20,11 +20,15 @@ class Controller(object):
         self.contour = np.array([[]])
         self.capture_frame = None
         self.capture_depth = None
+        self.calibration_callback = calibration_callback
 
         self.calibrate()
 
     def calibrate(self):
         self.background = kinect.measure_depth(nmeasurements)
+
+        if self.calibration_callback:
+            self.calibration_callback(self.background)
 
     def capture(self):
         rgb, rgb_with_outline, depth, outline = kinect.images_and_outline(

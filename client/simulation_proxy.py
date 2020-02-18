@@ -29,7 +29,7 @@ def load_pickle_file(filename):
         return pickle.load(f)
 
 
-def save_data_for_upload(data):
+def convert_image_to_bytes(data):
     """
     Save the image given by an BGR numpy array in `data` as an image in a given location
     """
@@ -72,8 +72,8 @@ def upload_images(sim_id):
     """
     sim = load_cached_sim(sim_id)
 
-    rgb_file = save_data_for_upload(sim['rgb_with_contour'])
-    depth_file = save_data_for_upload(sim['depth'])
+    rgb_file = convert_image_to_bytes(sim['rgb_with_contour'])
+    depth_file = convert_image_to_bytes(sim['depth'])
 
     url = f'{cluster_address}/upload/{sim_id}/rgb_with_contour.png'
     response = requests.post(url, data=rgb_file)

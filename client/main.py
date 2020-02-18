@@ -21,7 +21,7 @@ if __name__ == '__main__':
     # Call write_video_maybe every time that video_source emits a frame
     video_source.changeFramePixmap.connect(server.write_video_maybe)
 
-    controller = Controller()
+    controller = Controller(calibration_callback=server.set_background)
 
     viewfinder = ViewfinderWindow(video_source)
 
