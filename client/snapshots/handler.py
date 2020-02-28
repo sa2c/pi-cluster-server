@@ -2,7 +2,6 @@ import json, time
 import numpy as np
 from kinectlib import kinectlib as kinect
 from snapshots import snapshots
-
 import os
 
 ## Handle setting background (used from another function)
@@ -79,6 +78,7 @@ def write_video(image, depthimage, depth, background, identifier):
     sim = { 'rgb' : image,
             'depth' : depthimage,
             'background' : background,
+            'rgb_with_contour' : snapshots.draw_contour_on_image(image, contour),
             'contour-orig' : contour }
 
     snapshots.write_contour(contour, contour_filename)

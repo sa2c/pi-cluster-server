@@ -34,7 +34,7 @@ CORS(app)
 # Static routes for simulation data
 @app.route('/snapshots/<path:filename>')
 def custom_static(filename):
-    return send_from_directory(snapshots.dir(), filename)
+    return send_from_directory(snapshots.cache_dir(), filename)
 
 @app.route('/snapshots/')
 def snapshot_list():
@@ -48,16 +48,13 @@ def snapshot_list():
 @app.route('/dispatch/', methods=['POST'])
 def snapshot_dispatch():
     # construct a simulation object, it has keys: contour, snapshot-id, name, email
-    simulation = request.json
+    snapshot = request.json
 
-    # when I save data, I need to save also:
-    rgb, rgb_with_contour, depth, background, contour-orig
-    # ['name', 'email', 'rgb', 'rgb_with_contour', 'depth', 'background', 'contour', 'contour-orig'])
+    snapshot_id = int(snapshot['snapshot-id'])
 
-    # rgb_with_contour
-    breakpoint()
+    snapshots.update_from_cache(snapshot_id, snapshot)
 
-    id = simulation_proxy.dispatch(simulation)
+    id = simulation_proxy.dispatch(snapshot)
 
     return id
 
