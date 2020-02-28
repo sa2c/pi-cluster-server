@@ -1,9 +1,8 @@
 import json, time
 import numpy as np
 from kinectlib import kinectlib as kinect
-from server.settings import snapshots_dir
+from snapshots import snapshots
 
-from simulation_proxy import convert_image_to_bytes
 import os
 
 ## Handle setting background (used from another function)
@@ -21,14 +20,6 @@ def set_background(background):
 
 
 # Write images to disk
-
-def write_image_to_disk(filepath, image):
-
-    with open(filepath, 'wb') as f:
-        f.write(convert_image_to_bytes(image))
-
-def write_json_to_disk(filename, json_data):
-    pass
 
 # Maybe write the video
 
@@ -65,33 +56,18 @@ def write_video_maybe(image, depthimage, depth):
         if epoch % 4 == 0:
             write_video(image, depthimage, depth, background, epoch)
 
-def cache_filepath(name, epoch):
-    '''
-    Returns the directory to store a given epoch.
-    '''
-
-    directory = f'{snapshots_dir()}/{epoch}'
-    filepath = f'{directory}/{name}'
-
-    try:
-        os.mkdir(directory)
-    except:
-        pass
-
-    return filepath
-
-def write_video(image, depthimage, depth, background, epoch):
+def write_video(image, depthimage, depth, background, identifier):
     '''
     Writes periodic data to disk, at a given location
     Note, this function reads background from globals
     '''
 
-    image_filename = cache_filepath('image.png', epoch)
-    depthimage_filename = cache_filepath('depth.png', epoch)
-    contour_filename = cache_filepath('contour.json', epoch)
+    image_filename = snapshots.get_filepath(identifier, 'image.png')
+    depthimage_filename = snapshots.get_filepath(identifier, 'depth.png')
+    contour_filename = snapshots.get_filepath(identifier, 'contour.json')
 
-    write_image_to_disk(image_filename, image)
-    write_image_to_disk(depthimage_filename, depthimage)
+    snapshots.write_image(image_filename, image)
+    snapshots.write_image(depthimage_filename, depthimage)
 
     # Write contour to disk as json
     contour = compute_contour(image, depth, depthimage, background)
@@ -99,5 +75,12 @@ def write_video(image, depthimage, depth, background, epoch):
     # remove_additional_dimension
     contour = contour[:,0,:]
 
-    with open(contour_filename, 'w') as outfile:
-        json.dump(contour.tolist(), outfile)
+    # cache simulation data in format required for upload/dispatch
+    sim = { 'rgb' : image,
+            'depth' : depthimage,
+            'background' : background,
+            'contour-orig' : contour }
+
+    snapshots.write_contour(contour, contour_filename)
+
+    snapshots.write_sim_cache(identifier, sim)

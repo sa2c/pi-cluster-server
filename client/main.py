@@ -6,7 +6,7 @@ from display.video_capture import VideoCaptureThread
 from display.control_window import ControlWindow
 from display.viewfinder import ViewfinderWindow
 from controller import Controller
-from server import server
+from snapshots import handler as snap_handler
 
 from settings import local_path
 
@@ -19,9 +19,9 @@ if __name__ == '__main__':
     video_source = VideoCaptureThread()
 
     # Call write_video_maybe every time that video_source emits a frame
-    video_source.changeFramePixmap.connect(server.write_video_maybe)
+    video_source.changeFramePixmap.connect(snap_handler.write_video_maybe)
 
-    controller = Controller(calibration_callback=server.set_background)
+    controller = Controller(calibration_callback=snap_handler.set_background)
 
     viewfinder = ViewfinderWindow(video_source)
 

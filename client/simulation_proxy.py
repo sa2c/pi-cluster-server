@@ -132,6 +132,8 @@ def dispatch(sim):
 
     send_sim = {key: sim[key] for key in send_keys}
 
+    logger(f'Simulation dispatch in progress...')
+
     response = transfer_data.post_encoded(url_send, send_sim)
 
     if response.status_code != 200:
@@ -141,6 +143,8 @@ def dispatch(sim):
         )
 
     sim['id'] = response.json()['id']
+
+    logger(f"Simulation dispatched {sim['id']}")
 
     # moved temporary cached simulation file to final destination
     filename = sim_cache_filename(sim['id'])
