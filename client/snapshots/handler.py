@@ -40,6 +40,20 @@ def compute_contour(image, depth, depthimage, background):
 
     return contour
 
+def snapshot_id_or_none():
+    '''
+    Returns an ID if snapshot should be recorded, otherwise return None
+    '''
+    num_tenth_second = 4
+
+    # unix epoch computed in tenths of a second
+    epoch = int(time.time() * 10)
+
+    if epoch % num_tenth_second == 0:
+        return id
+    else:
+        return None
+
 def write_video_maybe(image, depthimage, depth):
     '''
     This is called for every frame, giving the opportunity to write the video to disk.
@@ -50,10 +64,11 @@ def write_video_maybe(image, depthimage, depth):
 
     if background is not None:
 
-        epoch = int(time.time())
+        # number of tenths of a second to record
+        identifier = snapshot_id_or_none()
 
-        if epoch % 4 == 0:
-            write_video(image, depthimage, depth, background, epoch)
+        if identifier:
+            write_video(image, depthimage, depth, background, identifier)
 
 def write_video(image, depthimage, depth, background, identifier):
     '''
