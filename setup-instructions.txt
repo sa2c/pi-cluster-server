@@ -1,0 +1,19 @@
+* This is the start procedure
+jarno machine:
+start pipenv from parent directory
+
+* Staring client
+cd pi-cluster-server2
+pipenv shell
+export PYTHON_PATH=$PWD/libfreenect/wrappers/python/build/lib.linux-x86_64-3.6
+cd client
+python main.py
+
+* start server
+ssh picluster (headnode)
+cd pi-cluster/server
+python3 main.py
+
+- simulations are cached in server/simulations
+- what are the file flags?
+- how do we resubmit a job?
