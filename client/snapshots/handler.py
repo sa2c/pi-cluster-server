@@ -3,24 +3,62 @@ import numpy as np
 from kinectlib import kinectlib as kinect
 from snapshots import snapshots
 import os
+import yaml
+
+default_settings = {
+    # all times are in tenths of a second
+    'interval': 0,
+    'interval-cleanup': 5,
+    'update-interval': 30 * 10,
+    'max-count': 0
+}
+
+settings = default_settings.copy()
 
 ## Handle setting background (used from another function)
 
 __background = None
+
 
 def get_background():
     global __background
 
     return __background
 
+
 def set_background(background):
     global __background
     __background = background
 
 
-# Write images to disk
+def fetch_settings_from_file():
+    '''
+    Read settings from settings.yaml, or return an empty dict if file does not exist
+    '''
+    settings_file = r'snapshots/settings.yaml'
 
-# Maybe write the video
+    if os.path.isfile(settings_file):
+        with open(settings_file) as settings_file:
+            return yaml.load(settings_file, Loader=yaml.FullLoader)
+    else:
+        return {}
+
+
+def update_settings():
+    '''
+    Update the global settings from contents of settings file
+    '''
+    global settings
+
+    new_settings = default_settings.copy()
+
+    new_settings.update(fetch_settings_from_file())
+
+    if new_settings != settings:
+        settings = new_settings
+        print('Settings updated.')
+        print(settings)
+
 
 def compute_contour(image, depth, depthimage, background):
     '''
@@ -36,23 +74,25 @@ def compute_contour(image, depth, depthimage, background):
 
     # I'm not sure why the code does the scaling twice - but have repeated here
     transformed_contour = kinect.transform_contour(contour_orig, scale, offset)
-    contour = kinect.scale_and_translate_contour(transformed_contour, scale, offset)
+    contour = kinect.scale_and_translate_contour(transformed_contour, scale,
+                                                 offset)
 
     return contour
 
-def snapshot_id_or_none():
-    '''
-    Returns an ID if snapshot should be recorded, otherwise return None
-    '''
-    num_tenth_second = 4
 
-    # unix epoch computed in tenths of a second
-    epoch = int(time.time() * 10)
+def snapshots_to_delete(num_to_keep=0):
+    all_ids = snapshots.ids()
+    all_ids.sort(reverse=True)
 
-    if epoch % num_tenth_second == 0:
-        return id
-    else:
-        return None
+    return all_ids[num_to_keep:]
+
+
+def cleanup_snapshots(num_to_keep):
+    to_delete = snapshots_to_delete(num_to_keep)
+
+    for snap in to_delete:
+        snapshots.delete_snapshot(snap)
+
 
 def write_video_maybe(image, depthimage, depth):
     '''
@@ -62,13 +102,28 @@ def write_video_maybe(image, depthimage, depth):
 
     background = get_background()
 
-    if background is not None:
+    # unix epoch computed in tenths of a second
+    epoch = int(time.time() * 10)
 
-        # number of tenths of a second to record
-        identifier = snapshot_id_or_none()
+    # set variables from settings
+    interval = settings['interval']
+    update_interval = settings['update-interval']
+    interval_cleanup = settings['interval-cleanup']
+    max_count = settings['max-count']
 
-        if identifier:
-            write_video(image, depthimage, depth, background, identifier)
+    # update settings periodically
+    if update_interval > 0 and epoch % update_interval:
+        update_settings()
+
+    # do periodic cleanup and snapshot recording
+
+    if max_count > 0:
+        if interval > 0 and epoch % interval == 0 and background is not None:
+            write_video(image, depthimage, depth, background, epoch)
+
+        if interval_cleanup > 0 and epoch % interval_cleanup == 0:
+            cleanup_snapshots(max_count)
+
 
 def write_video(image, depthimage, depth, background, identifier):
     '''
@@ -87,14 +142,16 @@ def write_video(image, depthimage, depth, background, identifier):
     contour = compute_contour(image, depth, depthimage, background)
 
     # remove_additional_dimension
-    contour = contour[:,0,:]
+    contour = contour[:, 0, :]
 
     # cache simulation data in format required for upload/dispatch
-    sim = { 'rgb' : image,
-            'depth' : depthimage,
-            'background' : background,
-            'rgb_with_contour' : snapshots.draw_contour_on_image(image, contour),
-            'contour-orig' : contour }
+    sim = {
+        'rgb': image,
+        'depth': depthimage,
+        'background': background,
+        'rgb_with_contour': snapshots.draw_contour_on_image(image, contour),
+        'contour-orig': contour
+    }
 
     snapshots.write_contour(contour, contour_filename)
 
