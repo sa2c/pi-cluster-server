@@ -262,6 +262,8 @@ def get_print_job():
 def finished_print_job(sim_id):
     model.mark_as_printed(sim_id)
 
+    return { 'updated' : sim_id }
+
 
 def run_filepath(index, filename):
     directory = run_directory(index)
