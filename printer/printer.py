@@ -31,10 +31,13 @@ def download_pdf(sim_id):
     print(f"Downloading {url}")
     response = requests.get(url, allow_redirects=True)
 
-    filename = '/tmp/cache.pdf'
+    filename = f'/tmp/cache{sim_id}.pdf'
 
     with open(filename, 'wb') as f:
         f.write(response.content)
+
+    return filename
+
 
 def mark_as_complete(sim_id):
     url = get_print_finished_url(sim_id)
